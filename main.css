@@ -1,0 +1,368 @@
+:root {
+    --mexican-green: #006847;
+    --mexican-white: #ffffff;
+    --mexican-red: #ce1126;
+    --dark-bg: #1a1a1a;
+    --light-bg: #f4f4f4;
+    --text-primary: #333333;
+    --text-light: #ffffff;
+    --accent-red: #ff4d4d;
+    --transition-speed: 0.3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1, h2, h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Header & Nav */
+header {
+    background: var(--dark-bg);
+    padding: 1.5rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.logo .green {
+    color: var(--mexican-green);
+}
+
+.logo .white {
+    color: var(--mexican-white);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: color var(--transition-speed);
+}
+
+.nav-links a:hover {
+    color: var(--mexican-green);
+}
+
+.cta-button-small {
+    background: var(--mexican-green);
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    color: white !important;
+}
+
+.cta-button-small:hover {
+    background: var(--mexican-red) !important;
+}
+
+/* Hero Section */
+.hero {
+    position: relative;
+    padding: 10rem 0;
+    background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+    color: white;
+    overflow: hidden;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero h1 {
+    font-size: 4.5rem;
+    line-height: 1.1;
+    margin-bottom: 2rem;
+}
+
+.highlight {
+    color: var(--mexican-green);
+    text-shadow: 2px 2px 0px var(--mexican-red);
+}
+
+.hero p {
+    font-size: 1.25rem;
+    max-width: 600px;
+    margin-bottom: 3rem;
+    color: #cccccc;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.cta-button {
+    text-decoration: none;
+    padding: 1rem 2.5rem;
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: all var(--transition-speed);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cta-button.primary {
+    background: var(--mexican-green);
+    color: white;
+}
+
+.cta-button.primary:hover {
+    background: var(--mexican-red);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.cta-button.secondary {
+    border: 2px solid white;
+    color: white;
+}
+
+.cta-button.secondary:hover {
+    background: white;
+    color: black;
+}
+
+.hero-decoration {
+    position: absolute;
+    top: 0;
+    right: -10%;
+    height: 100%;
+    width: 40%;
+    transform: skewX(-20deg);
+    display: flex;
+}
+
+.stripe {
+    flex: 1;
+}
+
+.green-stripe { background: var(--mexican-green); opacity: 0.3; }
+.white-stripe { background: var(--mexican-white); opacity: 0.1; }
+.red-stripe { background: var(--mexican-red); opacity: 0.3; }
+
+/* General Section Styles */
+section {
+    padding: 8rem 0;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+
+.red-line {
+    display: block;
+    width: 50px;
+    height: 4px;
+    background: var(--mexican-red);
+    margin-bottom: 1rem;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+}
+
+/* Vision Section */
+.vision-section {
+    background: white;
+}
+
+.stats {
+    list-style: none;
+    margin-top: 2rem;
+    display: flex;
+    gap: 2rem;
+}
+
+.stats strong {
+    display: block;
+    font-size: 2rem;
+    color: var(--mexican-green);
+}
+
+.vision-graphic {
+    background: var(--light-bg);
+    padding: 4rem;
+    border-left: 10px solid var(--mexican-green);
+    border-bottom: 10px solid var(--mexican-red);
+}
+
+.tech-card {
+    text-align: center;
+}
+
+.tech-card .icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+/* Capabilities Section */
+.capabilities-section.dark {
+    background: var(--dark-bg);
+    color: white;
+}
+
+.center { text-align: center; }
+
+.capability-card {
+    background: rgba(255,255,255,0.05);
+    padding: 3rem;
+    border-top: 4px solid var(--mexican-green);
+    transition: transform var(--transition-speed);
+}
+
+.capability-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255,255,255,0.1);
+}
+
+.capability-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--mexican-green);
+}
+
+/* Heritage Section */
+.heritage-section {
+    background: var(--light-bg);
+}
+
+.mexican-flag-accent {
+    height: 400px;
+    width: 100%;
+    background: linear-gradient(to right, 
+        var(--mexican-green) 33.33%, 
+        var(--mexican-white) 33.33%, 
+        var(--mexican-white) 66.66%, 
+        var(--mexican-red) 66.66%
+    );
+    border: 1px solid #ddd;
+    box-shadow: 20px 20px 0px var(--dark-bg);
+}
+
+/* Contact Section */
+.contact-section {
+    background: white;
+}
+
+.contact-section h2 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.large-green {
+    background: var(--mexican-green);
+    color: white;
+    display: inline-block;
+    margin-top: 2rem;
+}
+
+.large-green:hover {
+    background: var(--mexican-red);
+}
+
+/* Footer */
+footer {
+    background: #000;
+    color: #666;
+    padding: 4rem 0;
+    border-top: 1px solid #222;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-links a {
+    color: #666;
+    margin-left: 1.5rem;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 1s ease-out;
+}
+
+.fade-in-delayed {
+    animation: fadeIn 1.5s ease-out;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero h1 {
+        font-size: 3rem;
+    }
+    
+    .hero-decoration {
+        display: none;
+    }
+    
+    .nav-links {
+        display: none;
+    }
+}
