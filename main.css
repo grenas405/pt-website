@@ -53,6 +53,7 @@ nav {
     font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: -1px;
+    white-space: nowrap;
 }
 
 .logo .green {
@@ -333,20 +334,23 @@ footer {
     font-size: 0.9rem;
 }
 
-/* Animations */
-.fade-in {
-    animation: fadeIn 1s ease-out;
-}
-
-.fade-in-delayed {
-    animation: fadeIn 1.5s ease-out;
-    animation-fill-mode: both;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+/* JS Animation Initial States
+   Scroll-triggered elements start hidden; page-load elements
+   (logo, nav, hero) are reset by anime.set() in main.js instead
+   to avoid flash-of-invisible on slow connections. */
+.vision-text .red-line                { width: 0; }
+.vision-text h2                       { opacity: 0; transform: translateX(-40px); }
+.vision-text p                        { opacity: 0; }
+.stats li                             { opacity: 0; transform: translateY(20px); }
+.vision-graphic                       { opacity: 0; transform: scale(0.85); }
+.capabilities-section .section-title  { opacity: 0; transform: scale(0.9); }
+.capability-card                      { opacity: 0; transform: translateY(60px); }
+.heritage-text h2                     { opacity: 0; transform: translateX(40px); }
+.heritage-text p                      { opacity: 0; transform: translateX(40px); }
+.mexican-flag-accent                  { clip-path: inset(0 100% 0 0); }
+.contact-section h2                   { opacity: 0; transform: scale(0.8); }
+.contact-section .container > p       { opacity: 0; }
+.cta-button.large-green               { opacity: 0; transform: scale(0.5); }
 
 /* Responsive */
 @media (max-width: 992px) {
