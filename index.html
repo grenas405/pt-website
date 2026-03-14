@@ -3,16 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Praxedis Technologies | Disruptive Speed & Mexican Heritage</title>
+    <title>Praxedis Technologies | Disruptive Speed &amp; Mexican Heritage</title>
     <link rel="stylesheet" href="main.css" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Inter:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <script
-      src="https://kit.fontawesome.com/a076d05399.js"
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       crossorigin="anonymous"
-    ></script>
+      referrerpolicy="no-referrer"
+    />
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
       crossorigin="anonymous"
@@ -24,11 +26,17 @@
     />
   </head>
   <body>
+    <!-- Custom cursor -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- Scroll progress bar -->
+    <div id="scroll-progress"></div>
+
     <header>
       <nav class="container">
         <div class="logo">
-          <span class="green">Praxedis</span
-          ><span class="white">Technologies</span>
+          <span class="green">Praxedis</span><span class="white">Technologies</span>
         </div>
         <ul class="nav-links">
           <li><a href="#vision">Vision</a></li>
@@ -41,19 +49,21 @@
 
     <main>
       <section class="hero">
+        <canvas id="hero-canvas"></canvas>
         <div class="container hero-content">
+          <div class="hero-eyebrow">Pedro M. Dominguez &mdash; Founder &amp; Operator</div>
           <h1>
-            <span class="hero-line-1">One Person.</span> <br /><span class="highlight hero-line-2">Mag 7 Speed.</span>
+            <span class="hero-line-1">One Person.</span>
+            <br />
+            <span class="highlight hero-line-2">Mag 7 Speed.</span>
           </h1>
           <p>
-            Praxedis Technologies is a disruptive powerhouse led by Pedro M.
-            Dominguez. We combine the agility of a solo operator with the
-            technological velocity of the world's largest companies.
+            Praxedis Technologies is a disruptive powerhouse. We combine the
+            agility of a solo operator with the technological velocity of the
+            world's largest companies.
           </p>
           <div class="hero-actions">
-            <a href="#capabilities" class="cta-button primary"
-              >The Disruption</a
-            >
+            <a href="#capabilities" class="cta-button primary">The Disruption</a>
             <a href="#heritage" class="cta-button secondary">The Heritage</a>
           </div>
         </div>
@@ -84,7 +94,7 @@
           </div>
           <div class="vision-graphic">
             <div class="tech-card">
-              <span class="icon">⚡</span>
+              <span class="icon">&#x26A1;</span>
               <h3>Full-Cycle Execution</h3>
               <p>
                 From initial data analysis to final market deployment, every
@@ -98,8 +108,9 @@
       <section id="capabilities" class="capabilities-section dark">
         <div class="container">
           <h2 class="section-title center">Capabilities</h2>
-          <div class="grid-3">
+          <div class="grid-4">
             <div class="capability-card">
+              <i class="fa-solid fa-code capability-icon"></i>
               <h3>Full-Stack Dev</h3>
               <p>
                 Scalable, high-performance applications built from the ground
@@ -107,6 +118,7 @@
               </p>
             </div>
             <div class="capability-card">
+              <i class="fa-solid fa-chart-line capability-icon"></i>
               <h3>Market Analysis</h3>
               <p>
                 Data-driven insights that drive growth and outpace the
@@ -114,14 +126,61 @@
               </p>
             </div>
             <div class="capability-card">
+              <i class="fa-solid fa-rocket capability-icon"></i>
               <h3>Disruptive Strategy</h3>
               <p>
                 Innovative marketing and positioning that breaks the status quo.
               </p>
             </div>
+            <div class="capability-card">
+              <i class="fa-solid fa-brain capability-icon"></i>
+              <h3>AI &amp; Automation</h3>
+              <p>
+                Intelligent systems that multiply output and compress timelines.
+              </p>
+            </div>
           </div>
         </div>
       </section>
+
+      <!-- Scrolling marquee strip -->
+      <div class="marquee-section">
+        <div class="marquee-track">
+          <span>Full-Stack Development</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">Market Intelligence</span>
+          <span class="dot">&bull;</span>
+          <span>Disruptive Strategy</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">AI &amp; Automation</span>
+          <span class="dot">&bull;</span>
+          <span>Cloud Architecture</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">Data Analysis</span>
+          <span class="dot">&bull;</span>
+          <span>Brand Positioning</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">Mag 7 Velocity</span>
+          <span class="dot">&bull;</span>
+          <!-- duplicate for seamless loop -->
+          <span>Full-Stack Development</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">Market Intelligence</span>
+          <span class="dot">&bull;</span>
+          <span>Disruptive Strategy</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">AI &amp; Automation</span>
+          <span class="dot">&bull;</span>
+          <span>Cloud Architecture</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">Data Analysis</span>
+          <span class="dot">&bull;</span>
+          <span>Brand Positioning</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">Mag 7 Velocity</span>
+          <span class="dot">&bull;</span>
+        </div>
+      </div>
 
       <section id="heritage" class="heritage-section">
         <div class="container grid-2">
@@ -145,7 +204,9 @@
       </section>
 
       <section id="contact" class="contact-section">
+        <div class="contact-glow"></div>
         <div class="container center">
+          <div class="contact-manifesto">&ldquo;One person. Infinite leverage.&rdquo;</div>
           <h2>Join the Disruption</h2>
           <p>
             Experience what one person can do at Mag 7 speed. Connect with Pedro

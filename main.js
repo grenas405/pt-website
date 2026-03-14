@@ -1,22 +1,27 @@
 /**
- * main.js — Praxedis Technologies AnimeJS Animation Controller
- * AnimeJS 3.2.1 | Static site, no build tools
+ * main.js — Praxedis Technologies Animation Controller
+ * AnimeJS 3.2.1 | Vanilla canvas | No build tools
  *
  * Sections:
- *  1. Helper — splitLetters()
- *  2. Page-load resets — anime.set()
- *  3. Hero load timeline — anime.timeline()
- *  4. Scroll animations — IntersectionObserver
- *  5. Ambient loops
- *  6. Interactive — capability card hover
+ *  1.  Helpers — splitLetters(), splitWords()
+ *  2.  Custom cursor
+ *  3.  Scroll progress bar + glassmorphism nav
+ *  4.  Canvas particle network (hero background)
+ *  5.  Page-load resets — anime.set()
+ *  6.  Hero load timeline
+ *  7.  Text scramble on headline (post-load)
+ *  8.  Scroll animations — IntersectionObserver
+ *  9.  Ambient loops
+ *  10. Magnetic CTA buttons
+ *  11. 3D card tilt
+ *  12. Parallax on hero stripes
+ *  13. Interactive — capability card border flash
  */
 
 document.addEventListener('DOMContentLoaded', () => {
 
   // ============================================================
-  // 1. HELPER — splitLetters
-  // Wraps each character in a display:inline-block <span> so
-  // AnimeJS can animate individual letters.
+  // 1. HELPERS
   // ============================================================
 
   function splitLetters(el) {
@@ -32,36 +37,202 @@ document.addEventListener('DOMContentLoaded', () => {
     return el.querySelectorAll('.letter');
   }
 
+  // ============================================================
+  // 2. CUSTOM CURSOR
+  // ============================================================
+
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+
+  if (dot && ring && window.matchMedia('(hover: hover)').matches) {
+    let ringX = 0, ringY = 0;
+    let mouseX = 0, mouseY = 0;
+
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      dot.style.left = mouseX + 'px';
+      dot.style.top  = mouseY + 'px';
+    });
+
+    // Ring follows with lerp lag
+    (function ringLoop() {
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+      ring.style.left = ringX + 'px';
+      ring.style.top  = ringY + 'px';
+      requestAnimationFrame(ringLoop);
+    })();
+
+    // Scale up on interactive elements
+    const interactiveEls = document.querySelectorAll('a, button, .capability-card, .tech-card');
+    interactiveEls.forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+  }
+
+
+  // ============================================================
+  // 3. SCROLL PROGRESS BAR + GLASSMORPHISM NAV
+  // ============================================================
+
+  const progressBar = document.getElementById('scroll-progress');
+  const header = document.querySelector('header');
+
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+
+    if (progressBar) {
+      progressBar.style.width = (scrolled / total * 100) + '%';
+    }
+
+    if (header) {
+      header.classList.toggle('scrolled', scrolled > 60);
+    }
+  }, { passive: true });
+
+
+  // ============================================================
+  // 4. CANVAS PARTICLE NETWORK (hero background)
+  // ============================================================
+
+  const canvas = document.getElementById('hero-canvas');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    const PARTICLE_COUNT = 80;
+    const CONNECT_DIST   = 130;
+    const REPEL_DIST     = 160;
+    const REPEL_STRENGTH = 2.5;
+
+    // Mexican flag colors (low alpha for subtlety)
+    const COLORS = [
+      'rgba(0, 104, 71, 0.7)',   // green
+      'rgba(0, 168, 104, 0.5)',  // light green
+      'rgba(206, 17, 38, 0.6)',  // red
+      'rgba(255, 255, 255, 0.4)' // white
+    ];
+
+    let W, H, mouse = { x: -9999, y: -9999 };
+    let particles = [];
+
+    function resize() {
+      W = canvas.width  = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    canvas.addEventListener('mousemove', e => {
+      const r = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - r.left;
+      mouse.y = e.clientY - r.top;
+    });
+    canvas.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x  = Math.random() * W;
+        this.y  = Math.random() * H;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = (Math.random() - 0.5) * 0.5;
+        this.r  = Math.random() * 2 + 1;
+        this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      }
+      update() {
+        // Mouse repulsion
+        const dx = this.x - mouse.x;
+        const dy = this.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < REPEL_DIST && dist > 0) {
+          const force = (REPEL_DIST - dist) / REPEL_DIST * REPEL_STRENGTH;
+          this.vx += (dx / dist) * force * 0.05;
+          this.vy += (dy / dist) * force * 0.05;
+        }
+
+        // Damping
+        this.vx *= 0.99;
+        this.vy *= 0.99;
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Wrap edges
+        if (this.x < -10)    this.x = W + 10;
+        if (this.x > W + 10) this.x = -10;
+        if (this.y < -10)    this.y = H + 10;
+        if (this.y > H + 10) this.y = -10;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(new Particle());
+    }
+
+    function drawConnections() {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const a = particles[i], b = particles[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < CONNECT_DIST) {
+            const alpha = (1 - dist / CONNECT_DIST) * 0.35;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = `rgba(0, 104, 71, ${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function particleLoop() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => { p.update(); p.draw(); });
+      drawConnections();
+      requestAnimationFrame(particleLoop);
+    }
+    particleLoop();
+  }
+
+
+  // ============================================================
+  // 5. PAGE-LOAD RESETS
+  // ============================================================
+
   const logoGreenLetters = splitLetters(document.querySelector('.logo .green'));
   const logoWhiteLetters = splitLetters(document.querySelector('.logo .white'));
-
-
-  // ============================================================
-  // 2. PAGE-LOAD RESETS
-  // Hide synchronously before any paint so the timeline reveals them.
-  // ============================================================
 
   anime.set(logoGreenLetters,  { opacity: 0, translateY: -30 });
   anime.set(logoWhiteLetters,  { opacity: 0, translateY: -30 });
   anime.set('.nav-links li',   { opacity: 0, translateY: -20 });
+  anime.set('.hero-eyebrow',   { opacity: 0, translateY: 20 });
   anime.set('.hero-line-1',    { opacity: 0, translateX: -60 });
   anime.set('.hero-line-2',    { opacity: 0, translateX: 60 });
   anime.set('.hero p',         { opacity: 0, translateY: 30 });
   anime.set('.hero-actions a', { opacity: 0, scale: 0 });
 
-  // Stripes only on desktop (hidden via CSS on mobile)
   if (window.innerWidth > 992) {
     anime.set('.stripe', { translateX: '120%' });
   }
 
 
   // ============================================================
-  // 3. HERO LOAD TIMELINE (~2.2s total)
+  // 6. HERO LOAD TIMELINE
   // ============================================================
 
   const heroTL = anime.timeline({ easing: 'easeOutExpo' });
 
-  // Step 1 — Logo green "Praxedis" letters slide down
   heroTL.add({
     targets: logoGreenLetters,
     opacity: [0, 1],
@@ -70,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
     delay: anime.stagger(40),
   });
 
-  // Step 2 — Logo white "Technologies" letters
   heroTL.add({
     targets: logoWhiteLetters,
     opacity: [0, 1],
@@ -79,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
     delay: anime.stagger(30),
   }, '-=200');
 
-  // Step 3 — Nav links fade in from above
   heroTL.add({
     targets: '.nav-links li',
     opacity: [0, 1],
@@ -88,7 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
     delay: anime.stagger(80),
   }, '-=100');
 
-  // Step 4 — Hero stripes slide in from right (desktop only)
   if (window.innerWidth > 992) {
     heroTL.add({
       targets: '.stripe',
@@ -98,37 +266,30 @@ document.addEventListener('DOMContentLoaded', () => {
       easing: 'easeOutCubic',
     }, '-=300');
   } else {
-    // No-op placeholder to keep timeline offsets correct
     heroTL.add({ targets: 'body', duration: 1 }, '-=300');
   }
 
-  // Step 5 — "One Person." slides in from left
+  heroTL.add({
+    targets: '.hero-eyebrow',
+    opacity: [0, 1],
+    translateY: [20, 0],
+    duration: 500,
+  }, '-=500');
+
   heroTL.add({
     targets: '.hero-line-1',
     opacity: [0, 1],
     translateX: [-60, 0],
     duration: 700,
-  }, '-=400');
+  }, '-=300');
 
-  // Step 6 — "Mag 7 Speed." slides in from right with glow burst
   heroTL.add({
     targets: '.hero-line-2',
     opacity: [0, 1],
     translateX: [60, 0],
     duration: 800,
-    begin: () => {
-      const el = document.querySelector('.hero-line-2');
-      el.style.transition = 'text-shadow 0.4s ease-out';
-      el.style.textShadow = '0 0 30px #006847, 2px 2px 0px #ce1126';
-    },
-    complete: () => {
-      const el = document.querySelector('.hero-line-2');
-      el.style.textShadow = '2px 2px 0px #ce1126';
-      el.style.transition = '';
-    },
   }, '-=500');
 
-  // Step 7 — Hero paragraph fades up
   heroTL.add({
     targets: '.hero p',
     opacity: [0, 1],
@@ -136,8 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
     duration: 600,
   }, '-=300');
 
-  // Step 8 — CTA buttons bounce in; clear inline transforms on complete
-  // so CSS :hover transforms are not blocked by AnimeJS inline styles
   heroTL.add({
     targets: '.hero-actions a',
     opacity: [0, 1],
@@ -150,38 +309,91 @@ document.addEventListener('DOMContentLoaded', () => {
         anime.remove(btn);
         btn.style.transform = '';
       });
+      // Trigger text scramble after hero loads
+      scrambleText('.hero-line-2', 'Mag 7 Speed.');
     },
   }, '-=200');
 
 
   // ============================================================
-  // 4. SCROLL ANIMATIONS (IntersectionObserver)
-  // Helper fires the animation fn once per element, then unobserves.
+  // 7. TEXT SCRAMBLE (matrix-style) on hero headline
+  // ============================================================
+
+  function scrambleText(selector, finalText) {
+    const el = document.querySelector(selector);
+    if (!el) return;
+
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&';
+    const duration = 1200;
+    const resolveDelay = 80; // ms per character resolved
+    let frame = 0;
+    let startTime = null;
+    const textLen = finalText.length;
+    let resolved = new Array(textLen).fill(false);
+
+    function randomChar() {
+      return chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    function tick(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      frame++;
+
+      // Resolve chars one by one, left to right
+      const resolveIndex = Math.floor(elapsed / resolveDelay);
+      for (let i = 0; i <= resolveIndex && i < textLen; i++) {
+        resolved[i] = true;
+      }
+
+      let display = '';
+      for (let i = 0; i < textLen; i++) {
+        if (resolved[i]) {
+          display += finalText[i];
+        } else {
+          display += randomChar();
+        }
+      }
+
+      // Use innerHTML to preserve gradient (the span wraps the whole text)
+      el.textContent = display;
+
+      if (resolved.every(Boolean)) return; // done
+      if (elapsed < duration + textLen * resolveDelay) {
+        requestAnimationFrame(tick);
+      } else {
+        el.textContent = finalText;
+      }
+    }
+
+    // Small delay before starting scramble
+    setTimeout(() => requestAnimationFrame(tick), 800);
+  }
+
+
+  // ============================================================
+  // 8. SCROLL ANIMATIONS (IntersectionObserver)
   // ============================================================
 
   function createObserver(selector, fn, threshold) {
-    threshold = threshold || 0.2;
+    threshold = threshold || 0.15;
     const el = document.querySelector(selector);
     if (!el) return;
-    const observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
         if (entry.isIntersecting) {
           fn(entry.target);
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: threshold });
+    }, { threshold });
     observer.observe(el);
   }
 
 
   // --- VISION SECTION ---
-  createObserver('.vision-section', function() {
+  createObserver('.vision-section', () => {
 
-    // h2 and red-line animate together — red-line is a child of h2,
-    // so it must be visible (h2 opacity > 0) while it expands.
-    // Both start at delay:0; easeOutExpo on h2 brings it to ~90%
-    // opacity within the first ~150ms, making the line expansion visible.
     anime({
       targets: '.vision-text h2',
       opacity: [0, 1],
@@ -190,7 +402,6 @@ document.addEventListener('DOMContentLoaded', () => {
       easing: 'easeOutExpo',
     });
 
-    // Red accent line expands simultaneously with h2
     anime({
       targets: '.vision-text .red-line',
       width: ['0px', '50px'],
@@ -199,7 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
       easing: 'easeOutExpo',
     });
 
-    // Paragraph fades in
     anime({
       targets: '.vision-text p',
       opacity: [0, 1],
@@ -209,48 +419,46 @@ document.addEventListener('DOMContentLoaded', () => {
       easing: 'easeOutExpo',
     });
 
-    // Stats: entrance + count-up for numeric values
-    document.querySelectorAll('.stats li').forEach(function(li, i) {
+    document.querySelectorAll('.stats li').forEach((li, i) => {
       anime({
         targets: li,
         opacity: [0, 1],
         translateY: [20, 0],
         duration: 400,
-        delay: 500 + (i * 120),
+        delay: 500 + i * 120,
         easing: 'easeOutExpo',
       });
 
-      var strong = li.querySelector('strong');
+      const strong = li.querySelector('strong');
       if (!strong) return;
-      var originalText = strong.textContent.trim();
-      var numMatch = originalText.match(/^(\d+)/);
-      if (!numMatch) return; // "Mag 7" — entrance only, no count-up
+      const originalText = strong.textContent.trim();
+      const numMatch = originalText.match(/^(\d+)/);
+      if (!numMatch) return;
 
-      var endValue = parseInt(numMatch[1], 10);
-      var suffix = originalText.slice(numMatch[0].length);
+      const endValue = parseInt(numMatch[1], 10);
+      const suffix = originalText.slice(numMatch[0].length);
       strong.textContent = '0' + suffix;
 
       anime({
         targets: { count: 0 },
         count: endValue,
         duration: 1200,
-        delay: 600 + (i * 150),
+        delay: 600 + i * 150,
         easing: 'easeOutExpo',
-        update: function(anim) {
+        update(anim) {
           strong.textContent = Math.round(anim.animations[0].currentValue) + suffix;
         },
-        complete: function() {
+        complete() {
           anime({
             targets: strong,
-            scale: [1, 1.2, 1],
-            duration: 300,
+            scale: [1, 1.25, 1],
+            duration: 350,
             easing: 'easeOutBack',
           });
         },
       });
     });
 
-    // Vision graphic scales in
     anime({
       targets: '.vision-graphic',
       opacity: [0, 1],
@@ -263,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // --- CAPABILITIES SECTION ---
-  createObserver('.capabilities-section', function() {
+  createObserver('.capabilities-section', () => {
 
     anime({
       targets: '.capabilities-section .section-title',
@@ -278,10 +486,10 @@ document.addEventListener('DOMContentLoaded', () => {
       opacity: [0, 1],
       translateY: [60, 0],
       duration: 700,
-      delay: anime.stagger(150, { start: 200 }),
+      delay: anime.stagger(100, { start: 200 }),
       easing: 'easeOutExpo',
-      complete: function() {
-        document.querySelectorAll('.capability-card').forEach(function(card) {
+      complete() {
+        document.querySelectorAll('.capability-card').forEach(card => {
           anime.remove(card);
           card.style.transform = '';
         });
@@ -291,7 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // --- HERITAGE SECTION ---
-  createObserver('.heritage-section', function() {
+  createObserver('.heritage-section', () => {
 
     anime({
       targets: '.heritage-text h2',
@@ -301,7 +509,6 @@ document.addEventListener('DOMContentLoaded', () => {
       easing: 'easeOutExpo',
     });
 
-    // Mexican flag reveals left-to-right via clip-path
     anime({
       targets: '.mexican-flag-accent',
       clipPath: ['inset(0 100% 0 0)', 'inset(0 0% 0 0)'],
@@ -322,13 +529,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // --- CONTACT SECTION ---
-  createObserver('.contact-section', function() {
+  createObserver('.contact-section', () => {
+
+    anime({
+      targets: '.contact-manifesto',
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 600,
+      easing: 'easeOutExpo',
+    });
 
     anime({
       targets: '.contact-section h2',
       opacity: [0, 1],
       scale: [0.8, 1],
       duration: 700,
+      delay: 200,
       easing: 'easeOutBack',
     });
 
@@ -337,7 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
       opacity: [0, 1],
       translateY: [20, 0],
       duration: 500,
-      delay: 300,
+      delay: 400,
       easing: 'easeOutExpo',
     });
 
@@ -346,20 +562,17 @@ document.addEventListener('DOMContentLoaded', () => {
       opacity: [0, 1],
       scale: [0.5, 1],
       duration: 700,
-      delay: 500,
+      delay: 600,
       easing: 'easeOutBack',
-      complete: function() {
-        startContactPulse();
-      },
+      complete() { startContactPulse(); },
     });
   });
 
 
   // ============================================================
-  // 5. AMBIENT LOOPS
+  // 9. AMBIENT LOOPS
   // ============================================================
 
-  // ⚡ icon gentle float — runs immediately, always
   anime({
     targets: '.tech-card .icon',
     translateY: [-8, 0],
@@ -369,12 +582,11 @@ document.addEventListener('DOMContentLoaded', () => {
     easing: 'easeInOutSine',
   });
 
-  // Contact CTA breathing pulse (called after bounce-in completes)
   function startContactPulse() {
     anime({
       targets: '.cta-button.large-green',
-      scale: [1, 1.03, 1],
-      duration: 2000,
+      scale: [1, 1.04, 1],
+      duration: 2200,
       loop: true,
       easing: 'easeInOutSine',
     });
@@ -382,13 +594,88 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ============================================================
-  // 6. INTERACTIVE — Capability card border color flash on hover
+  // 10. MAGNETIC CTA BUTTONS
   // ============================================================
 
-  document.querySelectorAll('.capability-card').forEach(function(card) {
-    var borderAnim = null;
+  document.querySelectorAll('.cta-button').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2);
+      const dy = e.clientY - (r.top  + r.height / 2);
+      anime({
+        targets: btn,
+        translateX: dx * 0.28,
+        translateY: dy * 0.28,
+        duration: 350,
+        easing: 'easeOutExpo',
+      });
+    });
 
-    card.addEventListener('mouseenter', function() {
+    btn.addEventListener('mouseleave', () => {
+      anime({
+        targets: btn,
+        translateX: 0,
+        translateY: 0,
+        duration: 600,
+        easing: 'easeOutElastic(1, 0.5)',
+      });
+    });
+  });
+
+
+  // ============================================================
+  // 11. 3D CARD TILT
+  // ============================================================
+
+  document.querySelectorAll('.capability-card').forEach(card => {
+    const MAX_TILT = 12;
+
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;   // 0–1
+      const y = (e.clientY - r.top)  / r.height;  // 0–1
+      const rotX = (0.5 - y) * MAX_TILT * 2;
+      const rotY = (x - 0.5) * MAX_TILT * 2;
+
+      // Update gradient sheen position
+      card.style.setProperty('--mx', (x * 100) + '%');
+      card.style.setProperty('--my', (y * 100) + '%');
+
+      card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.03)`;
+      card.style.transition = 'transform 0.1s ease';
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transition = 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)';
+      card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)';
+    });
+  });
+
+
+  // ============================================================
+  // 12. PARALLAX ON HERO STRIPES (desktop only)
+  // ============================================================
+
+  if (window.innerWidth > 992) {
+    const decoration = document.querySelector('.hero-decoration');
+    window.addEventListener('scroll', () => {
+      if (decoration) {
+        const y = window.scrollY;
+        decoration.style.transform = `skewX(-20deg) translateY(${y * 0.25}px)`;
+      }
+    }, { passive: true });
+  }
+
+
+  // ============================================================
+  // 13. CAPABILITY CARD BORDER COLOR FLASH ON HOVER (AnimeJS)
+  //     (works alongside the 3D tilt above)
+  // ============================================================
+
+  document.querySelectorAll('.capability-card').forEach(card => {
+    let borderAnim = null;
+
+    card.addEventListener('mouseenter', () => {
       if (borderAnim) borderAnim.pause();
       borderAnim = anime({
         targets: card,
@@ -401,7 +688,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    card.addEventListener('mouseleave', function() {
+    card.addEventListener('mouseleave', () => {
       if (borderAnim) borderAnim.pause();
       anime({
         targets: card,
