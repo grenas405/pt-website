@@ -1,0 +1,23 @@
+[Unit]
+Description=Praxedis Technologies Website
+Documentation=https://www.praxedistechnologies.com
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.local/src/development/pt-website/server
+Environment=PORT=8000
+Environment=HOST=127.0.0.1
+Environment=PUBLIC_DIR=%h/.local/src/development/pt-website/public
+ExecStart=%h/.deno/bin/deno run \
+    --allow-net=127.0.0.1:8000 \
+    --allow-read=%h/.local/src/development/pt-website/public \
+    --allow-env=PORT,PUBLIC_DIR,HOST \
+    main.ts
+Restart=on-failure
+RestartSec=5
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
