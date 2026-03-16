@@ -35,9 +35,12 @@ pt-website/
 │   ├── mime.ts        # Extension → Content-Type
 │   └── headers.ts     # Cache and security headers
 ├── public/
-│   ├── index.html
-│   ├── main.css
-│   └── main.js
+│   ├── index.html       # Home — single-page marketing site
+│   ├── main.css         # Home styles
+│   ├── main.js          # Home animations
+│   ├── about.html       # About — Pedro, stack, currently building
+│   ├── about.css        # About styles
+│   └── about.js         # About animations (typewriters, terminal, canvas)
 ├── nginx/
 │   └── praxedistechnologies.com.conf
 └── systemd/
@@ -54,7 +57,7 @@ deno run \
   server/main.ts
 ```
 
-Open `http://localhost:8000` in any modern web browser.
+Open `http://localhost:8000` (home) or `http://localhost:8000/about.html` (about) in any modern web browser.
 
 ## Production
 

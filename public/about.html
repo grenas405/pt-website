@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About | Praxedis Technologies</title>
+    <link rel="stylesheet" href="about.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <meta
+      name="description"
+      content="About Pedro M. Dominguez — the architect, developer, and disruptor behind Praxedis Technologies."
+    />
+  </head>
+  <body>
+    <!-- Custom cursor -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- Scroll progress bar -->
+    <div id="scroll-progress"></div>
+
+    <header>
+      <nav class="container">
+        <a href="/" class="logo">
+          <span class="green">Praxedis</span><span class="white">Technologies</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="/#vision">Vision</a></li>
+          <li><a href="/#capabilities">Capabilities</a></li>
+          <li><a href="/#heritage">Heritage</a></li>
+          <li><a href="/about.html" class="active">About</a></li>
+          <li><a href="#contact" class="cta-button-small">Connect</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <!-- ── Section 1: Hero ── -->
+      <section class="hero">
+        <canvas id="hero-canvas"></canvas>
+        <div class="hero-decoration">
+          <div class="stripe stripe-green"></div>
+          <div class="stripe stripe-white"></div>
+          <div class="stripe stripe-red"></div>
+        </div>
+        <div class="container hero-content">
+          <div class="hero-eyebrow" id="hero-eyebrow">PEDRO M. DOMINGUEZ</div>
+          <h1 id="hero-headline">
+            <span class="hero-static">The&nbsp;</span><span class="hero-typed highlight" id="hero-typed"></span>
+          </h1>
+          <p class="hero-sub" id="hero-sub">
+            One operator. Full-cycle execution. No intermediaries, no friction, no ceiling.
+          </p>
+          <div class="hero-ctas" id="hero-ctas">
+            <a href="/" class="cta-button primary">See the Work</a>
+            <a href="#contact" class="cta-button secondary">Connect</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 2: The Person ── -->
+      <section class="person-section" id="person">
+        <div class="container">
+          <div class="grid-2">
+            <div class="person-text">
+              <div class="red-line"></div>
+              <h2 class="section-title">The Operator.</h2>
+              <p>
+                Pedro M. Dominguez is a full-stack engineer and strategic technologist who operates
+                Praxedis Technologies as a one-person, zero-bureaucracy machine. Every decision,
+                every line of code, every deployment — owned end-to-end.
+              </p>
+              <p>
+                The philosophy is simple: most companies slow down because of coordination overhead.
+                Remove the layers, keep the output. By eliminating the gap between the person who
+                understands the problem and the person who builds the solution, Praxedis moves at a
+                velocity that teams of ten cannot match.
+              </p>
+              <p>
+                Rooted in Mexican heritage and named after revolutionary Praxedis G. Guerrero, the
+                work carries that same energy — relentless, principled, and aimed at disruption.
+              </p>
+              <div class="person-stats">
+                <div class="stat-item">
+                  <strong class="stat-num" data-target="7">0</strong>
+                  <span>Years Building</span>
+                </div>
+                <div class="stat-item">
+                  <strong class="stat-num" data-target="100">0</strong><span class="stat-suffix">%</span>
+                  <span>Solo Operated</span>
+                </div>
+                <div class="stat-item">
+                  <strong>∞</strong>
+                  <span>Leverage</span>
+                </div>
+              </div>
+            </div>
+            <div class="terminal-card-wrap">
+              <div class="terminal" id="terminal-card">
+                <div class="terminal-bar">
+                  <span class="dot dot-red"></span>
+                  <span class="dot dot-yellow"></span>
+                  <span class="dot dot-green-dot"></span>
+                  <span class="terminal-title">pedro@praxedis ~ profile.txt</span>
+                </div>
+                <pre class="terminal-body" id="terminal-body"><span class="t-prompt">$ </span><span class="t-cmd">cat profile.txt</span>
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 3: Currently Building ── -->
+      <section class="building-section" id="building">
+        <div class="container">
+          <div class="section-header">
+            <div class="red-line"></div>
+            <h2 class="section-title mono">&gt; currently_building</h2>
+            <p class="section-sub">The stack powering this very site — built in public, in real time.</p>
+          </div>
+          <div class="grid-4 building-cards">
+            <div class="building-card" data-title="Deno HTTP Server">
+              <div class="card-icon"><i class="fa-solid fa-server"></i></div>
+              <h3 class="card-title-typed"></h3>
+              <p>Native APIs only. <code>Deno.serve()</code>, <code>Deno.open()</code>, stream-based file delivery. Zero npm.</p>
+              <div class="card-file">server/main.ts</div>
+            </div>
+            <div class="building-card" data-title="nginx Reverse Proxy">
+              <div class="card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <h3 class="card-title-typed"></h3>
+              <p>TLS termination, HTTP→HTTPS redirect, gzip, ACME challenge passthrough, security headers.</p>
+              <div class="card-file">nginx/praxedistechnologies.com.conf</div>
+            </div>
+            <div class="building-card" data-title="systemd User Service">
+              <div class="card-icon"><i class="fa-solid fa-gears"></i></div>
+              <h3 class="card-title-typed"></h3>
+              <p>Installed to <code>/etc/systemd/user/</code>. XDG-compliant <code>%h</code> paths. Restart on failure.</p>
+              <div class="card-file">systemd/praxedis-technologies.service</div>
+            </div>
+            <div class="building-card" data-title="Unix Philosophy">
+              <div class="card-icon"><i class="fa-solid fa-cubes"></i></div>
+              <h3 class="card-title-typed"></h3>
+              <p>One module, one job. <code>mime.ts</code> knows MIME types. <code>router.ts</code> knows paths. Nothing more.</p>
+              <div class="card-file">server/{config,mime,router,file,headers}.ts</div>
+            </div>
+          </div>
+
+          <!-- Live terminal strip -->
+          <div class="terminal terminal-strip" id="terminal-strip">
+            <div class="terminal-bar">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green-dot"></span>
+              <span class="terminal-title">pedro@praxedis — pt-website</span>
+            </div>
+            <div class="terminal-body" id="terminal-strip-body"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 4: The Stack ── -->
+      <section class="stack-section" id="stack">
+        <div class="container">
+          <div class="section-header">
+            <div class="red-line"></div>
+            <h2 class="section-title">The Stack.</h2>
+            <p class="section-sub">Every tool chosen with intention. No framework tax.</p>
+          </div>
+          <div class="grid-3 stack-cards">
+            <div class="stack-card" style="--tw-delay: 0s">
+              <div class="card-icon"><i class="fa-solid fa-dinosaur"></i></div>
+              <h3 class="stack-name">Deno 2.7.5</h3>
+              <p>Secure runtime. Native TypeScript. No npm. The right tool for a zero-dependency server.</p>
+            </div>
+            <div class="stack-card" style="--tw-delay: 0.25s">
+              <div class="card-icon"><i class="fa-brands fa-js"></i></div>
+              <h3 class="stack-name">TypeScript</h3>
+              <p>Type safety at the module boundary. Catches the class of bugs that matter before runtime.</p>
+            </div>
+            <div class="stack-card" style="--tw-delay: 0.5s">
+              <div class="card-icon"><i class="fa-brands fa-linux"></i></div>
+              <h3 class="stack-name">Linux</h3>
+              <p>x86_64. The OS that gets out of the way and lets the process run.</p>
+            </div>
+            <div class="stack-card" style="--tw-delay: 0.75s">
+              <div class="card-icon"><i class="fa-solid fa-globe"></i></div>
+              <h3 class="stack-name">nginx</h3>
+              <p>Reverse proxy, TLS termination, and static cache amplification in one lean config.</p>
+            </div>
+            <div class="stack-card" style="--tw-delay: 1s">
+              <div class="card-icon"><i class="fa-solid fa-gears"></i></div>
+              <h3 class="stack-name">systemd</h3>
+              <p>User-level process supervision. Restart on failure. XDG paths. Industry standard.</p>
+            </div>
+            <div class="stack-card" style="--tw-delay: 1.25s">
+              <div class="card-icon"><i class="fa-brands fa-git-alt"></i></div>
+              <h3 class="stack-name">Git</h3>
+              <p>Every architectural decision is a commit. The changelog is the spec.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 5: Philosophy ── -->
+      <section class="philosophy-section" id="philosophy">
+        <div class="container">
+          <div class="grid-2">
+            <div class="philosophy-text">
+              <div class="red-line"></div>
+              <h2 class="section-title">One Person.<br>Infinite Leverage.</h2>
+              <p>
+                The Unix philosophy isn't just a software principle — it's a business model.
+                Do one thing well. Compose simple pieces into powerful systems. Eliminate
+                everything that doesn't directly contribute to output.
+              </p>
+              <p>
+                Applied to operations: every tool has a single job. Every module has a clear
+                boundary. Every decision has an owner. The result is a system that scales
+                through precision, not through headcount.
+              </p>
+            </div>
+            <div class="philosophy-stats">
+              <div class="phil-stat">
+                <strong class="phil-num" data-target="0">—</strong>
+                <span class="phil-label">% Bloat</span>
+                <p>No dependencies that don't earn their place.</p>
+              </div>
+              <div class="phil-stat">
+                <strong class="phil-num" data-target="100">—</strong>
+                <span class="phil-label">% Ownership</span>
+                <p>Every line of production code written by one hand.</p>
+              </div>
+              <div class="phil-stat">
+                <strong class="phil-inf">∞</strong>
+                <span class="phil-label">Leverage</span>
+                <p>One operator. A complete technology stack. No ceiling.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 6: Contact ── -->
+      <section class="contact-section" id="contact">
+        <div class="contact-glow"></div>
+        <div class="container contact-content">
+          <p class="contact-manifesto">"The future belongs to those who build it themselves."</p>
+          <h2 class="contact-title">Start something.</h2>
+          <div class="contact-ctas">
+            <a href="/" class="cta-button primary large-green">Back to Praxedis</a>
+            <a href="mailto:domingueztechsolutions@gmail.com" class="cta-button secondary">Connect</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container footer-inner">
+        <span>&copy; 2026 Praxedis Technologies. All rights reserved.</span>
+        <span>Built by one. Powered by Deno.</span>
+      </div>
+    </footer>
+
+    <script src="about.js" defer></script>
+  </body>
+</html>
