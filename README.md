@@ -72,6 +72,23 @@ deno run \
 
 nginx config at `nginx/praxedistechnologies.com.conf` handles TLS termination and proxies to the Deno process.
 
+## nginx
+
+```sh
+# Install
+sudo cp nginx/praxedistechnologies.com.conf \
+        /etc/nginx/sites-available/praxedistechnologies.com.conf
+sudo ln -s /etc/nginx/sites-available/praxedistechnologies.com.conf \
+           /etc/nginx/sites-enabled/praxedistechnologies.com.conf
+
+# Obtain TLS certificate (first time)
+sudo certbot certonly --webroot -w /var/www/certbot \
+  -d praxedistechnologies.com -d www.praxedistechnologies.com
+
+# Test and reload
+sudo nginx -t && sudo systemctl reload nginx
+```
+
 ## systemd (User Service)
 
 ```sh
