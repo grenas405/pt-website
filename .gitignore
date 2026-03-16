@@ -17,6 +17,10 @@ Thumbs.db
 .settings/
 .classpath
 
+# Deno
+.deno/
+deno.lock
+
 # Node.js (Future-proofing)
 node_modules/
 npm-debug.log*

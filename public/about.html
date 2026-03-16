@@ -45,6 +45,17 @@
           <li><a href="/about.html" class="active">About</a></li>
           <li><a href="#contact" class="cta-button-small">Connect</a></li>
         </ul>
+        <button
+          class="hamburger"
+          id="hamburger-btn"
+          aria-label="Open navigation menu"
+          aria-expanded="false"
+          aria-controls="mobile-nav-overlay"
+        >
+          <span class="ham-bar ham-bar--top" aria-hidden="true"></span>
+          <span class="ham-bar ham-bar--mid" aria-hidden="true"></span>
+          <span class="ham-bar ham-bar--bot" aria-hidden="true"></span>
+        </button>
       </nav>
     </header>
 
@@ -276,6 +287,37 @@
       </div>
     </footer>
 
+    <div
+      class="mobile-nav-overlay"
+      id="mobile-nav-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Navigation menu"
+      aria-hidden="true"
+    >
+      <div class="mno-flag-bars" aria-hidden="true">
+        <div class="mno-flag-bar mno-flag-bar--green"></div>
+        <div class="mno-flag-bar mno-flag-bar--white"></div>
+        <div class="mno-flag-bar mno-flag-bar--red"></div>
+      </div>
+      <div class="mno-grid" aria-hidden="true"></div>
+      <button class="mno-close" id="mno-close-btn" aria-label="Close navigation menu">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <nav class="mno-nav" aria-label="Mobile site navigation">
+        <ul class="mno-links">
+          <li class="mno-item"><a href="/#vision"       class="mno-link">Vision</a></li>
+          <li class="mno-item"><a href="/#capabilities" class="mno-link">Capabilities</a></li>
+          <li class="mno-item"><a href="/#heritage"     class="mno-link">Heritage</a></li>
+          <li class="mno-item"><a href="/about.html"    class="mno-link active">About</a></li>
+          <li class="mno-item"><a href="#contact"       class="mno-link mno-link--cta">Connect</a></li>
+        </ul>
+      </nav>
+      <p class="mno-tagline" aria-hidden="true">
+        <span class="mno-tagline-green">Praxedis</span>
+        <span class="mno-tagline-white">Technologies</span>
+      </p>
+    </div>
     <script src="about.js" defer></script>
   </body>
 </html>

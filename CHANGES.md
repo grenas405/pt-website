@@ -2,6 +2,22 @@
 
 All notable changes to the **Praxedis Technologies** website project will be documented in this file.
 
+## [Unreleased] - 2026-03-16
+
+### Added
+- Implemented futuristic full-screen hamburger navigation menu for mobile/tablet (`≤992px`) on both `index.html` and `about.html`
+  - Hamburger button with Anime.js bars→X morph animation
+  - Full-screen dark overlay with glassmorphism (`backdrop-filter: blur(24px)`)
+  - Clip-path shutter-wipe entrance/exit animation
+  - Nav links stagger-lifted from clip containers (`overflow:hidden`)
+  - Mexican flag color bar decorations (right side, slide-in)
+  - Scan-line grid texture overlay
+  - Body scroll lock while menu is open
+  - Accessible: ARIA roles, `aria-expanded`, `aria-hidden`, focus trap, Escape key close
+
+### Changed
+- Updated `.gitignore` to include Deno-specific entries (`.deno/`, `deno.lock`)
+
 ## [1.0.0] - 2026-03-12
 
 ### Initial Release

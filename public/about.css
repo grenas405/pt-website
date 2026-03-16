@@ -125,6 +125,135 @@ nav.container {
 }
 .cta-button-small:hover { background: var(--mexican-red); }
 
+/* ── Hamburger Button ── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: 1px solid rgba(0, 104, 71, 0.4);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1200;
+  position: relative;
+  transition: border-color 0.3s;
+}
+.hamburger:hover { border-color: var(--mexican-green); }
+.hamburger:focus-visible { outline: 2px solid var(--mexican-green); outline-offset: 3px; }
+
+.ham-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--mexican-white);
+  border-radius: 2px;
+  transform-origin: center;
+}
+
+/* ── Mobile Nav Overlay ── */
+.mobile-nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 6rem 3rem 4rem;
+  background: rgba(10, 10, 10, 0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  clip-path: inset(0 0 100% 0);
+  pointer-events: none;
+  visibility: hidden;
+}
+.mobile-nav-overlay.is-open {
+  pointer-events: all;
+  visibility: visible;
+}
+
+.mno-flag-bars {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 18%;
+  display: flex; pointer-events: none;
+}
+.mno-flag-bar { flex: 1; }
+.mno-flag-bar--green { background: var(--mexican-green); opacity: 0.18; }
+.mno-flag-bar--white { background: var(--mexican-white); opacity: 0.05; }
+.mno-flag-bar--red   { background: var(--mexican-red);   opacity: 0.18; }
+
+.mno-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 104, 71, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 104, 71, 0.03) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+.mno-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  width: 44px; height: 44px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.6rem; line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.3s, color 0.3s;
+  opacity: 0;
+}
+.mno-close:hover { border-color: var(--mexican-red); color: var(--mexican-red); }
+.mno-close:focus-visible { outline: 2px solid var(--mexican-green); outline-offset: 3px; }
+
+.mno-nav { width: 100%; max-width: 82%; }
+.mno-links { list-style: none; padding: 0; margin: 0; }
+.mno-item {
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.mno-item:first-child { border-top: 1px solid rgba(255, 255, 255, 0.05); }
+.mno-link {
+  display: block;
+  padding: 1.1rem 0;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.6rem, 5vw, 2.8rem);
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  transition: color 0.25s, padding-left 0.25s;
+  transform: translateY(100%);
+}
+.mno-link:hover { color: var(--mexican-green); padding-left: 0.5rem; }
+.mno-link.active { color: var(--mexican-green); }
+.mno-link--cta {
+  color: var(--mexican-green) !important;
+  font-size: clamp(1rem, 3vw, 1.25rem) !important;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 1.5rem;
+}
+.mno-item:has(.mno-link--cta) { border-bottom: none; }
+
+.mno-tagline {
+  position: absolute; bottom: 2rem; left: 3rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  opacity: 0;
+}
+.mno-tagline-green { color: var(--mexican-green); }
+.mno-tagline-white { color: rgba(255, 255, 255, 0.25); }
+
+@media (max-width: 992px) {
+  .hamburger { display: flex; }
+}
+
 /* ── Section Shared ── */
 .red-line {
   width: 50px; height: 4px;
@@ -465,8 +594,7 @@ footer {
   .hero { padding: 8rem 0 6rem; }
   .grid-2 { grid-template-columns: 1fr; gap: 3rem; }
   .hero-decoration { display: none; }
-  .nav-links { gap: 1rem; }
-  .nav-links li:not(:last-child):not(:nth-last-child(2)) { display: none; }
+  .nav-links { display: none; }
   body { cursor: auto; }
   #cursor-dot, #cursor-ring { display: none; }
 }
