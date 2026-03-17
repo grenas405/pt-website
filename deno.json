@@ -1,5 +1,5 @@
 {
   "tasks": {
-    "start": "deno run --allow-net=127.0.0.1:8000 --allow-read=%h/.local/src/development/pt-website/public --allow-env=PORT,PUBLIC_DIR,HOST server/main.ts"
+    "start": "deno run --allow-net=127.0.0.1:8000 --allow-read=$HOME/.local/src/development/pt-website/public --allow-env=PORT,PUBLIC_DIR,HOST server/main.ts"
   }
 }
