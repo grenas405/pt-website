@@ -13,6 +13,7 @@ Environment=PUBLIC_DIR=%h/.local/src/development/pt-website/public
 # Use %h here instead of $HOME; systemd doesn't expand shell variables in ExecStart
 ExecStart=/home/sysadmin/.deno/bin/deno run \
     --allow-net=0.0.0.0:8000 \
+    --allow-net=127.0.0.1:8000 \
     --allow-read=%h/.local/src/development/pt-website/public \
     --allow-env=PORT,PUBLIC_DIR,HOST \
     server/main.ts
