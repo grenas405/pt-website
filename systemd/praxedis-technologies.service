@@ -6,7 +6,7 @@ After=network.target
 [Service]
 Type=simple
 # systemd uses %h correctly in most fields, but not inside ExecStart for path expansion
-WorkingDirectory=%h/.local/src/development/pt-website
+WorkingDirectory=/home/sysadmin/.local/src/development/pt-website
 Environment=PORT=8000
 Environment=HOST=127.0.0.1
 Environment=PUBLIC_DIR=%h/.local/src/development/pt-website/public
