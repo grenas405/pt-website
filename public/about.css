@@ -160,7 +160,7 @@ nav.container {
   position: fixed;
   inset: 0;
   z-index: 1100;
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
@@ -168,13 +168,9 @@ nav.container {
   background: rgba(10, 10, 10, 0.97);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  clip-path: inset(0 0 100% 0);
-  pointer-events: none;
-  visibility: hidden;
 }
 .mobile-nav-overlay.is-open {
-  pointer-events: all;
-  visibility: visible;
+  display: flex;
 }
 
 .mno-flag-bars {

@@ -726,6 +726,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       hamburgerBtn.setAttribute('aria-expanded', 'true');
       overlay.setAttribute('aria-hidden', 'false');
+      // Set clip-path before adding is-open (display:flex) to prevent flash
+      anime.set(overlay, { clipPath: 'inset(0 0 100% 0)' });
       overlay.classList.add('is-open');
       document.body.style.overflow = 'hidden';
 
