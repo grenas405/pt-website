@@ -15,8 +15,7 @@ ExecStart=%h/.deno/bin/deno run \
     --allow-env=PORT,PUBLIC_DIR,HOST \
     main.ts
 Restart=on-failure
-RestartSec=5
-Restart=on-failure
+KillMode=control-group
 RestartSec=5
 
 [Install]
