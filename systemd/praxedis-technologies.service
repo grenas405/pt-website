@@ -5,15 +5,17 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=%h/.local/src/development/pt-website/server
+# systemd uses %h correctly in most fields, but not inside ExecStart for path expansion
+WorkingDirectory=%h/.local/src/development/pt-website
 Environment=PORT=8000
 Environment=HOST=127.0.0.1
 Environment=PUBLIC_DIR=%h/.local/src/development/pt-website/public
+# Use %h here instead of $HOME; systemd doesn't expand shell variables in ExecStart
 ExecStart=%h/.deno/bin/deno run \
-    --allow-net=127.0.0.1:8000 \
+    --allow-net=0.0.0.0:8000 \
     --allow-read=%h/.local/src/development/pt-website/public \
     --allow-env=PORT,PUBLIC_DIR,HOST \
-    main.ts
+    server/main.ts
 Restart=on-failure
 KillMode=control-group
 RestartSec=5
