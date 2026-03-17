@@ -5,6 +5,15 @@ All notable changes to the **Praxedis Technologies** website project will be doc
 ## [Unreleased] - 2026-03-16
 
 ### Added
+- Added `heavenly-roofing.html` — promotional case study page for Heavenly Roofing LLC (Robert C. Rodriguez)
+  - Hero: "Built for Growth." with live site CTA and particle canvas
+  - Project Snapshot section: terminal-style project card (client, runtime, proxy, process, status)
+  - Architecture section: Deno native APIs / Nginx / systemd cards + advantage strip (0 npm · 1 runtime · ∞ scalability)
+  - AI-Augmented Velocity section: Pedro → Robert speed story with `<1hr`, `1 person`, `0 intermediaries` stats
+  - Secure by Design section: two panels covering secure lead capture and protected form submissions
+  - Contact section: live site CTA linking to https://www.heavenlyroofingllc.com
+  - Full Anime.js scroll-triggered animations, 3D card tilt, magnetic CTAs, hamburger menu
+- Added "Work" nav link to desktop nav and mobile hamburger overlay on `index.html` and `about.html`
 - Implemented futuristic full-screen hamburger navigation menu for mobile/tablet (`≤992px`) on both `index.html` and `about.html`
   - Hamburger button with Anime.js bars→X morph animation
   - Full-screen dark overlay with glassmorphism (`backdrop-filter: blur(24px)`)

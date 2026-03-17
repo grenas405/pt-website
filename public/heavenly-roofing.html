@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Heavenly Roofing | Praxedis Technologies</title>
+    <link rel="stylesheet" href="heavenly-roofing.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <meta
+      name="description"
+      content="Heavenly Roofing LLC — a production web platform built by Praxedis Technologies using Deno native APIs, Nginx, and systemd for secure lead generation and rapid deployment."
+    />
+  </head>
+  <body>
+    <!-- Custom cursor -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- Scroll progress bar -->
+    <div id="scroll-progress"></div>
+
+    <header>
+      <nav class="container">
+        <a href="/" class="logo">
+          <span class="green">Praxedis</span><span class="white">Technologies</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="/#vision">Vision</a></li>
+          <li><a href="/#capabilities">Capabilities</a></li>
+          <li><a href="/#heritage">Heritage</a></li>
+          <li><a href="/heavenly-roofing.html" class="active">Work</a></li>
+          <li><a href="/about.html">About</a></li>
+          <li><a href="#contact" class="cta-button-small">Connect</a></li>
+        </ul>
+        <button
+          class="hamburger"
+          id="hamburger-btn"
+          aria-label="Open navigation menu"
+          aria-expanded="false"
+          aria-controls="mobile-nav-overlay"
+        >
+          <span class="ham-bar ham-bar--top" aria-hidden="true"></span>
+          <span class="ham-bar ham-bar--mid" aria-hidden="true"></span>
+          <span class="ham-bar ham-bar--bot" aria-hidden="true"></span>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- ── Section 1: Hero ── -->
+      <section class="hero">
+        <canvas id="hero-canvas"></canvas>
+        <div class="hero-decoration">
+          <div class="stripe stripe-green"></div>
+          <div class="stripe stripe-white"></div>
+          <div class="stripe stripe-red"></div>
+        </div>
+        <div class="container hero-content">
+          <div class="hero-eyebrow" id="hero-eyebrow">CLIENT PROJECT &mdash; HEAVENLY ROOFING LLC</div>
+          <h1 id="hero-headline">
+            <span class="hero-static">Built for </span><span class="highlight">Growth.</span>
+          </h1>
+          <p class="hero-sub" id="hero-sub">
+            A production web platform for Robert C. Rodriguez &mdash; engineered with Deno, Nginx,
+            and systemd to capture leads, protect visitor data, and scale at the speed of one.
+          </p>
+          <div class="hero-ctas" id="hero-ctas">
+            <a
+              href="https://www.heavenlyroofingllc.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="cta-button primary"
+            >Visit Live Site</a>
+            <a href="#stack" class="cta-button secondary">See the Stack</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 2: Project Snapshot ── -->
+      <section class="snapshot-section" id="snapshot">
+        <div class="container">
+          <div class="grid-2">
+            <div class="snapshot-text">
+              <div class="red-line"></div>
+              <h2 class="section-title">The Mission.</h2>
+              <p>
+                Heavenly Roofing LLC is Robert C. Rodriguez's business &mdash; connecting homeowners
+                in need with the roofing expertise and integrity that has defined his career.
+                Every missed call, every broken contact form, every slow-loading page is a lead
+                lost and revenue left on the table.
+              </p>
+              <p>
+                Praxedis Technologies built a platform that changes that. A fast, reliable, and
+                secure web presence that works as hard as Robert does &mdash; capturing every
+                inquiry, protecting every visitor's data, and staying online around the clock
+                without Robert having to think about it.
+              </p>
+            </div>
+
+            <div class="project-card" id="project-card">
+              <div class="project-card-bar">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green-dot"></span>
+                <span class="project-card-title">heavenlyroofingllc.com</span>
+              </div>
+              <dl class="project-meta">
+                <div class="meta-row">
+                  <dt>Client</dt>
+                  <dd>Robert C. Rodriguez</dd>
+                </div>
+                <div class="meta-row">
+                  <dt>Runtime</dt>
+                  <dd>Deno (native APIs)</dd>
+                </div>
+                <div class="meta-row">
+                  <dt>Proxy</dt>
+                  <dd>Nginx</dd>
+                </div>
+                <div class="meta-row">
+                  <dt>Process</dt>
+                  <dd>systemd</dd>
+                </div>
+                <div class="meta-row">
+                  <dt>Dependencies</dt>
+                  <dd>0 npm packages</dd>
+                </div>
+                <div class="meta-row">
+                  <dt>Status</dt>
+                  <dd class="status-live">
+                    <span class="status-dot"></span>Live
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 3: The Architecture ── -->
+      <section class="arch-section" id="stack">
+        <div class="container">
+          <div class="section-header">
+            <div class="red-line"></div>
+            <h2 class="section-title">Deno. Nginx. systemd.<br>The Killer Stack.</h2>
+            <p class="section-sub">
+              No npm. No node_modules. No bloat. Just native TypeScript APIs running at the
+              OS level &mdash; the architecture that lets one person move faster than a team.
+            </p>
+          </div>
+
+          <div class="grid-3 arch-cards">
+            <div class="arch-card">
+              <div class="card-icon"><i class="fa-solid fa-dinosaur"></i></div>
+              <h3>Deno Native APIs</h3>
+              <p>
+                No package manager. Native TypeScript HTTP via <code>Deno.serve()</code>.
+                Native file serving via <code>Deno.open()</code>. Zero CVEs from supply chain
+                dependencies. Every request handled by first-party runtime code &mdash; nothing
+                in between Robert's platform and the operating system.
+              </p>
+            </div>
+            <div class="arch-card">
+              <div class="card-icon"><i class="fa-solid fa-server"></i></div>
+              <h3>Nginx Reverse Proxy</h3>
+              <p>
+                Battle-tested traffic routing. SSL termination at the edge. HTTP&rarr;HTTPS
+                redirect, gzip compression, ACME challenge passthrough, and hardened security
+                headers &mdash; all in a single lean config. Heavenly Roofing's traffic is
+                filtered before it ever touches Deno.
+              </p>
+            </div>
+            <div class="arch-card">
+              <div class="card-icon"><i class="fa-solid fa-gears"></i></div>
+              <h3>systemd Process Management</h3>
+              <p>
+                OS-level process supervision installed at <code>/etc/systemd/</code>.
+                Auto-restart on failure. Boot-time activation. <code>systemctl restart</code>
+                is a deployment. Robert's site stays online with zero manual intervention &mdash;
+                even after a server reboot.
+              </p>
+            </div>
+          </div>
+
+          <div class="advantage-strip">
+            <div class="advantage-item">
+              <span class="advantage-number">0</span>
+              <span class="advantage-label">npm packages</span>
+            </div>
+            <div class="advantage-divider"></div>
+            <div class="advantage-item">
+              <span class="advantage-number">1</span>
+              <span class="advantage-label">runtime to audit</span>
+            </div>
+            <div class="advantage-divider"></div>
+            <div class="advantage-item">
+              <span class="advantage-number">&infin;</span>
+              <span class="advantage-label">scalability ceiling</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 4: AI-Augmented Velocity ── -->
+      <section class="velocity-section" id="velocity">
+        <div class="container">
+          <div class="grid-2">
+            <div class="velocity-text">
+              <div class="red-line"></div>
+              <h2 class="section-title">One Person.<br>Robert's Speed.</h2>
+              <p>
+                This architecture is not just lean &mdash; it is <strong>intentionally optimized for
+                AI-augmented development</strong>. No framework abstractions. No build pipeline.
+                No package graph to untangle. Pedro can describe a feature, generate it with AI,
+                review it, and ship it in a single session.
+              </p>
+              <p>
+                Robert C. Rodriguez does not wait for a development sprint. He does not wait for
+                a team standup or a pull request review cycle. He gets features when he needs them,
+                deployed the same day they are requested.
+              </p>
+              <p>
+                Because the entire stack is composed of single-responsibility modules
+                &mdash; <code>router.ts</code>, <code>mime.ts</code>, <code>file.ts</code>
+                &mdash; AI tooling can read, reason about, and modify any component in isolation.
+                The result is a feedback loop that makes one person as fast as a team of ten.
+              </p>
+            </div>
+
+            <div class="velocity-stats">
+              <div class="velocity-stat">
+                <span class="velocity-number">&lt;&nbsp;1hr</span>
+                <div class="velocity-label">
+                  <strong>Idea to deployed feature</strong>
+                  From Robert's request to live on production.
+                </div>
+              </div>
+              <div class="velocity-stat">
+                <span class="velocity-number">1</span>
+                <div class="velocity-label">
+                  <strong>Person. Full-cycle.</strong>
+                  Architecture, code, deployment, and ops &mdash; owned end-to-end.
+                </div>
+              </div>
+              <div class="velocity-stat">
+                <span class="velocity-number">0</span>
+                <div class="velocity-label">
+                  <strong>Intermediaries</strong>
+                  Between Robert's business needs and his live platform.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 5: Secure by Design ── -->
+      <section class="security-section" id="security">
+        <div class="container">
+          <div class="section-header">
+            <div class="red-line"></div>
+            <h2 class="section-title">Robert's Leads. Secured.</h2>
+            <p class="section-sub">
+              Every visitor interaction is handled server-side. No third-party form services.
+              No data brokers. No client-side exposure of endpoints.
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <div class="security-panel">
+              <div class="security-panel-icon">
+                <i class="fa-solid fa-envelope-circle-check"></i>
+              </div>
+              <h3>Secure Lead Capture</h3>
+              <p>
+                Every homeowner who fills out a form on HeavenlyRoofingLLC.com has their inquiry
+                handled directly by Pedro's Deno server &mdash; not a third-party API, not a
+                SaaS form aggregator, not a service with its own data retention policy.
+              </p>
+              <p>
+                Robert gets real, qualified leads delivered directly to him. No intermediaries
+                skimming data. No platform fees on inquiry volume. Every lead is Robert's,
+                exclusively.
+              </p>
+              <span class="security-badge">Live &middot; Encrypted</span>
+            </div>
+
+            <div class="security-panel">
+              <div class="security-panel-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <h3>Protected Visitor Data</h3>
+              <p>
+                Form submissions are processed entirely server-side on Deno. There is no
+                client-side exposure of backend endpoints, no CORS attack surface from
+                third-party scripts, and no JavaScript-based form handlers that can be
+                intercepted or tampered with.
+              </p>
+              <p>
+                Visitor information &mdash; names, phone numbers, addresses &mdash; is
+                protected from the moment of submission to the moment it reaches Robert.
+                The architecture itself is the security model.
+              </p>
+              <span class="security-badge">Server-Side Only</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 6: Contact / Live Site ── -->
+      <section class="contact-section" id="contact">
+        <div class="contact-glow"></div>
+        <div class="container contact-content">
+          <p class="contact-manifesto">"Built by one. Deployed for a community."</p>
+          <h2 class="contact-title">See Heavenly Roofing Live.</h2>
+          <p class="contact-sub">
+            Robert C. Rodriguez's digital platform &mdash; generating leads, serving homeowners,
+            running on Deno.
+          </p>
+          <a
+            href="https://www.heavenlyroofingllc.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="cta-button primary large-green"
+          >Visit heavenlyroofingllc.com</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container footer-inner">
+        <span>&copy; 2026 Praxedis Technologies. All rights reserved.</span>
+        <span>Built by one. Powered by Deno.</span>
+      </div>
+    </footer>
+
+    <div
+      class="mobile-nav-overlay"
+      id="mobile-nav-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Navigation menu"
+      aria-hidden="true"
+    >
+      <div class="mno-flag-bars" aria-hidden="true">
+        <div class="mno-flag-bar mno-flag-bar--green"></div>
+        <div class="mno-flag-bar mno-flag-bar--white"></div>
+        <div class="mno-flag-bar mno-flag-bar--red"></div>
+      </div>
+      <div class="mno-grid" aria-hidden="true"></div>
+      <button class="mno-close" id="mno-close-btn" aria-label="Close navigation menu">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <nav class="mno-nav" aria-label="Mobile site navigation">
+        <ul class="mno-links">
+          <li class="mno-item"><a href="/#vision"                  class="mno-link">Vision</a></li>
+          <li class="mno-item"><a href="/#capabilities"            class="mno-link">Capabilities</a></li>
+          <li class="mno-item"><a href="/#heritage"                class="mno-link">Heritage</a></li>
+          <li class="mno-item"><a href="/heavenly-roofing.html"    class="mno-link active">Work</a></li>
+          <li class="mno-item"><a href="/about.html"               class="mno-link">About</a></li>
+          <li class="mno-item"><a href="#contact"                  class="mno-link mno-link--cta">Connect</a></li>
+        </ul>
+      </nav>
+      <p class="mno-tagline" aria-hidden="true">
+        <span class="mno-tagline-green">Praxedis</span>
+        <span class="mno-tagline-white">Technologies</span>
+      </p>
+    </div>
+
+    <script src="heavenly-roofing.js" defer></script>
+  </body>
+</html>
