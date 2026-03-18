@@ -629,3 +629,22 @@ footer {
   .contact-title { font-size: 2.5rem; }
   .footer-inner { flex-direction: column; gap: 0.5rem; text-align: center; }
 }
+
+/* ── Particle Engine ── */
+.cursor-trail-particle {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 50%;
+  z-index: 9997;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+  opacity: 0;
+}
+.ambient-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.ambient-particle { position: absolute; border-radius: 50%; pointer-events: none; will-change: transform, opacity; opacity: 0; }
+@keyframes ambient-float {
+  0%   { transform: translateY(0) scale(1);        opacity: 0; }
+  15%  { opacity: var(--ap-alpha, 0.18); }
+  85%  { opacity: var(--ap-alpha, 0.18); }
+  100% { transform: translateY(-110vh) scale(0.5); opacity: 0; }
+}

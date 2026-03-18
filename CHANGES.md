@@ -2,6 +2,24 @@
 
 All notable changes to the **Praxedis Technologies** website project will be documented in this file.
 
+## [Unreleased] - 2026-03-17
+
+### Added
+- Added `particles.js` — shared particle engine powering all three pages
+  - **Hero canvas** (site-wide): 140 glowing particles (70 on mobile) with `shadowBlur` glow and neon color variants (`#00ff9f`, `#ff6b7a`)
+  - Pulsing particle radii via sine wave; comet ghost-trails via semi-transparent `fillRect` clear
+  - Gradient connections: `createLinearGradient` between particle pairs (color A → color B); connection opacity boosts 1.5× when near cursor
+  - Mouse repulsion zone (0–120px) + weak attraction vortex (120–220px)
+  - Sinusoidal wave-drift velocity field (time-based, subtle turbulence)
+  - Click burst: 22 spark particles radiate from click point and fade over ~0.6s
+  - **Cursor particle trail**: pooled 20 DOM divs emit colored sparks on mouse movement; fade + drift via Anime.js; disabled on touch/mobile
+  - **Ambient section particles**: 20 floating CSS-animated particles per dark section (Capabilities, Contact, Building, Architecture); zero JS per-frame cost
+- Added `<script src="particles.js" defer>` to `index.html`, `about.html`, `heavenly-roofing.html`
+
+### Changed
+- `main.js`, `about.js`, `heavenly-roofing.js` — removed duplicated canvas particle code (108 lines each); replaced with 4-line `ParticleEngine` calls
+- `main.css`, `about.css`, `heavenly-roofing.css` — added `.cursor-trail-particle`, `.ambient-layer`, `.ambient-particle`, and `@keyframes ambient-float`
+
 ## [Unreleased] - 2026-03-16
 
 ### Added

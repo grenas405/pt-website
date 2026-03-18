@@ -65,83 +65,10 @@ window.addEventListener('scroll', () => {
 
 /* ── 5. Canvas Particle Network ── */
 
-const canvas = document.getElementById('hero-canvas');
-const ctx = canvas.getContext('2d');
-let W, H, particles;
-const COLORS = ['#006847', '#00a868', '#ce1126', '#ffffff'];
-
-class Particle {
-  constructor() { this.reset(); }
-  reset() {
-    this.x  = Math.random() * W;
-    this.y  = Math.random() * H;
-    this.vx = (Math.random() - 0.5) * 0.6;
-    this.vy = (Math.random() - 0.5) * 0.6;
-    this.r  = Math.random() * 2 + 1;
-    this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    this.alpha = Math.random() * 0.5 + 0.2;
-  }
-  update(mx, my) {
-    const dx = this.x - mx, dy = this.y - my;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < 160) {
-      const force = (160 - dist) / 160;
-      this.vx += (dx / dist) * force * 0.8;
-      this.vy += (dy / dist) * force * 0.8;
-    }
-    this.vx *= 0.98; this.vy *= 0.98;
-    this.x += this.vx; this.y += this.vy;
-    if (this.x < 0) this.x = W;
-    if (this.x > W) this.x = 0;
-    if (this.y < 0) this.y = H;
-    if (this.y > H) this.y = 0;
-  }
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.fillStyle = this.color;
-    ctx.globalAlpha = this.alpha;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  }
-}
-
-function initCanvas() {
-  W = canvas.width  = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-  particles = Array.from({ length: 80 }, () => new Particle());
-}
-
-let mx = -999, my = -999;
-window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-window.addEventListener('resize', initCanvas);
-initCanvas();
-
-(function animateCanvas() {
-  ctx.clearRect(0, 0, W, H);
-  particles.forEach(p => {
-    p.update(mx, my);
-    p.draw();
-  });
-  for (let i = 0; i < particles.length; i++) {
-    for (let j = i + 1; j < particles.length; j++) {
-      const dx = particles[i].x - particles[j].x;
-      const dy = particles[i].y - particles[j].y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 130) {
-        ctx.beginPath();
-        ctx.moveTo(particles[i].x, particles[i].y);
-        ctx.lineTo(particles[j].x, particles[j].y);
-        ctx.strokeStyle = '#006847';
-        ctx.globalAlpha = (1 - dist / 130) * 0.25;
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-      }
-    }
-  }
-  requestAnimationFrame(animateCanvas);
-})();
+ParticleEngine.initHeroCanvas('hero-canvas');
+ParticleEngine.initCursorTrail();
+ParticleEngine.initSectionAmbient('.arch-section');
+ParticleEngine.initSectionAmbient('.contact-section');
 
 /* ── 6. Page Load Timeline ── */
 
