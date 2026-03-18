@@ -47,29 +47,28 @@ window.ParticleEngine = (() => {
     let mouse   = { x: -9999, y: -9999 };
     let particles = [];
     let bursts    = [];
-    let timestamp = 0;
+    let canvasRect = canvas.getBoundingClientRect();
 
     // ── resize ──
     function resize() {
       W = canvas.width  = canvas.offsetWidth  || window.innerWidth;
       H = canvas.height = canvas.offsetHeight || window.innerHeight;
+      canvasRect = canvas.getBoundingClientRect();
     }
     resize();
     window.addEventListener('resize', resize, { passive: true });
 
     // ── mouse tracking ──
     window.addEventListener('mousemove', e => {
-      const r = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - r.left;
-      mouse.y = e.clientY - r.top;
+      mouse.x = e.clientX - canvasRect.left;
+      mouse.y = e.clientY - canvasRect.top;
     });
     canvas.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
 
     // ── click burst ──
     canvas.addEventListener('click', e => {
-      const r = canvas.getBoundingClientRect();
-      const cx = e.clientX - r.left;
-      const cy = e.clientY - r.top;
+      const cx = e.clientX - canvasRect.left;
+      const cy = e.clientY - canvasRect.top;
       for (let i = 0; i < 22; i++) {
         const angle = (i / 22) * Math.PI * 2 + Math.random() * 0.4;
         const speed = 3 + Math.random() * 5;
@@ -148,15 +147,11 @@ window.ParticleEngine = (() => {
       }
 
       draw() {
-        ctx.save();
         ctx.globalAlpha = this.alpha;
-        ctx.shadowBlur  = this.glowRadius;
-        ctx.shadowColor = this.glow;
         ctx.fillStyle   = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, Math.max(0.1, this.r), 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
       }
     }
 
@@ -166,41 +161,36 @@ window.ParticleEngine = (() => {
     }
 
     // ── connections ──
-    function drawConnections(t) {
-      const mouseDist2 = (x, y) => {
-        const dx = x - mouse.x, dy = y - mouse.y;
-        return Math.sqrt(dx * dx + dy * dy);
-      };
+    const CONNECT_DIST2    = CONNECT_DIST * CONNECT_DIST;   // 16900
+    const MOUSE_BOOST_DIST2 = 200 * 200;                    // 40000
 
-      ctx.save();
-      ctx.lineWidth = 0.8;
+    function drawConnections() {
+      ctx.lineWidth   = 0.8;
+      ctx.strokeStyle = 'rgba(0, 200, 120, 1)';
+      ctx.shadowBlur  = 0;
 
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const a = particles[i], b = particles[j];
-          const dx   = a.x - b.x, dy = a.y - b.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist >= CONNECT_DIST) continue;
+          const dx    = a.x - b.x, dy = a.y - b.y;
+          const dist2 = dx * dx + dy * dy;
+          if (dist2 >= CONNECT_DIST2) continue;
 
-          const proximity = (mouseDist2(a.x, a.y) < 200 || mouseDist2(b.x, b.y) < 200) ? 1.5 : 1.0;
-          const baseAlpha = (1 - dist / CONNECT_DIST) * 0.28 * proximity;
+          const dist  = Math.sqrt(dist2);
+          const mdxA  = a.x - mouse.x, mdyA = a.y - mouse.y;
+          const mdxB  = b.x - mouse.x, mdyB = b.y - mouse.y;
+          const near  = (mdxA*mdxA + mdyA*mdyA < MOUSE_BOOST_DIST2 ||
+                         mdxB*mdxB + mdyB*mdyB < MOUSE_BOOST_DIST2);
+          ctx.globalAlpha = (1 - dist / CONNECT_DIST) * 0.28 * (near ? 1.5 : 1.0);
 
-          // Gradient line A→B
-          const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
-          grad.addColorStop(0, a.color);
-          grad.addColorStop(1, b.color);
-
-          ctx.strokeStyle   = grad;
-          ctx.globalAlpha   = baseAlpha;
-          ctx.shadowBlur    = 4;
-          ctx.shadowColor   = a.glow;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
           ctx.stroke();
         }
       }
-      ctx.restore();
+
+      ctx.globalAlpha = 1;
     }
 
     // ── burst update/draw ──
@@ -234,7 +224,6 @@ window.ParticleEngine = (() => {
     function loop(t) {
       const dt = (t - lastTime) / 1000; // seconds
       lastTime  = t;
-      timestamp = t;
 
       // Ghost trail — semi-transparent clear for comet tails
       ctx.fillStyle = 'rgba(0,0,0,0.18)';
@@ -242,7 +231,7 @@ window.ParticleEngine = (() => {
 
       // Update + draw particles
       particles.forEach(p => p.update(t));
-      drawConnections(t);
+      drawConnections();
       particles.forEach(p => p.draw());
 
       // Burst sparks

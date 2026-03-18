@@ -2,6 +2,16 @@
 
 All notable changes to the **Praxedis Technologies** website project will be documented in this file.
 
+## [Unreleased] - 2026-03-18
+
+### Fixed
+- `particles.js` — resolved hero canvas lag caused by four compounding GPU/CPU bottlenecks:
+  - **Removed `ctx.shadowBlur` from `Particle.draw()`** — eliminated 8,400+ GPU blur compositing passes per second (140 particles × 60fps); particles now draw with plain `globalAlpha` + `fillStyle`
+  - **Cached `canvas.getBoundingClientRect()`** — stored in `canvasRect`, updated only on `resize`; eliminates layout reflow triggered on every `mousemove` event
+  - **Squared-distance early exit in connection loop** — checks `dx²+dy²` against `CONNECT_DIST²` before calling `Math.sqrt`, avoiding the expensive sqrt on the ~95% of particle pairs that are out of range
+  - **Removed `createLinearGradient` per connection** — replaced with a single `strokeStyle` color; connections now render as uniform green lines with distance-based alpha
+  - `shadowBlur` retained in `updateBursts()` (click sparks) — infrequent and short-lived, cost is acceptable
+
 ## [Unreleased] - 2026-03-17
 
 ### Added
