@@ -4,6 +4,22 @@ All notable changes to the **Praxedis Technologies** website project will be doc
 
 ## [Unreleased] - 2026-03-18
 
+### Added
+- **Contact section universe background animation** (`particles.js`, `index.html`, `main.css`, `main.js`)
+  - Canvas-based deep-space animation behind the "Join the Disruption" section
+  - 5 visual layers rendered back-to-front:
+    1. **Milky Way band** — 600 Gaussian-spread micro-stars along a diagonal, drawn once to an offscreen canvas and blitted each frame with `lighter` blending
+    2. **Nebula clouds** — 6 offscreen radial-gradient buffers (2 green, 2 red, 1 white, 1 green) composited with `screen` blending; each pulses in opacity and drifts sinusoidally to simulate a breathing cosmos; incorporates Mexican flag palette (#006847, #ce1126)
+    3. **Starfield** — 300 stars across 3 depth layers (far/mid/near) with per-star twinkling via sine waves; near-layer stars have 25% chance of green/red brand tints and ~8 stars with `shadowBlur` glow
+    4. **Shooting stars** — pool of 5 meteors with 20-point trail ring buffers, gradient stroke rendering (`lighter` blend), and smooth fade-in/fade-out; spawn every 2–6 seconds from top/left edges
+    5. **Cosmic dust** — 80 sub-pixel particles batched into a single `beginPath/fill` call, slow-drifting with edge-wrapping
+  - IntersectionObserver pauses animation when section is not visible (performance)
+  - `dt` clamped to 50ms to prevent animation jumps on tab switch / scroll resume
+  - Mobile-responsive: particle counts halved on touch devices
+  - Returns `destroy()` method for cleanup
+
+
+
 ### Fixed
 - `particles.js` — resolved hero canvas lag caused by four compounding GPU/CPU bottlenecks:
   - **Removed `ctx.shadowBlur` from `Particle.draw()`** — eliminated 8,400+ GPU blur compositing passes per second (140 particles × 60fps); particles now draw with plain `globalAlpha` + `fillStyle`

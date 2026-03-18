@@ -102,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ParticleEngine.initCursorTrail();
   ParticleEngine.initSectionAmbient('.capabilities-section.dark');
   ParticleEngine.initSectionAmbient('.contact-section');
+  ParticleEngine.initContactUniverse('contact-canvas');
 
 
   // ============================================================
