@@ -43,7 +43,10 @@ pt-website/
 │   ├── about.js                  # About animations (typewriters, terminal, canvas)
 │   ├── heavenly-roofing.html     # Client case study — Heavenly Roofing LLC
 │   ├── heavenly-roofing.css      # Case study styles
-│   └── heavenly-roofing.js       # Case study animations
+│   ├── heavenly-roofing.js       # Case study animations
+│   ├── 404.html                  # Custom 404 page — glitch animation, terminal typewriter
+│   ├── 404.css                   # 404 styles
+│   └── 404.js                    # 404 animations (entry timeline, glitch, magnetic buttons)
 ├── nginx/
 │   └── praxedistechnologies.com.conf
 └── systemd/
@@ -60,7 +63,7 @@ deno run \
   server/main.ts
 ```
 
-Open `http://localhost:8000` (home), `http://localhost:8000/about.html` (about), or `http://localhost:8000/heavenly-roofing.html` (client case study) in any modern web browser.
+Open `http://localhost:8000` (home), `http://localhost:8000/about.html` (about), `http://localhost:8000/heavenly-roofing.html` (client case study), or navigate to any non-existent path to see the 404 page.
 
 ## Production
 
