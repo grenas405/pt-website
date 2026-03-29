@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 — Page Not Found | Praxedis Technologies</title>
+    <link rel="stylesheet" href="404.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <meta
+      name="description"
+      content="The path you requested does not exist. One person. Zero results."
+    />
+  </head>
+  <body>
+    <!-- Custom cursor -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- Scroll progress bar -->
+    <div id="scroll-progress"></div>
+
+    <header>
+      <nav class="container">
+        <a href="/" class="logo">
+          <span class="green">Praxedis</span><span class="white">Technologies</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="/#vision">Vision</a></li>
+          <li><a href="/#capabilities">Capabilities</a></li>
+          <li><a href="/#heritage">Heritage</a></li>
+          <li><a href="/heavenly-roofing.html">Work</a></li>
+          <li><a href="/about.html">About</a></li>
+          <li><a href="/#contact" class="cta-button-small">Connect</a></li>
+        </ul>
+        <button
+          class="hamburger"
+          id="hamburger-btn"
+          aria-label="Open navigation menu"
+          aria-expanded="false"
+          aria-controls="mobile-nav-overlay"
+        >
+          <span class="ham-bar ham-bar--top" aria-hidden="true"></span>
+          <span class="ham-bar ham-bar--mid" aria-hidden="true"></span>
+          <span class="ham-bar ham-bar--bot" aria-hidden="true"></span>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- ── 404 Hero ── -->
+      <section class="error-hero">
+        <canvas id="hero-canvas"></canvas>
+
+        <div class="hero-decoration" aria-hidden="true">
+          <div class="stripe stripe-green"></div>
+          <div class="stripe stripe-white"></div>
+          <div class="stripe stripe-red"></div>
+        </div>
+
+        <div class="container error-content">
+
+          <!-- Giant glitching 404 numerals -->
+          <div class="error-code-wrap" aria-hidden="true">
+            <span class="error-digit" id="digit-4a">4</span>
+            <span class="error-digit error-digit--zero" id="digit-0">0</span>
+            <span class="error-digit" id="digit-4b">4</span>
+          </div>
+
+          <!-- Monospace eyebrow -->
+          <div class="error-eyebrow" id="error-eyebrow">
+            ERROR_CODE: 404 &nbsp;·&nbsp; PATH_RESOLUTION_FAILED
+          </div>
+
+          <!-- Headline -->
+          <h1 class="error-headline" id="error-headline">
+            <span class="hero-static">One path.</span>
+            <span class="highlight"> Zero results.</span>
+          </h1>
+
+          <!-- Terminal window -->
+          <div class="terminal error-terminal" id="error-terminal">
+            <div class="terminal-bar">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green-dot"></span>
+              <span class="terminal-title">praxedis@server ~ route.log</span>
+            </div>
+            <pre class="terminal-body" id="terminal-body"><span class="t-prompt">$ </span><span class="t-cmd">resolve_path</span>
+</pre>
+          </div>
+
+          <!-- Navigation CTAs -->
+          <div class="error-ctas" id="error-ctas">
+            <a href="/" class="cta-button primary">Return Home</a>
+            <a href="/about.html" class="cta-button secondary">About</a>
+            <a href="/heavenly-roofing.html" class="cta-button secondary">Work</a>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container footer-inner">
+        <span>&copy; 2026 Praxedis Technologies. All rights reserved.</span>
+        <span>Built by one. Powered by Deno.</span>
+      </div>
+    </footer>
+
+    <div
+      class="mobile-nav-overlay"
+      id="mobile-nav-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Navigation menu"
+      aria-hidden="true"
+    >
+      <div class="mno-flag-bars" aria-hidden="true">
+        <div class="mno-flag-bar mno-flag-bar--green"></div>
+        <div class="mno-flag-bar mno-flag-bar--white"></div>
+        <div class="mno-flag-bar mno-flag-bar--red"></div>
+      </div>
+      <div class="mno-grid" aria-hidden="true"></div>
+      <button class="mno-close" id="mno-close-btn" aria-label="Close navigation menu">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <nav class="mno-nav" aria-label="Mobile site navigation">
+        <ul class="mno-links">
+          <li class="mno-item"><a href="/#vision"               class="mno-link">Vision</a></li>
+          <li class="mno-item"><a href="/#capabilities"         class="mno-link">Capabilities</a></li>
+          <li class="mno-item"><a href="/#heritage"             class="mno-link">Heritage</a></li>
+          <li class="mno-item"><a href="/heavenly-roofing.html" class="mno-link">Work</a></li>
+          <li class="mno-item"><a href="/about.html"            class="mno-link">About</a></li>
+          <li class="mno-item"><a href="/#contact"              class="mno-link mno-link--cta">Connect</a></li>
+        </ul>
+      </nav>
+      <p class="mno-tagline" aria-hidden="true">
+        <span class="mno-tagline-green">Praxedis</span>
+        <span class="mno-tagline-white">Technologies</span>
+      </p>
+    </div>
+
+    <script src="particles.js" defer></script>
+    <script src="404.js" defer></script>
+  </body>
+</html>

@@ -4,6 +4,21 @@ import { openFile } from "./file.ts";
 import { mimeType } from "./mime.ts";
 import { buildHeaders } from "./headers.ts";
 
+async function serve404(): Promise<Response> {
+  const path404 = config.publicDir + "/404.html";
+  try {
+    const f = await openFile(path404);
+    const headers = buildHeaders({
+      contentType: "text/html; charset=utf-8",
+      size: f.size,
+      mtime: f.mtime,
+    });
+    return new Response(f.stream, { status: 404, headers });
+  } catch {
+    return new Response("Not Found", { status: 404 });
+  }
+}
+
 async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
 
@@ -13,14 +28,14 @@ async function handler(req: Request): Promise<Response> {
 
   const filePath = await resolve(url.pathname);
   if (filePath === null) {
-    return new Response("Not Found", { status: 404 });
+    return await serve404();
   }
 
   let fileResult;
   try {
     fileResult = await openFile(filePath);
   } catch {
-    return new Response("Not Found", { status: 404 });
+    return await serve404();
   }
 
   const ext = filePath.slice(filePath.lastIndexOf("."));

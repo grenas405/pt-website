@@ -2,6 +2,22 @@
 
 All notable changes to the **Praxedis Technologies** website project will be documented in this file.
 
+## [Unreleased] - 2026-03-29
+
+### Added
+- **Custom 404 page** (`public/404.html`, `public/404.css`, `public/404.js`)
+  - Full-viewport hero with particle canvas background (reuses `particles.js`)
+  - Giant glitching 404 numerals: CSS `@keyframes glitch-404` applied per-digit with staggered `animation-delay` (0s / 0.35s / 0.7s) and varied durations; the zero digit uses the red palette for a warning/target visual
+  - AnimeJS periodic shake on `error-code-wrap` fires every 6.5–10.5s — second layer of disturbance independent of the CSS glitch
+  - Entry timeline: 404 numbers slam in with `easeOutBack` → eyebrow fades down → headline slides up → terminal slides in from left → CTA buttons stagger-bounce
+  - Terminal window with typewriter effect: shows actual `window.location.pathname` in a fake route log (`resolve(): null — path not found in /public/`)
+  - Brand message: "One path. Zero results."
+  - Three navigation CTAs: Return Home (primary green), About (secondary), Work (secondary)
+  - Full design system parity: custom cursor, scroll progress bar, glassmorphism nav on scroll, mobile hamburger overlay, footer, Mexican flag stripe decoration
+
+### Changed
+- `server/main.ts` — added `serve404()` helper; both plain-text "Not Found" returns (missing path + file open failure) now stream `404.html` with HTTP 404 status and correct cache headers; retains text fallback if `404.html` is missing during deploy
+
 ## [Unreleased] - 2026-03-18
 
 ### Added
