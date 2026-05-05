@@ -39,6 +39,7 @@ pt-website/
 │   ├── index.html                # Home — single-page marketing site
 │   ├── main.css                  # Home styles
 │   ├── main.js                   # Home animations
+│   ├── navigation.js             # Shared nav behavior (scroll state, mobile overlay)
 │   ├── about.html                # About — Pedro, stack, currently building
 │   ├── about.css                 # About styles
 │   ├── about.js                  # About animations (typewriters, terminal, canvas)

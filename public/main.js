@@ -5,17 +5,16 @@
  * Sections:
  *  1.  Helpers — splitLetters(), splitWords()
  *  2.  Custom cursor
- *  3.  Scroll progress bar + glassmorphism nav
- *  4.  Canvas particle network (hero background)
- *  5.  Page-load resets — anime.set()
- *  6.  Hero load timeline
- *  7.  Text scramble on headline (post-load)
- *  8.  Scroll animations — IntersectionObserver
- *  9.  Ambient loops
- *  10. Magnetic CTA buttons
- *  11. 3D card tilt
- *  12. Parallax on hero stripes
- *  13. Interactive — capability card border flash
+ *  3.  Canvas particle network (hero background)
+ *  4.  Page-load resets — anime.set()
+ *  5.  Hero load timeline
+ *  6.  Text scramble on headline (post-load)
+ *  7.  Scroll animations — IntersectionObserver
+ *  8.  Ambient loops
+ *  9.  Magnetic CTA buttons
+ *  10. 3D card tilt
+ *  11. Parallax on hero stripes
+ *  12. Interactive — capability card border flash
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -74,28 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ============================================================
-  // 3. SCROLL PROGRESS BAR + GLASSMORPHISM NAV
-  // ============================================================
-
-  const progressBar = document.getElementById('scroll-progress');
-  const header = document.querySelector('header');
-
-  window.addEventListener('scroll', () => {
-    const scrolled = window.scrollY;
-    const total = document.body.scrollHeight - window.innerHeight;
-
-    if (progressBar) {
-      progressBar.style.width = (scrolled / total * 100) + '%';
-    }
-
-    if (header) {
-      header.classList.toggle('scrolled', scrolled > 60);
-    }
-  }, { passive: true });
-
-
-  // ============================================================
-  // 4. CANVAS PARTICLE NETWORK (hero background)
+  // 3. CANVAS PARTICLE NETWORK (hero background)
   // ============================================================
 
   ParticleEngine.initHeroCanvas('hero-canvas');
@@ -106,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ============================================================
-  // 5. PAGE-LOAD RESETS
+  // 4. PAGE-LOAD RESETS
   // ============================================================
 
   const logoGreenLetters = splitLetters(document.querySelector('.logo .green'));
@@ -130,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ============================================================
-  // 6. HERO LOAD TIMELINE
+  // 5. HERO LOAD TIMELINE
   // ============================================================
 
   const heroTL = anime.timeline({ easing: 'easeOutExpo' });
@@ -656,111 +634,5 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
-
-  // ============================================================
-  // 14. MOBILE MENU
-  // ============================================================
-  function initMobileMenu() {
-    const hamburgerBtn = document.getElementById('hamburger-btn');
-    const overlay      = document.getElementById('mobile-nav-overlay');
-    const closeBtn     = document.getElementById('mno-close-btn');
-    const mnoLinks     = document.querySelectorAll('.mno-link');
-
-    if (!hamburgerBtn || !overlay) return;
-
-    let isOpen = false;
-    let openTL = null;
-    let closeTL = null;
-
-    anime.set('.mno-link',     { translateY: '100%' });
-    anime.set('.mno-close',    { opacity: 0 });
-    anime.set('.mno-tagline',  { opacity: 0 });
-    anime.set('.mno-flag-bar', { translateX: '100%' });
-
-    function openMenu() {
-      if (isOpen) return;
-      isOpen = true;
-      if (closeTL) closeTL.pause();
-
-      hamburgerBtn.setAttribute('aria-expanded', 'true');
-      overlay.setAttribute('aria-hidden', 'false');
-      // Set clip-path before adding is-open (display:flex) to prevent flash
-      anime.set(overlay, { clipPath: 'inset(0 0 100% 0)' });
-      overlay.classList.add('is-open');
-      document.body.style.overflow = 'hidden';
-
-      anime({ targets: '.ham-bar--top', translateY: [0, 7],  rotate: [0, 45],  duration: 380, easing: 'easeInOutExpo' });
-      anime({ targets: '.ham-bar--mid', opacity: [1, 0], scaleX: [1, 0], duration: 200, easing: 'easeInExpo' });
-      anime({ targets: '.ham-bar--bot', translateY: [0, -7], rotate: [0, -45], duration: 380, easing: 'easeInOutExpo' });
-
-      openTL = anime.timeline({ easing: 'easeOutExpo' });
-      openTL
-        .add({ targets: overlay,         clipPath: ['inset(0 0 100% 0)', 'inset(0 0 0% 0)'], duration: 600, easing: 'easeInOutExpo' })
-        .add({ targets: '.mno-flag-bar', translateX: ['100%', '0%'], duration: 500, delay: anime.stagger(60, { from: 'last' }), easing: 'easeOutCubic' }, '-=400')
-        .add({ targets: '.mno-link',     translateY: ['100%', '0%'], duration: 550, delay: anime.stagger(70), easing: 'easeOutExpo' }, '-=300')
-        .add({ targets: ['.mno-close', '.mno-tagline'], opacity: [0, 1], duration: 400, delay: anime.stagger(100), easing: 'easeOutExpo',
-               complete: () => { document.getElementById('mno-close-btn')?.focus(); }
-             }, '-=300');
-    }
-
-    function closeMenu() {
-      if (!isOpen) return;
-      isOpen = false;
-      if (openTL) openTL.pause();
-
-      hamburgerBtn.setAttribute('aria-expanded', 'false');
-      overlay.setAttribute('aria-hidden', 'true');
-      hamburgerBtn.focus();
-
-      anime({ targets: '.ham-bar--top', translateY: [7, 0],  rotate: [45, 0],  duration: 380, easing: 'easeInOutExpo' });
-      anime({ targets: '.ham-bar--mid', opacity: [0, 1], scaleX: [0, 1], duration: 280, delay: 100, easing: 'easeOutExpo' });
-      anime({ targets: '.ham-bar--bot', translateY: [-7, 0], rotate: [-45, 0], duration: 380, easing: 'easeInOutExpo' });
-
-      closeTL = anime.timeline({
-        complete: () => {
-          overlay.classList.remove('is-open');
-          document.body.style.overflow = '';
-          anime.set('.mno-link',     { translateY: '100%' });
-          anime.set('.mno-close',    { opacity: 0 });
-          anime.set('.mno-tagline',  { opacity: 0 });
-          anime.set('.mno-flag-bar', { translateX: '100%' });
-        }
-      });
-      closeTL
-        .add({ targets: '.mno-link', translateY: ['0%', '100%'], duration: 350, delay: anime.stagger(40, { from: 'last' }), easing: 'easeInExpo' })
-        .add({ targets: overlay, clipPath: ['inset(0 0 0% 0)', 'inset(0 0 100% 0)'], duration: 450, easing: 'easeInExpo' }, '-=100');
-    }
-
-    hamburgerBtn.addEventListener('click', () => isOpen ? closeMenu() : openMenu());
-    closeBtn?.addEventListener('click', closeMenu);
-    mnoLinks.forEach(link => link.addEventListener('click', () => setTimeout(closeMenu, 80)));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen) closeMenu(); });
-
-    overlay.addEventListener('keydown', e => {
-      if (!isOpen || e.key !== 'Tab') return;
-      const els = [...overlay.querySelectorAll('button, a[href]')];
-      if (e.shiftKey && document.activeElement === els[0]) { e.preventDefault(); els[els.length - 1].focus(); }
-      else if (!e.shiftKey && document.activeElement === els[els.length - 1]) { e.preventDefault(); els[0].focus(); }
-    });
-
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 992 && isOpen) {
-        overlay.classList.remove('is-open');
-        overlay.setAttribute('aria-hidden', 'true');
-        hamburgerBtn.setAttribute('aria-expanded', 'false');
-        document.body.style.overflow = '';
-        isOpen = false;
-        anime.set('.mno-link',     { translateY: '100%' });
-        anime.set('.mno-close',    { opacity: 0 });
-        anime.set('.mno-tagline',  { opacity: 0 });
-        anime.set('.mno-flag-bar', { translateX: '100%' });
-        anime.set('.ham-bar--top', { translateY: 0, rotate: 0 });
-        anime.set('.ham-bar--mid', { opacity: 1, scaleX: 1 });
-        anime.set('.ham-bar--bot', { translateY: 0, rotate: 0 });
-      }
-    }, { passive: true });
-  }
-
-  initMobileMenu();
 
 }); // end DOMContentLoaded

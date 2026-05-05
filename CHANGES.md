@@ -7,8 +7,10 @@ All notable changes to the **Praxedis Technologies** website project will be doc
 ### Added
 - **API Health Endpoint** — added `GET /api/health` and `HEAD /api/health` with non-cacheable JSON health payload (`status`, `service`, `timestamp`, `uptimeSeconds`) for uptime checks and load balancer probes
 - **VERSION File** — added root `VERSION` file as the SemVer source of truth for the current site release version (`1.2.0`)
+- **Shared Navigation Module** — added `public/navigation.js` as the single owner of scroll progress, header scrolled state, and mobile menu interactions
 
 ### Changed
+- **Navigation Refactor** — removed duplicated nav behavior from page-specific scripts and loaded the shared navigation module on every page
 - **nginx Health Routing** — bare-domain HTTPS requests to `/api/health` now proxy directly to Deno instead of returning the canonical `www` redirect; normal bare-domain paths still redirect to `www`
 - **nginx Warning Cleanup** — removed duplicate `text/html` from `gzip_types`, merged HTTPS handling into one server block, and normalized HTTPS `listen` directives to avoid protocol option conflicts with other enabled nginx sites
 - **Vision Section** — complete overhaul: eyebrow label "The Philosophy", rewritten copy emphasizing zero-friction unified execution, 4-stat grid (`0% Friction`, `100% Accountability`, `Mag 7 Velocity`, `1 Vision`) with animated count-up, replaced single tech card with `.vision-card-stack` containing a dark primary card (progress bar fills for Execution Velocity & Accountability Index) and a green secondary "PARADIGM SHIFT" quote card
