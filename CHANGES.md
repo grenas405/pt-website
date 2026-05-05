@@ -10,7 +10,7 @@ All notable changes to the **Praxedis Technologies** website project will be doc
 
 ### Changed
 - **nginx Health Routing** — bare-domain HTTPS requests to `/api/health` now proxy directly to Deno instead of returning the canonical `www` redirect; normal bare-domain paths still redirect to `www`
-- **nginx Warning Cleanup** — removed duplicate `text/html` from `gzip_types` and merged HTTPS handling into one server block to avoid repeated protocol options on the same socket
+- **nginx Warning Cleanup** — removed duplicate `text/html` from `gzip_types`, merged HTTPS handling into one server block, and normalized HTTPS `listen` directives to avoid protocol option conflicts with other enabled nginx sites
 - **Vision Section** — complete overhaul: eyebrow label "The Philosophy", rewritten copy emphasizing zero-friction unified execution, 4-stat grid (`0% Friction`, `100% Accountability`, `Mag 7 Velocity`, `1 Vision`) with animated count-up, replaced single tech card with `.vision-card-stack` containing a dark primary card (progress bar fills for Execution Velocity & Accountability Index) and a green secondary "PARADIGM SHIFT" quote card
 - **Capabilities Section** — added "Core Disciplines" eyebrow + "Four domains. One operator. Infinite leverage." subtitle, semi-transparent watermark numbers `01`–`04` per card, tech tag badges per card, renamed "Market Analysis" → "Market Intelligence"
 - **Marquee Strip** — doubled to dual-direction tracks (first goes left, second goes right at 32s), edge-fade via CSS `mask-image`, second track adds keywords: Paradigm Shift, Zero Friction, TypeScript, Solo Operator, Deno Runtime, Infinite Leverage, React / Next.js, Praxedis G. Guerrero
