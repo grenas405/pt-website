@@ -27,6 +27,7 @@ The site's aesthetic is a fusion of **Vibrant Mexican Heritage** and **High-Tech
 
 ```
 pt-website/
+├── VERSION                    # Current SemVer release version
 ├── server/
 │   ├── main.ts        # Entry point — Deno.serve()
 │   ├── config.ts      # Runtime config from env (PORT, HOST, PUBLIC_DIR)
@@ -64,6 +65,38 @@ deno run \
 ```
 
 Open `http://localhost:8000` (home), `http://localhost:8000/about.html` (about), `http://localhost:8000/heavenly-roofing.html` (client case study), or navigate to any non-existent path to see the 404 page.
+
+## API
+
+### Health Check
+
+```http
+GET /api/health
+HEAD /api/health
+```
+
+Returns a non-cacheable JSON response for uptime checks and load balancer probes:
+
+```json
+{
+  "status": "ok",
+  "service": "praxedis-technologies-website",
+  "timestamp": "2026-05-05T12:00:00.000Z",
+  "uptimeSeconds": 42
+}
+```
+
+Unsupported methods return `405 Method Not Allowed` with `Allow: GET, HEAD`.
+
+## Versioning
+
+The root `VERSION` file is the source of truth for the site release version. It uses SemVer format:
+
+```txt
+MAJOR.MINOR.PATCH
+```
+
+Use numeric segments only, no leading `v`, and keep the file to a single line.
 
 ## Production
 

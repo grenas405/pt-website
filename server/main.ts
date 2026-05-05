@@ -2,7 +2,26 @@ import { config } from "./config.ts";
 import { resolve } from "./router.ts";
 import { openFile } from "./file.ts";
 import { mimeType } from "./mime.ts";
-import { buildHeaders } from "./headers.ts";
+import { buildHeaders, buildJsonHeaders } from "./headers.ts";
+
+const HEALTH_PATH = "/api/health";
+
+function serveHealth(method: string): Response {
+  const body = JSON.stringify({
+    status: "ok",
+    service: "praxedis-technologies-website",
+    timestamp: new Date().toISOString(),
+    uptimeSeconds: Math.floor(performance.now() / 1000),
+  });
+  const size = new TextEncoder().encode(body).byteLength;
+  const headers = buildJsonHeaders(size);
+
+  if (method === "HEAD") {
+    return new Response(null, { status: 200, headers });
+  }
+
+  return new Response(body, { status: 200, headers });
+}
 
 async function serve404(): Promise<Response> {
   const path404 = config.publicDir + "/404.html";
@@ -23,7 +42,14 @@ async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
 
   if (req.method !== "GET" && req.method !== "HEAD") {
-    return new Response("Method Not Allowed", { status: 405 });
+    return new Response("Method Not Allowed", {
+      status: 405,
+      headers: { Allow: "GET, HEAD" },
+    });
+  }
+
+  if (url.pathname === HEALTH_PATH) {
+    return serveHealth(req.method);
   }
 
   const filePath = await resolve(url.pathname);

@@ -11,6 +11,12 @@ const CACHE_DURATION: Record<string, number> = {
   "image/x-icon": 86400,
 };
 
+function applySecurityHeaders(h: Headers): void {
+  h.set("X-Content-Type-Options", "nosniff");
+  h.set("X-Frame-Options", "DENY");
+  h.set("Referrer-Policy", "strict-origin-when-cross-origin");
+}
+
 export function buildHeaders(info: FileInfo): Headers {
   const h = new Headers();
 
@@ -30,9 +36,18 @@ export function buildHeaders(info: FileInfo): Headers {
     h.set("ETag", `W/"${info.mtime.getTime()}"`);
   }
 
-  h.set("X-Content-Type-Options", "nosniff");
-  h.set("X-Frame-Options", "DENY");
-  h.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  applySecurityHeaders(h);
+
+  return h;
+}
+
+export function buildJsonHeaders(size: number): Headers {
+  const h = new Headers();
+
+  h.set("Content-Type", "application/json; charset=utf-8");
+  h.set("Content-Length", String(size));
+  h.set("Cache-Control", "no-store");
+  applySecurityHeaders(h);
 
   return h;
 }
