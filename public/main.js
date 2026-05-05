@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
 
     // Scale up on interactive elements
-    const interactiveEls = document.querySelectorAll('a, button, .capability-card, .tech-card');
+    const interactiveEls = document.querySelectorAll('a, button, .capability-card, .vision-card');
     interactiveEls.forEach(el => {
       el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
       el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
@@ -120,6 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
   anime.set('.hero-line-2',    { opacity: 0, translateX: 60 });
   anime.set('.hero p',         { opacity: 0, translateY: 30 });
   anime.set('.hero-actions a', { opacity: 0, scale: 0 });
+  anime.set('.vision-card',           { opacity: 0, translateY: 30 });
+  anime.set('.stat-item',             { opacity: 0, translateY: 20 });
+  anime.set('.heritage-quote-bubble', { opacity: 0, translateY: 20 });
 
   if (window.innerWidth > 992) {
     anime.set('.stripe', { translateX: '120%' });
@@ -318,39 +321,36 @@ document.addEventListener('DOMContentLoaded', () => {
       easing: 'easeOutExpo',
     });
 
-    document.querySelectorAll('.stats li').forEach((li, i) => {
-      anime({
-        targets: li,
-        opacity: [0, 1],
-        translateY: [20, 0],
-        duration: 400,
-        delay: 500 + i * 120,
-        easing: 'easeOutExpo',
-      });
+    // Stats grid items
+    anime({
+      targets: '.stat-item',
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 500,
+      delay: anime.stagger(100, { start: 500 }),
+      easing: 'easeOutExpo',
+    });
 
-      const strong = li.querySelector('strong');
-      if (!strong) return;
-      const originalText = strong.textContent.trim();
-      const numMatch = originalText.match(/^(\d+)/);
-      if (!numMatch) return;
-
-      const endValue = parseInt(numMatch[1], 10);
-      const suffix = originalText.slice(numMatch[0].length);
-      strong.textContent = '0' + suffix;
+    // Animated number counters
+    document.querySelectorAll('.stat-number[data-target]').forEach((el, i) => {
+      const endValue = parseInt(el.getAttribute('data-target'), 10);
+      const suffix   = el.getAttribute('data-suffix') || '';
+      const prefix   = el.getAttribute('data-prefix') || '';
+      el.textContent = prefix + '0' + suffix;
 
       anime({
         targets: { count: 0 },
         count: endValue,
-        duration: 1200,
+        duration: 1400,
         delay: 600 + i * 150,
         easing: 'easeOutExpo',
         update(anim) {
-          strong.textContent = Math.round(anim.animations[0].currentValue) + suffix;
+          el.textContent = prefix + Math.round(anim.animations[0].currentValue) + suffix;
         },
         complete() {
           anime({
-            targets: strong,
-            scale: [1, 1.25, 1],
+            targets: el,
+            scale: [1, 1.2, 1],
             duration: 350,
             easing: 'easeOutBack',
           });
@@ -358,14 +358,28 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+    // Vision card stack entrance, then trigger progress bar fills
     anime({
-      targets: '.vision-graphic',
+      targets: '.vision-card',
       opacity: [0, 1],
-      scale: [0.85, 1],
+      translateY: [30, 0],
       duration: 700,
-      delay: 200,
+      delay: anime.stagger(180, { start: 250 }),
       easing: 'easeOutExpo',
+      complete() {
+        document.querySelectorAll('.vision-card-bar-fill').forEach((bar, i) => {
+          const targetWidth = bar.getAttribute('data-width') || '0';
+          anime({
+            targets: bar,
+            width: ['0%', targetWidth + '%'],
+            duration: 900,
+            delay: i * 200,
+            easing: 'easeInOutExpo',
+          });
+        });
+      },
     });
+
   });
 
 
@@ -373,10 +387,28 @@ document.addEventListener('DOMContentLoaded', () => {
   createObserver('.capabilities-section', () => {
 
     anime({
+      targets: '.capabilities-eyebrow',
+      opacity: [0, 1],
+      translateY: [10, 0],
+      duration: 400,
+      easing: 'easeOutExpo',
+    });
+
+    anime({
       targets: '.capabilities-section .section-title',
       opacity: [0, 1],
       scale: [0.9, 1],
       duration: 600,
+      delay: 100,
+      easing: 'easeOutExpo',
+    });
+
+    anime({
+      targets: '.capabilities-intro',
+      opacity: [0, 1],
+      translateY: [10, 0],
+      duration: 400,
+      delay: 200,
       easing: 'easeOutExpo',
     });
 
@@ -385,7 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
       opacity: [0, 1],
       translateY: [60, 0],
       duration: 700,
-      delay: anime.stagger(100, { start: 200 }),
+      delay: anime.stagger(100, { start: 300 }),
       easing: 'easeOutExpo',
       complete() {
         document.querySelectorAll('.capability-card').forEach(card => {
@@ -401,10 +433,19 @@ document.addEventListener('DOMContentLoaded', () => {
   createObserver('.heritage-section', () => {
 
     anime({
+      targets: '.heritage-eyebrow',
+      opacity: [0, 1],
+      translateX: [40, 0],
+      duration: 400,
+      easing: 'easeOutExpo',
+    });
+
+    anime({
       targets: '.heritage-text h2',
       opacity: [0, 1],
       translateX: [40, 0],
       duration: 700,
+      delay: 100,
       easing: 'easeOutExpo',
     });
 
@@ -422,6 +463,24 @@ document.addEventListener('DOMContentLoaded', () => {
       translateX: [40, 0],
       duration: 600,
       delay: anime.stagger(150, { start: 250 }),
+      easing: 'easeOutExpo',
+    });
+
+    anime({
+      targets: '.heritage-quote-bubble',
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 600,
+      delay: 700,
+      easing: 'easeOutExpo',
+    });
+
+    anime({
+      targets: '.heritage-location',
+      opacity: [0, 1],
+      translateY: [10, 0],
+      duration: 400,
+      delay: 900,
       easing: 'easeOutExpo',
     });
   });
@@ -473,9 +532,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // ============================================================
 
   anime({
-    targets: '.tech-card .icon',
-    translateY: [-8, 0],
-    duration: 2000,
+    targets: '.vision-card-icon',
+    translateY: [-6, 0],
+    duration: 2200,
     loop: true,
     direction: 'alternate',
     easing: 'easeInOutSine',

@@ -88,30 +88,65 @@
       </section>
 
       <section id="vision" class="vision-section">
-        <div class="container grid-2">
+        <div class="container grid-2 vision-grid">
           <div class="vision-text">
+            <p class="vision-eyebrow">The Philosophy</p>
             <h2 class="section-title">
               <span class="red-line"></span>The Disruption
             </h2>
             <p>
-              In a world of bloated teams and slow cycles, Praxedis Technologies
-              operates differently. Pedro M. Dominguez is the developer, the
-              marketer, the analyst, and the programmer. This unified vision
-              eliminates friction, allowing for unprecedented delivery speed.
+              No handoffs. No committees. No friction tax. Praxedis Technologies
+              is a single, unified mind — developer, analyst, strategist, and
+              operator fused into one. Every decision made at the speed of
+              thought. Every product shipped with the precision of a Mag 7
+              engineering org. Pure execution. No dilution.
             </p>
-            <ul class="stats">
-              <li><strong>0%</strong> Friction</li>
-              <li><strong>100%</strong> Accountability</li>
-              <li><strong>Mag 7</strong> Velocity</li>
-            </ul>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-number" data-target="0" data-suffix="%">0%</span>
+                <span class="stat-label">Friction</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number" data-target="100" data-suffix="%">100%</span>
+                <span class="stat-label">Accountability</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number" data-prefix="Mag " data-target="7">Mag 7</span>
+                <span class="stat-label">Velocity</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">1</span>
+                <span class="stat-label">Vision, No Compromise</span>
+              </div>
+            </div>
           </div>
-          <div class="vision-graphic">
-            <div class="tech-card">
-              <span class="icon">&#x26A1;</span>
+          <div class="vision-card-stack">
+            <div class="vision-card vision-card--primary">
+              <span class="vision-card-icon">&#x26A1;</span>
               <h3>Full-Cycle Execution</h3>
               <p>
-                From initial data analysis to final market deployment, every
-                step is executed with precision and speed.
+                From initial data analysis to final market deployment — every
+                step executed with precision and speed. One operator.
+                End-to-end ownership.
+              </p>
+              <div class="vision-card-bar-wrap">
+                <div class="vision-card-bar">
+                  <div class="vision-card-bar-fill" data-width="92"></div>
+                </div>
+                <span class="vision-card-bar-label">Execution Velocity</span>
+              </div>
+              <div class="vision-card-bar-wrap">
+                <div class="vision-card-bar">
+                  <div class="vision-card-bar-fill" data-width="100"></div>
+                </div>
+                <span class="vision-card-bar-label">Accountability Index</span>
+              </div>
+            </div>
+            <div class="vision-card vision-card--secondary">
+              <div class="vision-card-quote-mark">&ldquo;</div>
+              <p class="vision-card-quote-text">PARADIGM SHIFT</p>
+              <p class="vision-card-quote-sub">
+                One person redefining what a technology company can be.
               </p>
             </div>
           </div>
@@ -120,44 +155,66 @@
 
       <section id="capabilities" class="capabilities-section dark">
         <div class="container">
-          <h2 class="section-title center">Capabilities</h2>
+          <div class="capabilities-header">
+            <p class="capabilities-eyebrow">Core Disciplines</p>
+            <h2 class="section-title center">Capabilities</h2>
+            <p class="capabilities-intro">Four domains. One operator. Infinite leverage.</p>
+          </div>
           <div class="grid-4">
             <div class="capability-card">
+              <span class="capability-number">01</span>
               <i class="fa-solid fa-code capability-icon"></i>
               <h3>Full-Stack Dev</h3>
               <p>
                 Scalable, high-performance applications built from the ground
-                up.
+                up — no bloat, no compromise.
               </p>
+              <div class="capability-tags">
+                <span>TypeScript</span><span>Deno</span><span>React</span>
+              </div>
             </div>
             <div class="capability-card">
+              <span class="capability-number">02</span>
               <i class="fa-solid fa-chart-line capability-icon"></i>
-              <h3>Market Analysis</h3>
+              <h3>Market Intelligence</h3>
               <p>
-                Data-driven insights that drive growth and outpace the
+                Data-driven insights that expose opportunities and outpace the
                 competition.
               </p>
+              <div class="capability-tags">
+                <span>Analytics</span><span>Research</span><span>Strategy</span>
+              </div>
             </div>
             <div class="capability-card">
+              <span class="capability-number">03</span>
               <i class="fa-solid fa-rocket capability-icon"></i>
               <h3>Disruptive Strategy</h3>
               <p>
-                Innovative marketing and positioning that breaks the status quo.
+                Marketing and positioning that doesn't break the status quo —
+                it redefines it.
               </p>
+              <div class="capability-tags">
+                <span>Positioning</span><span>GTM</span><span>Brand</span>
+              </div>
             </div>
             <div class="capability-card">
+              <span class="capability-number">04</span>
               <i class="fa-solid fa-brain capability-icon"></i>
               <h3>AI &amp; Automation</h3>
               <p>
-                Intelligent systems that multiply output and compress timelines.
+                Intelligent systems that multiply output, compress timelines,
+                and make one person unstoppable.
               </p>
+              <div class="capability-tags">
+                <span>LLMs</span><span>Pipelines</span><span>Agents</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       <!-- Scrolling marquee strip -->
-      <div class="marquee-section">
+      <div class="marquee-section marquee-section--dual">
         <div class="marquee-track">
           <span>Full-Stack Development</span>
           <span class="dot">&bull;</span>
@@ -193,24 +250,80 @@
           <span class="accent">Mag 7 Velocity</span>
           <span class="dot">&bull;</span>
         </div>
+        <div class="marquee-track marquee-track--reverse">
+          <span class="accent">Paradigm Shift</span>
+          <span class="dot">&bull;</span>
+          <span>Zero Friction</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">TypeScript</span>
+          <span class="dot">&bull;</span>
+          <span>Solo Operator</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">Deno Runtime</span>
+          <span class="dot">&bull;</span>
+          <span>Infinite Leverage</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">React / Next.js</span>
+          <span class="dot">&bull;</span>
+          <span>Praxedis G. Guerrero</span>
+          <span class="dot">&bull;</span>
+          <!-- duplicate for seamless loop -->
+          <span class="accent">Paradigm Shift</span>
+          <span class="dot">&bull;</span>
+          <span>Zero Friction</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">TypeScript</span>
+          <span class="dot">&bull;</span>
+          <span>Solo Operator</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">Deno Runtime</span>
+          <span class="dot">&bull;</span>
+          <span>Infinite Leverage</span>
+          <span class="dot">&bull;</span>
+          <span class="accent">React / Next.js</span>
+          <span class="dot">&bull;</span>
+          <span>Praxedis G. Guerrero</span>
+          <span class="dot">&bull;</span>
+        </div>
       </div>
 
       <section id="heritage" class="heritage-section">
         <div class="container grid-2">
           <div class="heritage-image">
             <div class="mexican-flag-accent"></div>
+            <div class="heritage-quote-bubble">
+              <span class="heritage-quote-mark">&ldquo;</span>
+              <p class="heritage-quote-text">
+                La libertad no se mendiga; se conquista con el filo de la espada.
+              </p>
+              <cite class="heritage-quote-cite">— Praxedis G. Guerrero</cite>
+            </div>
           </div>
           <div class="heritage-text">
-            <h2 class="section-title">Rooted in Revolution</h2>
+            <p class="heritage-eyebrow">Origin &amp; Identity</p>
+            <h2 class="section-title">
+              Rooted in <em class="heritage-em">Revolution</em>
+            </h2>
             <p>
               Our name pays homage to <strong>Praxedis G. Guerrero</strong>, the
               revolutionary journalist from Chihuahua, Mexico. His spirit of
-              disruption and pursuit of progress drives our technological
+              disruption and fearless pursuit of progress drives our technological
               mission today.
             </p>
             <p>
               Though based in the United States, our heart beats with the
-              vibrant energy and unyielding determination of Chihuahua.
+              vibrant energy and unyielding determination of Chihuahua — we carry
+              that fire into every line of code and every paradigm we shift.
+            </p>
+            <div class="heritage-divider">
+              <span class="hd-bar hd-bar--green"></span>
+              <span class="hd-bar hd-bar--white"></span>
+              <span class="hd-bar hd-bar--red"></span>
+            </div>
+            <p class="heritage-location">
+              <i class="fa-solid fa-location-dot"></i> United States
+              &nbsp;&middot;&nbsp;
+              <i class="fa-solid fa-heart"></i> Chihuahua, Mexico
             </p>
           </div>
         </div>
@@ -235,10 +348,50 @@
       </section>
     </main>
 
-    <footer>
-      <div class="container footer-content">
-        <p>&copy; 2026 Praxedis Technologies. All Rights Reserved.</p>
-        <div class="footer-links"></div>
+    <footer class="site-footer">
+      <div class="footer-flag-bar" aria-hidden="true">
+        <div class="ffb ffb--green"></div>
+        <div class="ffb ffb--white"></div>
+        <div class="ffb ffb--red"></div>
+      </div>
+      <div class="footer-inner container">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span class="green">Praxedis</span><span class="white">Technologies</span>
+          </div>
+          <p class="footer-catchphrase">
+            One Person,<br />
+            One Paradigm Shift<br />
+            <span class="footer-catchphrase-accent">in Computer Science.</span>
+          </p>
+          <p class="footer-founder">Pedro M. Dominguez &mdash; Founder &amp; Sole Operator</p>
+        </div>
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Navigate</p>
+          <ul>
+            <li><a href="#vision">Vision</a></li>
+            <li><a href="#capabilities">Capabilities</a></li>
+            <li><a href="#heritage">Heritage</a></li>
+            <li><a href="/heavenly-roofing.html">Work</a></li>
+            <li><a href="/about.html">About</a></li>
+          </ul>
+        </div>
+        <div class="footer-connect-col">
+          <p class="footer-nav-heading">Connect</p>
+          <a href="mailto:domingueztechsolutions@gmail.com" class="footer-email">
+            <i class="fa-solid fa-envelope"></i>
+            domingueztechsolutions@gmail.com
+          </a>
+          <div class="footer-social">
+            <a href="#" aria-label="GitHub" class="footer-social-btn"><i class="fa-brands fa-github"></i></a>
+            <a href="#" aria-label="LinkedIn" class="footer-social-btn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="#" aria-label="X / Twitter" class="footer-social-btn"><i class="fa-brands fa-x-twitter"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-bottom-copy">&copy; 2026 Praxedis Technologies. All Rights Reserved.</p>
+        <p class="footer-bottom-mantra">One Person. One Paradigm Shift. Infinite Leverage.</p>
       </div>
     </footer>
     <div

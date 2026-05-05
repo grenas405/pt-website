@@ -2,6 +2,17 @@
 
 All notable changes to the **Praxedis Technologies** website project will be documented in this file.
 
+## [Unreleased] - 2026-05-05
+
+### Changed
+- **Vision Section** — complete overhaul: eyebrow label "The Philosophy", rewritten copy emphasizing zero-friction unified execution, 4-stat grid (`0% Friction`, `100% Accountability`, `Mag 7 Velocity`, `1 Vision`) with animated count-up, replaced single tech card with `.vision-card-stack` containing a dark primary card (progress bar fills for Execution Velocity & Accountability Index) and a green secondary "PARADIGM SHIFT" quote card
+- **Capabilities Section** — added "Core Disciplines" eyebrow + "Four domains. One operator. Infinite leverage." subtitle, semi-transparent watermark numbers `01`–`04` per card, tech tag badges per card, renamed "Market Analysis" → "Market Intelligence"
+- **Marquee Strip** — doubled to dual-direction tracks (first goes left, second goes right at 32s), edge-fade via CSS `mask-image`, second track adds keywords: Paradigm Shift, Zero Friction, TypeScript, Solo Operator, Deno Runtime, Infinite Leverage, React / Next.js, Praxedis G. Guerrero
+- **Heritage Section** — added "Origin & Identity" eyebrow, italic red accent on "Revolution", `.heritage-quote-bubble` (Spanish quote from Praxedis G. Guerrero, dark card with green left border, positioned over flag), tricolor divider bar, location line with FA icons
+- **Footer** — complete redesign: 4px tricolor flag stripe header, 3-column grid layout (Brand | Navigate | Connect), catchphrase "One Person, One Paradigm Shift in Computer Science." with green accent, navigation links, email + social icon buttons (GitHub / LinkedIn / X), bottom bar with "One Person. One Paradigm Shift. Infinite Leverage." mantra
+- `main.js` — updated vision/capabilities/heritage IntersectionObserver animations for all new elements; replaced `.stats li` counter with `[data-target]` attribute-driven counters; added progress bar fill animations; updated cursor hover targets; updated ambient loop from `.tech-card .icon` → `.vision-card-icon`
+- `main.css` — removed old `footer {}` base block, added full CSS for all new section elements and footer redesign, updated JS animation initial-states block
+
 ## [Unreleased] - 2026-03-29
 
 ### Added

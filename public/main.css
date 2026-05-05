@@ -653,28 +653,7 @@ section {
     box-shadow: 0 0 40px rgba(206, 17, 38, 0.4);
 }
 
-/* ============================================================
-   Footer
-   ============================================================ */
-footer {
-    background: #000;
-    color: #666;
-    padding: 4rem 0;
-    border-top: 1px solid #1a1a1a;
-}
-
-.footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.footer-links a {
-    color: #666;
-    margin-left: 1.5rem;
-    text-decoration: none;
-    font-size: 0.9rem;
-}
+/* Footer — redesigned; see .site-footer block below */
 
 /* ============================================================
    JS Animation Initial States
@@ -684,13 +663,18 @@ footer {
 .vision-text .red-line               { width: 0; }
 .vision-text h2                      { opacity: 0; transform: translateX(-40px); }
 .vision-text p                       { opacity: 0; }
-.stats li                            { opacity: 0; transform: translateY(20px); }
-.vision-graphic                      { opacity: 0; transform: scale(0.85); }
+.stat-item                           { opacity: 0; transform: translateY(20px); }
+.vision-card                         { opacity: 0; transform: translateY(30px); }
 .capabilities-section .section-title { opacity: 0; transform: scale(0.9); }
+.capabilities-eyebrow                { opacity: 0; }
+.capabilities-intro                  { opacity: 0; }
 .capability-card                     { opacity: 0; transform: translateY(60px); }
+.heritage-eyebrow                    { opacity: 0; transform: translateX(40px); }
 .heritage-text h2                    { opacity: 0; transform: translateX(40px); }
 .heritage-text p                     { opacity: 0; transform: translateX(40px); }
 .mexican-flag-accent                 { clip-path: inset(0 100% 0 0); }
+.heritage-quote-bubble               { opacity: 0; transform: translateY(20px); }
+.heritage-location                   { opacity: 0; transform: translateY(10px); }
 .contact-section h2                  { opacity: 0; transform: scale(0.8); }
 .contact-section .container > p      { opacity: 0; }
 .contact-manifesto                   { opacity: 0; }
@@ -802,4 +786,533 @@ footer {
 .contact-section > .container {
     position: relative;
     z-index: 1;
+}
+
+/* ============================================================
+   Vision Section — Enhanced
+   ============================================================ */
+.vision-eyebrow {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--mexican-green);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.vision-grid {
+    align-items: start;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 2rem;
+    margin-top: 2.5rem;
+}
+
+.stat-number {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--mexican-green);
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #888;
+    margin-top: 0.3rem;
+    font-weight: 600;
+}
+
+.vision-card-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.vision-card {
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.vision-card--primary {
+    background: var(--dark-bg);
+    border-left: 5px solid var(--mexican-green);
+    border-bottom: 5px solid var(--mexican-red);
+    color: white;
+}
+
+.vision-card--secondary {
+    background: var(--mexican-green);
+    color: white;
+    padding: 2rem 2.5rem;
+}
+
+.vision-card-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.vision-card--primary h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.75rem;
+    color: var(--mexican-green-light);
+}
+
+.vision-card--primary p {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0;
+}
+
+.vision-card-bar-wrap {
+    margin-top: 1.25rem;
+}
+
+.vision-card-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.vision-card-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--mexican-green), var(--mexican-green-light));
+    border-radius: 2px;
+}
+
+.vision-card-bar-label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 0.35rem;
+}
+
+.vision-card-quote-mark {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 5rem;
+    line-height: 0.8;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.25);
+    margin-bottom: 0.5rem;
+}
+
+.vision-card-quote-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.vision-card-quote-sub {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+/* ============================================================
+   Capabilities Section — Enhanced
+   ============================================================ */
+.capabilities-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+}
+
+.capabilities-eyebrow {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--mexican-green);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.capabilities-intro {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.45);
+    margin-top: 0.5rem;
+    letter-spacing: 0.5px;
+}
+
+.capability-number {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.05);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -2px;
+    transition: color 0.3s;
+}
+
+.capability-card:hover .capability-number {
+    color: rgba(0, 104, 71, 0.18);
+}
+
+.capability-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+}
+
+.capability-tags span {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    background: rgba(0, 104, 71, 0.15);
+    color: var(--mexican-green);
+    padding: 0.25rem 0.6rem;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 104, 71, 0.3);
+    transition: background 0.2s, color 0.2s;
+}
+
+.capability-card:hover .capability-tags span {
+    background: rgba(0, 104, 71, 0.3);
+    color: var(--mexican-green-light);
+}
+
+/* ============================================================
+   Marquee Strip — Dual Track
+   ============================================================ */
+.marquee-section--dual {
+    padding: 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.marquee-section--dual .marquee-track {
+    padding: 1.1rem 0;
+}
+
+.marquee-section--dual .marquee-track:first-child {
+    border-bottom: 1px solid rgba(0, 104, 71, 0.2);
+}
+
+@keyframes marquee-reverse {
+    from { transform: translateX(-50%); }
+    to   { transform: translateX(0); }
+}
+
+.marquee-track--reverse {
+    animation-name: marquee-reverse !important;
+    animation-duration: 32s !important;
+}
+
+/* ============================================================
+   Heritage Section — Enhanced
+   ============================================================ */
+.heritage-eyebrow {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--mexican-green);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.heritage-em {
+    font-style: italic;
+    color: var(--mexican-red);
+}
+
+.heritage-image {
+    position: relative;
+}
+
+.heritage-quote-bubble {
+    position: absolute;
+    bottom: -1.5rem;
+    right: -1.5rem;
+    background: var(--dark-bg);
+    color: white;
+    padding: 1.5rem 1.75rem;
+    max-width: 280px;
+    border-left: 4px solid var(--mexican-green);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+}
+
+.heritage-quote-mark {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--mexican-green);
+    line-height: 0.7;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.heritage-quote-text {
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.85);
+    font-style: italic;
+    margin-bottom: 0.75rem;
+}
+
+.heritage-quote-cite {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--mexican-green);
+    font-style: normal;
+    font-weight: 700;
+}
+
+.heritage-divider {
+    display: flex;
+    height: 4px;
+    margin: 1.75rem 0 1.25rem;
+    border-radius: 2px;
+    overflow: hidden;
+    gap: 2px;
+}
+
+.hd-bar {
+    flex: 1;
+    border-radius: 2px;
+}
+
+.hd-bar--green { background: var(--mexican-green); }
+.hd-bar--white { background: #bbb; }
+.hd-bar--red   { background: var(--mexican-red); }
+
+.heritage-location {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+    letter-spacing: 0.5px;
+}
+
+.heritage-location .fa-location-dot { color: var(--mexican-green); margin-right: 0.2rem; }
+.heritage-location .fa-heart        { color: var(--mexican-red);   margin-right: 0.2rem; }
+
+/* ============================================================
+   Footer — Complete Redesign
+   ============================================================ */
+.site-footer {
+    background: #000;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+}
+
+.footer-flag-bar {
+    display: flex;
+    height: 4px;
+}
+
+.ffb { flex: 1; }
+.ffb--green { background: var(--mexican-green); }
+.ffb--white { background: rgba(255, 255, 255, 0.5); }
+.ffb--red   { background: var(--mexican-red); }
+
+.footer-inner {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr;
+    gap: 4rem;
+    padding-top: 4rem;
+    padding-bottom: 3rem;
+}
+
+.footer-logo {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    margin-bottom: 1.25rem;
+}
+
+.footer-logo .green { color: var(--mexican-green); }
+.footer-logo .white { color: rgba(255, 255, 255, 0.9); }
+
+.footer-catchphrase {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 1rem;
+}
+
+.footer-catchphrase-accent {
+    color: var(--mexican-green);
+}
+
+.footer-founder {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.footer-nav-heading {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.3);
+    margin-bottom: 1.25rem;
+}
+
+.footer-nav-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.footer-nav-col a {
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.25s;
+}
+
+.footer-nav-col a:hover {
+    color: var(--mexican-green);
+}
+
+.footer-email {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    font-size: 0.82rem;
+    word-break: break-all;
+    transition: color 0.25s;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.footer-email:hover {
+    color: var(--mexican-green);
+}
+
+.footer-email i {
+    flex-shrink: 0;
+    color: var(--mexican-green);
+}
+
+.footer-social {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.footer-social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: border-color 0.25s, color 0.25s, background 0.25s;
+}
+
+.footer-social-btn:hover {
+    border-color: var(--mexican-green);
+    color: var(--mexican-green);
+    background: rgba(0, 104, 71, 0.1);
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.footer-bottom-copy {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.footer-bottom-mantra {
+    font-size: 0.78rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.18);
+}
+
+/* ============================================================
+   Responsive — updated breakpoints for new elements
+   ============================================================ */
+@media (max-width: 992px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .heritage-quote-bubble {
+        position: static;
+        margin-top: 1.5rem;
+        max-width: 100%;
+    }
+
+    .footer-inner {
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+    }
+
+    .footer-brand {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 600px) {
+    .stats-grid {
+        gap: 1rem;
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+    }
+
+    .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding-top: 2.5rem;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+    }
+
+    .capabilities-intro {
+        font-size: 0.9rem;
+    }
 }
