@@ -2,11 +2,24 @@
 
 All notable changes to the **Praxedis Technologies** website project will be documented in this file.
 
+## [4.0.0] - 2026-05-08
+
+### Added
+- **Next-Gen ANSI Health Dashboard** — terminal and non-browser `GET /api/health` requests now receive a polished ANSI status dashboard with Mexican flag colors, service status, timestamp, uptime, and a tribute to Praxedis G. Guerrero
+- **Plain Text Health Headers** — added `text/plain; charset=utf-8` health response headers with `Content-Length`, `Cache-Control: no-store`, and existing security headers for ANSI responses
+
+### Changed
+- **Health Response Negotiation** — browser user agents continue to receive the existing JSON health payload, while non-browser clients receive ANSI by default
+- **VERSION Source of Truth** — updated the root `VERSION` file to `4.0.0`, using strict SemVer `MAJOR.MINOR.PATCH` format with no leading `v`
+
+### Breaking
+- Non-browser clients that previously expected JSON from `GET /api/health` now receive ANSI text by default
+
 ## [Unreleased] - 2026-05-05
 
 ### Added
 - **API Health Endpoint** — added `GET /api/health` and `HEAD /api/health` with non-cacheable JSON health payload (`status`, `service`, `timestamp`, `uptimeSeconds`) for uptime checks and load balancer probes
-- **VERSION File** — added root `VERSION` file as the SemVer source of truth for the current site release version (`1.2.0`)
+- **VERSION File** — added root `VERSION` file as the SemVer source of truth for the current site release version
 - **Shared Navigation Module** — added `public/navigation.js` as the single owner of scroll progress, header scrolled state, and mobile menu interactions
 
 ### Changed

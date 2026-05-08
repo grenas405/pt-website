@@ -76,7 +76,7 @@ GET /api/health
 HEAD /api/health
 ```
 
-Returns a non-cacheable JSON response for uptime checks and load balancer probes:
+Browsers receive a non-cacheable JSON response:
 
 ```json
 {
@@ -85,6 +85,14 @@ Returns a non-cacheable JSON response for uptime checks and load balancer probes
   "timestamp": "2026-05-05T12:00:00.000Z",
   "uptimeSeconds": 42
 }
+```
+
+Terminal and non-browser clients receive a non-cacheable ANSI status dashboard
+by default, including service status, timestamp, uptime, Mexican flag colors,
+and a tribute to Praxedis G. Guerrero:
+
+```sh
+curl http://localhost:8000/api/health
 ```
 
 Unsupported methods return `405 Method Not Allowed` with `Allow: GET, HEAD`.

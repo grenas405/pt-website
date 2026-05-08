@@ -51,3 +51,14 @@ export function buildJsonHeaders(size: number): Headers {
 
   return h;
 }
+
+export function buildTextHeaders(size: number): Headers {
+  const h = new Headers();
+
+  h.set("Content-Type", "text/plain; charset=utf-8");
+  h.set("Content-Length", String(size));
+  h.set("Cache-Control", "no-store");
+  applySecurityHeaders(h);
+
+  return h;
+}
