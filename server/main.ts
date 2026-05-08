@@ -219,11 +219,19 @@ async function handler(req: Request): Promise<Response> {
     return serveHealth(req);
   }
 
-  const filePath = await resolve(url.pathname);
-  if (filePath === null) {
+  const route = await resolve(url);
+  if (route.kind === "redirect") {
+    return new Response(null, {
+      status: route.status,
+      headers: { Location: route.location },
+    });
+  }
+
+  if (route.kind === "notFound") {
     return await serve404();
   }
 
+  const filePath = route.path;
   let fileResult;
   try {
     fileResult = await openFile(filePath);

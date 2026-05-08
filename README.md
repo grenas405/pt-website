@@ -31,7 +31,7 @@ pt-website/
 ├── server/
 │   ├── main.ts        # Entry point — Deno.serve()
 │   ├── config.ts      # Runtime config from env (PORT, HOST, PUBLIC_DIR)
-│   ├── router.ts      # URL → filesystem path (traversal-safe)
+│   ├── router.ts      # Explicit page routes, redirects, and static assets
 │   ├── file.ts        # Stream-based file reader
 │   ├── mime.ts        # Extension → Content-Type
 │   └── headers.ts     # Cache and security headers
@@ -43,9 +43,9 @@ pt-website/
 │   ├── about.html                # About — Pedro, stack, currently building
 │   ├── about.css                 # About styles
 │   ├── about.js                  # About animations (typewriters, terminal, canvas)
-│   ├── heavenly-roofing.html     # Client case study — Heavenly Roofing LLC
-│   ├── heavenly-roofing.css      # Case study styles
-│   ├── heavenly-roofing.js       # Case study animations
+│   ├── case-study.html           # Client case study — Heavenly Roofing LLC
+│   ├── case-study.css            # Case study styles
+│   ├── case-study.js             # Case study animations
 │   ├── 404.html                  # Custom 404 page — glitch animation, terminal typewriter
 │   ├── 404.css                   # 404 styles
 │   └── 404.js                    # 404 animations (entry timeline, glitch, magnetic buttons)
@@ -65,7 +65,28 @@ deno run \
   server/main.ts
 ```
 
-Open `http://localhost:8000` (home), `http://localhost:8000/about.html` (about), `http://localhost:8000/heavenly-roofing.html` (client case study), or navigate to any non-existent path to see the 404 page.
+Open `http://localhost:8000` (home), `http://localhost:8000/about` (about), `http://localhost:8000/case-study` (client case study), or navigate to any non-existent path to see the 404 page.
+
+## Routes
+
+Canonical page routes:
+
+```txt
+/             # Home
+/about        # About
+/case-study   # Client case study
+```
+
+Legacy page URLs redirect permanently to the canonical routes:
+
+```txt
+/about.html             -> /about
+/case-study.html        -> /case-study
+/heavenly-roofing       -> /case-study
+/heavenly-roofing.html  -> /case-study
+```
+
+Static assets such as `/main.css`, `/about.js`, and `/case-study.js` are still served directly by filename.
 
 ## API
 

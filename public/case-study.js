@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────
-   heavenly-roofing.js — Praxedis Technologies
+   case-study.js — Praxedis Technologies
    Heavenly Roofing LLC case study page
    ───────────────────────────────────────────────────────── */
 
