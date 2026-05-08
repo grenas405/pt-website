@@ -3,18 +3,7 @@ import { config } from "./config.ts";
 export type RouteResult =
   | { kind: "page"; path: string }
   | { kind: "asset"; path: string }
-  | { kind: "redirect"; location: string; status: 308 }
   | { kind: "notFound" };
-
-const REDIRECTS: Record<string, string> = {
-  "/about.html": "/about",
-  "/about/": "/about",
-  "/case-study.html": "/case-study",
-  "/case-study/": "/case-study",
-  "/heavenly-roofing": "/case-study",
-  "/heavenly-roofing.html": "/case-study",
-  "/heavenly-roofing/": "/case-study",
-};
 
 async function resolvePublicFile(filePath: string): Promise<string | null> {
   const candidate = config.publicDir + filePath;
@@ -55,28 +44,16 @@ function decodePath(pathname: string): string | null {
   }
 }
 
-function withSearch(pathname: string, search: string): string {
-  return search === "" ? pathname : `${pathname}${search}`;
-}
-
-function hasFileExtension(pathname: string): boolean {
+function hasStaticAssetExtension(pathname: string): boolean {
   const basename = pathname.slice(pathname.lastIndexOf("/") + 1);
-  return basename.includes(".") && !pathname.endsWith("/");
+  return basename.includes(".") && !pathname.endsWith("/") &&
+    !pathname.toLowerCase().endsWith(".html");
 }
 
 export async function resolve(url: URL): Promise<RouteResult> {
   const pathname = decodePath(url.pathname);
   if (pathname === null) {
     return { kind: "notFound" };
-  }
-
-  const redirectTarget = REDIRECTS[pathname];
-  if (redirectTarget !== undefined) {
-    return {
-      kind: "redirect",
-      location: withSearch(redirectTarget, url.search),
-      status: 308,
-    };
   }
 
   if (pathname === "/") {
@@ -94,7 +71,7 @@ export async function resolve(url: URL): Promise<RouteResult> {
     return path === null ? { kind: "notFound" } : { kind: "page", path };
   }
 
-  if (hasFileExtension(pathname)) {
+  if (hasStaticAssetExtension(pathname)) {
     const path = await resolvePublicFile(pathname);
     return path === null ? { kind: "notFound" } : { kind: "asset", path };
   }

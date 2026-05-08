@@ -6,12 +6,15 @@ All notable changes to the **Praxedis Technologies** website project will be doc
 
 ### Added
 - **Clean Page Routes** — added explicit page routing for `/`, `/about`, and `/case-study`, allowing visitors to use extensionless URLs instead of `.html` paths
-- **Legacy Page Redirects** — added permanent redirects from `/about.html`, `/case-study.html`, `/heavenly-roofing`, and `/heavenly-roofing.html` to their canonical routes
+- **Enhanced 404 Experience** — redesigned the custom 404 page with a high-tech error cockpit, animated 404 numerals, route diagnostics, verified-route cards, particle effects, and Mexican flag color accents
 
 ### Changed
 - **Case Study File Naming** — renamed the Heavenly Roofing case-study assets from `heavenly-roofing.*` to `case-study.*`
 - **Navigation URLs** — updated internal site links to point to `/about` and `/case-study`
-- **Router Contract** — changed `router.ts` from direct path resolution to explicit route results for pages, assets, redirects, and 404s
+- **Router Contract** — changed `router.ts` from direct path resolution to explicit route results for pages, assets, and 404s
+
+### Removed
+- **Legacy Inbound URL Redirects** — removed redirects for `/about.html`, `/case-study.html`, `/heavenly-roofing`, and `/heavenly-roofing.html`; these now return the themed 404 page
 
 ## [4.0.0] - 2026-05-08
 

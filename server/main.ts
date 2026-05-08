@@ -220,13 +220,6 @@ async function handler(req: Request): Promise<Response> {
   }
 
   const route = await resolve(url);
-  if (route.kind === "redirect") {
-    return new Response(null, {
-      status: route.status,
-      headers: { Location: route.location },
-    });
-  }
-
   if (route.kind === "notFound") {
     return await serve404();
   }

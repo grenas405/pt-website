@@ -31,7 +31,7 @@ pt-website/
 ├── server/
 │   ├── main.ts        # Entry point — Deno.serve()
 │   ├── config.ts      # Runtime config from env (PORT, HOST, PUBLIC_DIR)
-│   ├── router.ts      # Explicit page routes, redirects, and static assets
+│   ├── router.ts      # Explicit page routes and static assets
 │   ├── file.ts        # Stream-based file reader
 │   ├── mime.ts        # Extension → Content-Type
 │   └── headers.ts     # Cache and security headers
@@ -69,7 +69,7 @@ Open `http://localhost:8000` (home), `http://localhost:8000/about` (about), `htt
 
 ## Routes
 
-Canonical page routes:
+Page routes are exact and extensionless:
 
 ```txt
 /             # Home
@@ -77,13 +77,14 @@ Canonical page routes:
 /case-study   # Client case study
 ```
 
-Legacy page URLs redirect permanently to the canonical routes:
+Legacy page URLs are not redirected. Old paths such as these return the custom
+404 page with HTTP `404`:
 
 ```txt
-/about.html             -> /about
-/case-study.html        -> /case-study
-/heavenly-roofing       -> /case-study
-/heavenly-roofing.html  -> /case-study
+/about.html
+/case-study.html
+/heavenly-roofing
+/heavenly-roofing.html
 ```
 
 Static assets such as `/main.css`, `/about.js`, and `/case-study.js` are still served directly by filename.
