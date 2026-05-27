@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ParticleEngine.initSectionAmbient('.capabilities-section.dark');
   ParticleEngine.initSectionAmbient('.contact-section');
   ParticleEngine.initContactUniverse('contact-canvas');
+  initWaitlistForm();
 
 
   // ============================================================
@@ -307,7 +308,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ============================================================
-  // 7. SCROLL ANIMATIONS (IntersectionObserver)
+  // 7. WAITLIST FORM
+  // ============================================================
+
+  function setWaitlistStatus(statusEl, message, type) {
+    statusEl.textContent = message;
+    statusEl.classList.remove('success', 'error');
+    if (type) statusEl.classList.add(type);
+  }
+
+  function initWaitlistForm() {
+    const form = document.getElementById('waitlist-form');
+    const statusEl = document.getElementById('waitlist-status');
+    if (!form || !statusEl) return;
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const submitButton = form.querySelector('button[type="submit"]');
+      const data = new FormData(form);
+      const payload = {
+        businessName: data.get('businessName'),
+        contactName: data.get('contactName'),
+        email: data.get('email'),
+        phone: data.get('phone'),
+        need: data.get('need'),
+      };
+
+      if (submitButton) submitButton.disabled = true;
+      setWaitlistStatus(statusEl, 'Joining...', null);
+
+      try {
+        const response = await fetch('/api/waitlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.ok) {
+          const message = result?.error?.message || 'Unable to join right now.';
+          setWaitlistStatus(statusEl, message, 'error');
+          return;
+        }
+
+        form.reset();
+        setWaitlistStatus(statusEl, 'You are on the waitlist.', 'success');
+      } catch {
+        setWaitlistStatus(statusEl, 'Network error. Try again in a moment.', 'error');
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
+    });
+  }
+
+
+  // ============================================================
+  // 8. SCROLL ANIMATIONS (IntersectionObserver)
   // ============================================================
 
   function createObserver(selector, fn, threshold) {
@@ -545,6 +602,15 @@ document.addEventListener('DOMContentLoaded', () => {
       translateY: [20, 0],
       duration: 500,
       delay: 400,
+      easing: 'easeOutExpo',
+    });
+
+    anime({
+      targets: '.waitlist-form',
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 600,
+      delay: 520,
       easing: 'easeOutExpo',
     });
 

@@ -29,4 +29,15 @@ const allowedHosts = (Deno.env.get("ALLOWED_HOSTS") ??
   .map((value) => value.trim().toLowerCase())
   .filter((value) => value.length > 0);
 
-export const config = Object.freeze({ port, publicDir, host, allowedHosts });
+const kvPath = Deno.env.get("KV_PATH") ?? ":memory:";
+if (kvPath.trim() === "") {
+  throw new Error("KV_PATH cannot be empty");
+}
+
+export const config = Object.freeze({
+  port,
+  publicDir,
+  host,
+  allowedHosts,
+  kvPath,
+});

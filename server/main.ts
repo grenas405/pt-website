@@ -2,11 +2,37 @@ import { config } from "./config.ts";
 import { resolve } from "./router.ts";
 import { openFile } from "./file.ts";
 import { mimeType } from "./mime.ts";
-import { buildHeaders, buildJsonHeaders, buildTextHeaders } from "./headers.ts";
+import {
+  buildCsvHeaders,
+  buildHeaders,
+  buildJsonHeaders,
+  buildTextHeaders,
+} from "./headers.ts";
+import {
+  createAdminSessionToken,
+  isAdminSessionConfigured,
+  verifyAdminSessionToken,
+} from "./admin_auth.ts";
+import { getKv } from "./kv.ts";
+import {
+  ADMIN_PASSWORD_KEY,
+  AdminPasswordRecord,
+  verifyPassword,
+} from "./password.ts";
+import {
+  createWaitlistEntry,
+  listWaitlistEntries,
+  waitlistEntriesToCsv,
+} from "./waitlist.ts";
 
 const HEALTH_PATH = "/api/health";
+const WAITLIST_PATH = "/api/waitlist";
+const ADMIN_LOGIN_PATH = "/api/admin/login";
+const ADMIN_WAITLIST_PATH = "/api/admin/waitlist";
+const ADMIN_WAITLIST_CSV_PATH = "/api/admin/waitlist.csv";
 const ANSI_ESCAPE = "\x1b";
 const MAX_URL_LENGTH = 2048;
+const MAX_JSON_BODY_BYTES = 8192;
 const METHOD_NOT_ALLOWED = "Method Not Allowed";
 const BAD_REQUEST = "Bad Request";
 
@@ -211,6 +237,219 @@ function textResponse(
   return new Response(body, { status, headers });
 }
 
+function jsonResponse(body: unknown, status = 200): Response {
+  const json = JSON.stringify(body);
+  return new Response(json, {
+    status,
+    headers: buildJsonHeaders(encodeSize(json)),
+  });
+}
+
+function csvResponse(body: string, filename: string): Response {
+  return new Response(body, {
+    status: 200,
+    headers: buildCsvHeaders(encodeSize(body), filename),
+  });
+}
+
+function apiError(status: number, code: string, message: string): Response {
+  return jsonResponse({ ok: false, error: { code, message } }, status);
+}
+
+function methodNotAllowed(allowedMethods: string): Response {
+  const response = apiError(405, "method_not_allowed", METHOD_NOT_ALLOWED);
+  response.headers.set("Allow", allowedMethods);
+  return response;
+}
+
+async function readJsonBody(req: Request): Promise<
+  | { ok: true; value: unknown }
+  | { ok: false; response: Response }
+> {
+  const contentType = req.headers.get("content-type")?.toLowerCase() ?? "";
+  if (!contentType.includes("application/json")) {
+    return {
+      ok: false,
+      response: apiError(
+        415,
+        "unsupported_media_type",
+        "Expected application/json.",
+      ),
+    };
+  }
+
+  const contentLength = req.headers.get("content-length");
+  if (contentLength !== null) {
+    const normalized = contentLength.trim();
+    if (!/^(0|[1-9][0-9]*)$/.test(normalized)) {
+      return { ok: false, response: apiError(400, "bad_request", BAD_REQUEST) };
+    }
+    if (Number(normalized) > MAX_JSON_BODY_BYTES) {
+      return {
+        ok: false,
+        response: apiError(
+          413,
+          "payload_too_large",
+          "Request body is too large.",
+        ),
+      };
+    }
+  }
+
+  if (req.body === null) {
+    return {
+      ok: false,
+      response: apiError(400, "empty_body", "Request body is required."),
+    };
+  }
+
+  const reader = req.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+
+    if (total > MAX_JSON_BODY_BYTES) {
+      await reader.cancel();
+      return {
+        ok: false,
+        response: apiError(
+          413,
+          "payload_too_large",
+          "Request body is too large.",
+        ),
+      };
+    }
+
+    chunks.push(value);
+  }
+
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  try {
+    return { ok: true, value: JSON.parse(new TextDecoder().decode(bytes)) };
+  } catch {
+    return {
+      ok: false,
+      response: apiError(400, "invalid_json", "Submit valid JSON."),
+    };
+  }
+}
+
+async function serveWaitlist(req: Request): Promise<Response> {
+  if (req.method !== "POST") {
+    return methodNotAllowed("POST");
+  }
+
+  const body = await readJsonBody(req);
+  if (!body.ok) return body.response;
+
+  const result = await createWaitlistEntry(body.value);
+  if (!result.ok) {
+    const { status, code, message } = result.error;
+    return apiError(status, code, message);
+  }
+
+  return jsonResponse({ ok: true, id: result.entry.id });
+}
+
+async function serveAdminLogin(req: Request): Promise<Response> {
+  if (req.method !== "POST") {
+    return methodNotAllowed("POST");
+  }
+
+  if (!isAdminSessionConfigured()) {
+    return apiError(
+      503,
+      "admin_not_configured",
+      "Admin sessions are not configured.",
+    );
+  }
+
+  const body = await readJsonBody(req);
+  if (!body.ok) return body.response;
+
+  const password = typeof body.value === "object" && body.value !== null &&
+      !Array.isArray(body.value)
+    ? String((body.value as Record<string, unknown>).password ?? "")
+    : "";
+  if (password === "") {
+    return apiError(400, "missing_password", "Password is required.");
+  }
+
+  const kv = await getKv();
+  const passwordRecord = await kv.get<AdminPasswordRecord>(ADMIN_PASSWORD_KEY);
+  if (passwordRecord.value === null) {
+    return apiError(
+      503,
+      "admin_not_configured",
+      "Admin password has not been created.",
+    );
+  }
+
+  if (!(await verifyPassword(password, passwordRecord.value))) {
+    return apiError(401, "invalid_credentials", "Invalid credentials.");
+  }
+
+  const token = await createAdminSessionToken();
+  if (token === null) {
+    return apiError(
+      503,
+      "admin_not_configured",
+      "Admin sessions are not configured.",
+    );
+  }
+
+  return jsonResponse({ ok: true, token });
+}
+
+async function requireAdmin(req: Request): Promise<Response | null> {
+  const auth = req.headers.get("authorization") ?? "";
+  const match = /^Bearer\s+(.+)$/i.exec(auth);
+  if (match === null || !(await verifyAdminSessionToken(match[1]))) {
+    return apiError(401, "unauthorized", "Admin authorization is required.");
+  }
+
+  return null;
+}
+
+async function serveAdminWaitlist(req: Request, url: URL): Promise<Response> {
+  if (req.method !== "GET") {
+    return methodNotAllowed("GET");
+  }
+
+  const authError = await requireAdmin(req);
+  if (authError !== null) return authError;
+
+  const rawLimit = url.searchParams.get("limit");
+  const limit = rawLimit === null ? 100 : Number.parseInt(rawLimit, 10);
+  const entries = await listWaitlistEntries(
+    Number.isInteger(limit) ? limit : 100,
+  );
+
+  return jsonResponse({ ok: true, entries });
+}
+
+async function serveAdminWaitlistCsv(req: Request): Promise<Response> {
+  if (req.method !== "GET") {
+    return methodNotAllowed("GET");
+  }
+
+  const authError = await requireAdmin(req);
+  if (authError !== null) return authError;
+
+  const entries = await listWaitlistEntries(500);
+  return csvResponse(waitlistEntriesToCsv(entries), "praxedis-waitlist.csv");
+}
+
 async function serve404(req: Request): Promise<Response> {
   const path404 = config.publicDir + "/404.html";
   try {
@@ -261,6 +500,22 @@ export async function handler(req: Request): Promise<Response> {
 
   if (req.url.length > MAX_URL_LENGTH || !isAllowedHost(url)) {
     return textResponse(req, BAD_REQUEST, 400);
+  }
+
+  if (url.pathname === WAITLIST_PATH) {
+    return await serveWaitlist(req);
+  }
+
+  if (url.pathname === ADMIN_LOGIN_PATH) {
+    return await serveAdminLogin(req);
+  }
+
+  if (url.pathname === ADMIN_WAITLIST_PATH) {
+    return await serveAdminWaitlist(req, url);
+  }
+
+  if (url.pathname === ADMIN_WAITLIST_CSV_PATH) {
+    return await serveAdminWaitlistCsv(req);
   }
 
   if (req.method !== "GET" && req.method !== "HEAD") {

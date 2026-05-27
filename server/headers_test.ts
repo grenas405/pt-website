@@ -1,4 +1,5 @@
 import {
+  buildCsvHeaders,
   buildHeaders,
   buildJsonHeaders,
   buildTextHeaders,
@@ -39,6 +40,7 @@ Deno.test("all header builders apply the baseline security headers", () => {
       mtime: new Date(0),
     }),
     buildJsonHeaders(2),
+    buildCsvHeaders(2, "waitlist.csv"),
     buildTextHeaders(2),
   ];
 

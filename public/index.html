@@ -323,14 +323,61 @@
           <div class="contact-manifesto">&ldquo;One person. Infinite leverage.&rdquo;</div>
           <h2>Join the Disruption</h2>
           <p>
-            Experience what one person can do at Mag 7 speed. Connect with Pedro
-            M. Dominguez.
+            Businesses in Praxedis G. Guerrero can join the build queue for
+            direct, founder-led execution.
           </p>
-          <a
-            href="mailto:domingueztechsolutions@gmail.com"
-            class="cta-button large-green"
-            >Contact Pedro</a
-          >
+          <form class="waitlist-form" id="waitlist-form">
+            <div class="waitlist-grid">
+              <label>
+                <span>Business</span>
+                <input
+                  type="text"
+                  name="businessName"
+                  autocomplete="organization"
+                  maxlength="120"
+                  required
+                />
+              </label>
+              <label>
+                <span>Contact</span>
+                <input
+                  type="text"
+                  name="contactName"
+                  autocomplete="name"
+                  maxlength="120"
+                  required
+                />
+              </label>
+              <label>
+                <span>Email</span>
+                <input
+                  type="email"
+                  name="email"
+                  autocomplete="email"
+                  maxlength="254"
+                  required
+                />
+              </label>
+              <label>
+                <span>Phone</span>
+                <input
+                  type="tel"
+                  name="phone"
+                  autocomplete="tel"
+                  maxlength="40"
+                  required
+                />
+              </label>
+            </div>
+            <label class="waitlist-need">
+              <span>Need</span>
+              <textarea name="need" rows="4" maxlength="600" required></textarea>
+            </label>
+            <div class="waitlist-actions">
+              <button type="submit" class="cta-button large-green">Join Waitlist</button>
+              <p class="waitlist-status" id="waitlist-status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
         </div>
       </section>
     </main>

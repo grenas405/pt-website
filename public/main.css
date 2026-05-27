@@ -650,6 +650,8 @@ section {
 .contact-section > .container > p {
     color: #888;
     font-size: 1.1rem;
+    max-width: 640px;
+    margin: 0 auto;
 }
 
 .large-green {
@@ -663,6 +665,95 @@ section {
 .large-green:hover {
     background: var(--mexican-red);
     box-shadow: 0 0 40px rgba(206, 17, 38, 0.4);
+}
+
+.waitlist-form {
+    width: min(760px, 100%);
+    margin: 2rem auto 0;
+}
+
+.waitlist-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.waitlist-form label {
+    display: block;
+    text-align: left;
+}
+
+.waitlist-form span {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.waitlist-form input,
+.waitlist-form textarea {
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.35);
+    color: white;
+    font: inherit;
+    padding: 0.95rem 1rem;
+    outline: none;
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.waitlist-form input:focus,
+.waitlist-form textarea:focus {
+    border-color: var(--mexican-green-light);
+    box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.12);
+}
+
+.waitlist-form textarea {
+    resize: vertical;
+    min-height: 130px;
+}
+
+.waitlist-need {
+    margin-top: 1rem;
+}
+
+.waitlist-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.25rem;
+}
+
+.waitlist-actions .large-green {
+    border: 0;
+    cursor: pointer;
+    margin-top: 0;
+}
+
+.waitlist-actions .large-green:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+.waitlist-status {
+    min-height: 1.4em;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+}
+
+.waitlist-status.success {
+    color: var(--mexican-green-light);
+}
+
+.waitlist-status.error {
+    color: #ff6b7a;
 }
 
 /* Footer — redesigned; see .site-footer block below */
@@ -690,6 +781,7 @@ section {
 .contact-section h2                  { opacity: 0; transform: scale(0.8); }
 .contact-section .container > p      { opacity: 0; }
 .contact-manifesto                   { opacity: 0; }
+.waitlist-form                       { opacity: 0; transform: translateY(20px); }
 .cta-button.large-green              { opacity: 0; transform: scale(0.5); }
 
 /* ============================================================
@@ -740,6 +832,14 @@ section {
         font-size: 2.6rem;
         line-height: 1.1;
         min-height: 3.3em;
+    }
+
+    .waitlist-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .waitlist-actions .large-green {
+        width: 100%;
     }
 
     .contact-section h2 {

@@ -79,6 +79,18 @@ export function buildJsonHeaders(size: number): Headers {
   return h;
 }
 
+export function buildCsvHeaders(size: number, filename: string): Headers {
+  const h = new Headers();
+
+  h.set("Content-Type", "text/csv; charset=utf-8");
+  h.set("Content-Disposition", `attachment; filename="${filename}"`);
+  h.set("Content-Length", String(size));
+  h.set("Cache-Control", "no-store");
+  applySecurityHeaders(h);
+
+  return h;
+}
+
 export function buildTextHeaders(size: number): Headers {
   const h = new Headers();
 

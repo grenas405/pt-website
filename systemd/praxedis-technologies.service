@@ -5,23 +5,30 @@ After=network.target
 
 [Service]
 Type=simple
+User=sysadmin
+Group=sysadmin
 # systemd uses %h correctly in most fields, but not inside ExecStart for path expansion
 WorkingDirectory=/home/sysadmin/.local/src/development/pt-website
+EnvironmentFile=-/etc/praxedis-technologies.env
 Environment=PORT=8000
 Environment=HOST=127.0.0.1
 Environment=PUBLIC_DIR=/home/sysadmin/.local/src/development/pt-website/public
 Environment=ALLOWED_HOSTS=www.praxedistechnologies.com,praxedistechnologies.com,127.0.0.1,localhost
 Environment=DENO_DIR=/tmp/deno-cache
+Environment=KV_PATH=/var/lib/praxedis-technologies/site.kv
 # Use %h here instead of $HOME; systemd doesn't expand shell variables in ExecStart
-# Keep --allow-env in sync with every Deno.env.get() call in server/config.ts.
+# Keep --allow-env in sync with every Deno.env.get() call.
 ExecStart=/home/sysadmin/.deno/bin/deno run \
+    --unstable-kv \
     --allow-net=127.0.0.1:8000 \
-    --allow-read=/home/sysadmin/.local/src/development/pt-website/public \
-    --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS,DENO_DIR \
+    --allow-read=/home/sysadmin/.local/src/development/pt-website/public,/var/lib/praxedis-technologies \
+    --allow-write=/var/lib/praxedis-technologies \
+    --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS,DENO_DIR,KV_PATH,ADMIN_SESSION_SECRET \
     server/main.ts
 Restart=on-failure
 KillMode=control-group
 RestartSec=5
+StateDirectory=praxedis-technologies
 NoNewPrivileges=true
 PrivateDevices=true
 PrivateTmp=true
@@ -34,6 +41,7 @@ ProtectKernelModules=true
 ProtectKernelTunables=true
 ProtectSystem=strict
 ReadOnlyPaths=/home/sysadmin/.local/src/development/pt-website
+ReadWritePaths=/var/lib/praxedis-technologies
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
 RestrictRealtime=true
 SystemCallArchitectures=native

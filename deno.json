@@ -1,13 +1,14 @@
 {
   "fmt": {
-    "include": ["server/"]
+    "include": ["server/", "scripts/"]
   },
   "lint": {
-    "include": ["server/"]
+    "include": ["server/", "scripts/"]
   },
   "tasks": {
-    "start": "deno run --allow-net=0.0.0.0:8000 --allow-read=$HOME/.local/src/development/pt-website/public --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS server/main.ts",
-    "check": "deno check server/main.ts",
-    "test": "deno test --allow-read=$HOME/.local/src/development/pt-website/public --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS,DENO_DIR"
+    "start": "sh -c 'KV_PATH=${KV_PATH:-/tmp/praxedis-technologies-site.kv}; ADMIN_SESSION_SECRET=${ADMIN_SESSION_SECRET:-dev-only-admin-session-secret-change-me}; export KV_PATH ADMIN_SESSION_SECRET; deno run --unstable-kv --allow-net=0.0.0.0:8000 --allow-read=$HOME/.local/src/development/pt-website/public,/tmp,/var/lib/praxedis-technologies --allow-write=/tmp,/var/lib/praxedis-technologies --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS,DENO_DIR,KV_PATH,ADMIN_SESSION_SECRET server/main.ts'",
+    "check": "deno check --unstable-kv server/main.ts scripts/create_admin_password.ts",
+    "test": "KV_PATH=:memory: ADMIN_SESSION_SECRET=test-admin-session-secret-minimum-32-bytes deno test --unstable-kv --allow-read=$HOME/.local/src/development/pt-website/public,/tmp --allow-write=/tmp --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS,DENO_DIR,KV_PATH,ADMIN_SESSION_SECRET",
+    "create-admin-password": "sh -c 'KV_PATH=${KV_PATH:-/tmp/praxedis-technologies-site.kv}; export KV_PATH; deno run --unstable-kv --allow-read=/tmp,/var/lib/praxedis-technologies --allow-write=/tmp,/var/lib/praxedis-technologies --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS,DENO_DIR,KV_PATH scripts/create_admin_password.ts'"
   }
 }
