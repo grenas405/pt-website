@@ -13,6 +13,7 @@ Environment=PUBLIC_DIR=/home/sysadmin/.local/src/development/pt-website/public
 Environment=ALLOWED_HOSTS=www.praxedistechnologies.com,praxedistechnologies.com,127.0.0.1,localhost
 Environment=DENO_DIR=/tmp/deno-cache
 # Use %h here instead of $HOME; systemd doesn't expand shell variables in ExecStart
+# Keep --allow-env in sync with every Deno.env.get() call in server/config.ts.
 ExecStart=/home/sysadmin/.deno/bin/deno run \
     --allow-net=127.0.0.1:8000 \
     --allow-read=/home/sysadmin/.local/src/development/pt-website/public \
