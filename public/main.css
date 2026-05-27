@@ -339,6 +339,12 @@ nav {
     font-weight: 900;
 }
 
+.hero-title-line {
+    display: block;
+    min-height: 1.05em;
+    will-change: opacity, transform;
+}
+
 .highlight {
     background: linear-gradient(135deg, var(--mexican-green) 0%, var(--mexican-green-light) 100%);
     -webkit-background-clip: text;
@@ -355,6 +361,12 @@ nav {
     94% { filter: blur(0); transform: skewX(0); }
 }
 .highlight { animation: glitch 6s infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+    .highlight {
+        animation: none;
+    }
+}
 
 .hero p {
     font-size: 1.25rem;
@@ -726,6 +738,8 @@ section {
 
     .hero h1 {
         font-size: 2.6rem;
+        line-height: 1.1;
+        min-height: 3.3em;
     }
 
     .contact-section h2 {

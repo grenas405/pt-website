@@ -10,15 +10,33 @@ WorkingDirectory=/home/sysadmin/.local/src/development/pt-website
 Environment=PORT=8000
 Environment=HOST=127.0.0.1
 Environment=PUBLIC_DIR=/home/sysadmin/.local/src/development/pt-website/public
+Environment=ALLOWED_HOSTS=www.praxedistechnologies.com,praxedistechnologies.com,127.0.0.1,localhost
+Environment=DENO_DIR=/tmp/deno-cache
 # Use %h here instead of $HOME; systemd doesn't expand shell variables in ExecStart
 ExecStart=/home/sysadmin/.deno/bin/deno run \
-    --allow-net \
+    --allow-net=127.0.0.1:8000 \
     --allow-read=/home/sysadmin/.local/src/development/pt-website/public \
-    --allow-env=PORT,PUBLIC_DIR,HOST \
+    --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS,DENO_DIR \
     server/main.ts
 Restart=on-failure
 KillMode=control-group
 RestartSec=5
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectHome=read-only
+ProtectHostname=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+ReadOnlyPaths=/home/sysadmin/.local/src/development/pt-website
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictRealtime=true
+SystemCallArchitectures=native
+UMask=0077
 
 [Install]
 WantedBy=default.target

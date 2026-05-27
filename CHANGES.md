@@ -5,10 +5,15 @@ All notable changes to the **Praxedis Technologies** website project will be doc
 ## [Unreleased] - 2026-05-08
 
 ### Added
+- **Security Hardening** — added strict same-origin CSP, expanded OWASP-style security headers, host validation, uniform headered error responses, and Deno tests for the security contract
+- **Self-Hosted Runtime Assets** — vendored Google Fonts, Font Awesome, and anime.js under `public/vendor/` so production no longer depends on public CDNs at runtime
 - **Clean Page Routes** — added explicit page routing for `/`, `/about`, and `/case-study`, allowing visitors to use extensionless URLs instead of `.html` paths
 - **Enhanced 404 Experience** — redesigned the custom 404 page with a high-tech error cockpit, animated 404 numerals, route diagnostics, verified-route cards, particle effects, and Mexican flag color accents
 
 ### Changed
+- **Runtime Least Privilege** — tightened production Deno permissions, added `ALLOWED_HOSTS`, and hardened the systemd service with sandboxing directives
+- **nginx Security Boundary** — mirrored security headers at the edge, added request timeout/body limits, and removed asset-location cache headers that bypassed inherited security headers
+- **Router Hardening** — rejects ambiguous encoded separators, traversal segments, dotfiles, unknown extensions, and malformed decoded paths before file resolution
 - **Case Study File Naming** — renamed the Heavenly Roofing case-study assets from `heavenly-roofing.*` to `case-study.*`
 - **Navigation URLs** — updated internal site links to point to `/about` and `/case-study`
 - **Router Contract** — changed `router.ts` from direct path resolution to explicit route results for pages, assets, and 404s

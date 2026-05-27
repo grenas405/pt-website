@@ -4,16 +4,43 @@ export interface FileInfo {
   mtime: Date | null;
 }
 
+export const CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "connect-src 'self'",
+  "font-src 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  "img-src 'self' data:",
+  "object-src 'none'",
+  "script-src 'self'",
+  "style-src 'self'",
+].join("; ");
+
 const CACHE_DURATION: Record<string, number> = {
   "text/html": 0,
   "text/css": 31536000,
   "text/javascript": 31536000,
+  "font/woff": 31536000,
+  "font/woff2": 31536000,
+  "font/ttf": 31536000,
   "image/x-icon": 86400,
 };
 
 function applySecurityHeaders(h: Headers): void {
+  h.set("Content-Security-Policy", CONTENT_SECURITY_POLICY);
+  h.set("Cross-Origin-Opener-Policy", "same-origin");
+  h.set("Cross-Origin-Resource-Policy", "same-origin");
+  h.set("Origin-Agent-Cluster", "?1");
+  h.set(
+    "Permissions-Policy",
+    "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()",
+  );
+  h.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
   h.set("X-Content-Type-Options", "nosniff");
   h.set("X-Frame-Options", "DENY");
+  h.set("X-Permitted-Cross-Domain-Policies", "none");
+  h.set("X-XSS-Protection", "0");
   h.set("Referrer-Policy", "strict-origin-when-cross-origin");
 }
 
@@ -33,7 +60,7 @@ export function buildHeaders(info: FileInfo): Headers {
 
   if (info.mtime) {
     h.set("Last-Modified", info.mtime.toUTCString());
-    h.set("ETag", `W/"${info.mtime.getTime()}"`);
+    h.set("ETag", `W/"${info.mtime.getTime()}-${info.size}"`);
   }
 
   applySecurityHeaders(h);

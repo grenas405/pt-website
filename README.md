@@ -20,7 +20,7 @@ The site's aesthetic is a fusion of **Vibrant Mexican Heritage** and **High-Tech
 - **Deno**: Native HTTP server — no npm, no frameworks, no build step.
 - **HTML5**: Semantic and accessible structure.
 - **CSS3**: Responsive design with custom properties, grid layouts, and smooth animations.
-- **Typography**: Montserrat (Headers) and Inter (Body) via Google Fonts.
+- **Typography**: Self-hosted Montserrat (Headers) and Inter (Body).
 - **nginx**: Reverse proxy handling TLS, gzip, caching, and HTTP→HTTPS redirects.
 
 ## Project Structure
@@ -48,7 +48,8 @@ pt-website/
 │   ├── case-study.js             # Case study animations
 │   ├── 404.html                  # Custom 404 page — glitch animation, terminal typewriter
 │   ├── 404.css                   # 404 styles
-│   └── 404.js                    # 404 animations (entry timeline, glitch, magnetic buttons)
+│   ├── 404.js                    # 404 animations (entry timeline, glitch, magnetic buttons)
+│   └── vendor/                   # Self-hosted fonts, Font Awesome, and anime.js
 ├── nginx/
 │   └── praxedistechnologies.com.conf
 └── systemd/
@@ -61,7 +62,7 @@ pt-website/
 deno run \
   --allow-net \
   --allow-read=./public \
-  --allow-env=PORT,PUBLIC_DIR,HOST \
+  --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS \
   server/main.ts
 ```
 
@@ -87,7 +88,8 @@ Legacy page URLs are not redirected. Old paths such as these return the custom
 /heavenly-roofing.html
 ```
 
-Static assets such as `/main.css`, `/about.js`, and `/case-study.js` are still served directly by filename.
+Static assets such as `/main.css`, `/about.js`, `/case-study.js`, and
+`/vendor/...` files are still served directly by filename.
 
 ## API
 
@@ -119,6 +121,31 @@ curl http://localhost:8000/api/health
 
 Unsupported methods return `405 Method Not Allowed` with `Allow: GET, HEAD`.
 
+## Security
+
+- All responses use strict same-origin security headers, including CSP,
+  HSTS, `nosniff`, `DENY` framing protection, cross-origin isolation headers,
+  and a restrictive `Permissions-Policy`.
+- Third-party runtime assets are vendored under `public/vendor/`, so the CSP
+  does not need CDN exceptions or inline script/style allowances.
+- The router rejects malformed paths, encoded path separators, traversal
+  segments, dotfiles, legacy `.html` page URLs, and unknown asset extensions
+  before resolving files.
+- Production should run with least-privilege Deno permissions:
+  `--allow-net=127.0.0.1:8000`, `--allow-read=<public-dir>`, and only the
+  documented environment variables.
+- The systemd unit keeps the app tree read-only and points Deno's runtime cache
+  at the service's private `/tmp`.
+
+## Verification
+
+```sh
+deno task check
+deno task test
+deno fmt --check
+systemd-analyze verify systemd/praxedis-technologies.service
+```
+
 ## Versioning
 
 The root `VERSION` file is the source of truth for the site release version. It uses SemVer format:
@@ -133,10 +160,12 @@ Use numeric segments only, no leading `v`, and keep the file to a single line.
 
 ```sh
 PORT=8000 HOST=127.0.0.1 PUBLIC_DIR=/var/www/praxedistechnologies/public \
+ALLOWED_HOSTS=www.praxedistechnologies.com,praxedistechnologies.com,127.0.0.1,localhost \
+DENO_DIR=/tmp/deno-cache \
 deno run \
   --allow-net=127.0.0.1:8000 \
   --allow-read=/var/www/praxedistechnologies/public \
-  --allow-env=PORT,PUBLIC_DIR,HOST \
+  --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS,DENO_DIR \
   server/main.ts
 ```
 

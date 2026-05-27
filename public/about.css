@@ -494,6 +494,12 @@ nav.container {
 .stack-cards.revealed .stack-name {
   animation-play-state: running;
 }
+.stack-card:nth-child(1) .stack-name { animation-delay: 0s; }
+.stack-card:nth-child(2) .stack-name { animation-delay: 0.25s; }
+.stack-card:nth-child(3) .stack-name { animation-delay: 0.5s; }
+.stack-card:nth-child(4) .stack-name { animation-delay: 0.75s; }
+.stack-card:nth-child(5) .stack-name { animation-delay: 1s; }
+.stack-card:nth-child(6) .stack-name { animation-delay: 1.25s; }
 .stack-card p { font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.6; }
 
 @keyframes typing-reveal {

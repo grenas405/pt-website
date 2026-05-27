@@ -8,7 +8,7 @@
  *  3.  Canvas particle network (hero background)
  *  4.  Page-load resets — anime.set()
  *  5.  Hero load timeline
- *  6.  Text scramble on headline (post-load)
+ *  6.  Hero slogan rotation + text scramble
  *  7.  Scroll animations — IntersectionObserver
  *  8.  Ambient loops
  *  9.  Magnetic CTA buttons
@@ -189,70 +189,125 @@ document.addEventListener('DOMContentLoaded', () => {
         anime.remove(btn);
         btn.style.transform = '';
       });
-      // Trigger text scramble after hero loads
-      scrambleText('.hero-line-2', 'Mag 7 Speed.');
+      startHeroSloganRotation();
     },
   }, '-=200');
 
 
   // ============================================================
-  // 7. TEXT SCRAMBLE (matrix-style) on hero headline
+  // 6. HERO SLOGAN ROTATION + TEXT SCRAMBLE
   // ============================================================
 
-  function scrambleText(selector, finalText) {
-    const el = document.querySelector(selector);
-    if (!el) return;
+  const heroSlogans = [
+    { lead: 'One Person.', payoff: 'Mag 7 Speed.' },
+    { lead: 'Solo Operator.', payoff: 'Enterprise Velocity.' },
+    { lead: 'Founder-Led.', payoff: 'Full-Stack Firepower.' },
+    { lead: 'No Middle Layers.', payoff: 'Just Execution.' },
+    { lead: 'Lean Team.', payoff: 'Heavyweight Output.' },
+  ];
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function startHeroSloganRotation() {
+    const leadEl = document.querySelector('.hero-line-1');
+    const payoffEl = document.querySelector('.hero-line-2');
+    if (!leadEl || !payoffEl) return;
+
+    leadEl.textContent = heroSlogans[0].lead;
+    payoffEl.textContent = heroSlogans[0].payoff;
+
+    if (reduceMotion || heroSlogans.length < 2) return;
+
+    scrambleText(payoffEl, heroSlogans[0].payoff, { delay: 500 });
+
+    let index = 0;
+    window.setInterval(() => {
+      index = (index + 1) % heroSlogans.length;
+      const next = heroSlogans[index];
+
+      anime.timeline({ easing: 'easeOutExpo' })
+        .add({
+          targets: [leadEl, payoffEl],
+          opacity: [1, 0],
+          translateY: [0, -14],
+          duration: 280,
+          easing: 'easeInQuad',
+          complete() {
+            leadEl.textContent = next.lead;
+            payoffEl.textContent = '';
+          },
+        })
+        .add({
+          targets: leadEl,
+          opacity: [0, 1],
+          translateY: [14, 0],
+          duration: 420,
+        })
+        .add({
+          targets: payoffEl,
+          opacity: [0, 1],
+          translateY: [14, 0],
+          duration: 520,
+          begin() {
+            scrambleText(payoffEl, next.payoff, {
+              duration: 900,
+              resolveDelay: 48,
+            });
+          },
+        }, '-=260');
+    }, 4200);
+  }
+
+  function scrambleText(target, finalText, options) {
+    const el = typeof target === 'string' ? document.querySelector(target) : target;
+    if (!el) return Promise.resolve();
 
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&';
-    const duration = 1200;
-    const resolveDelay = 80; // ms per character resolved
-    let frame = 0;
+    const duration = options?.duration || 1200;
+    const resolveDelay = options?.resolveDelay || 80;
+    const delay = options?.delay || 0;
     let startTime = null;
     const textLen = finalText.length;
-    let resolved = new Array(textLen).fill(false);
+    const resolved = new Array(textLen).fill(false);
 
     function randomChar() {
       return chars[Math.floor(Math.random() * chars.length)];
     }
 
-    function tick(timestamp) {
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      frame++;
+    return new Promise(resolve => {
+      function tick(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
 
-      // Resolve chars one by one, left to right
-      const resolveIndex = Math.floor(elapsed / resolveDelay);
-      for (let i = 0; i <= resolveIndex && i < textLen; i++) {
-        resolved[i] = true;
-      }
-
-      let display = '';
-      for (let i = 0; i < textLen; i++) {
-        if (resolved[i]) {
-          display += finalText[i];
-        } else {
-          display += randomChar();
+        // Resolve chars one by one, left to right
+        const resolveIndex = Math.floor(elapsed / resolveDelay);
+        for (let i = 0; i <= resolveIndex && i < textLen; i++) {
+          resolved[i] = true;
         }
-      }
 
-      // Use innerHTML to preserve gradient (the span wraps the whole text)
-      el.textContent = display;
+        let display = '';
+        for (let i = 0; i < textLen; i++) {
+          display += resolved[i] ? finalText[i] : randomChar();
+        }
 
-      if (resolved.every(Boolean)) return; // done
-      if (elapsed < duration + textLen * resolveDelay) {
+        el.textContent = display;
+
+        if (resolved.every(Boolean) || elapsed >= duration + textLen * resolveDelay) {
+          el.textContent = finalText;
+          resolve();
+          return;
+        }
+
         requestAnimationFrame(tick);
-      } else {
-        el.textContent = finalText;
       }
-    }
 
-    // Small delay before starting scramble
-    setTimeout(() => requestAnimationFrame(tick), 800);
+      window.setTimeout(() => requestAnimationFrame(tick), delay);
+    });
   }
 
 
   // ============================================================
-  // 8. SCROLL ANIMATIONS (IntersectionObserver)
+  // 7. SCROLL ANIMATIONS (IntersectionObserver)
   // ============================================================
 
   function createObserver(selector, fn, threshold) {

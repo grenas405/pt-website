@@ -6,6 +6,9 @@ import { buildHeaders, buildJsonHeaders, buildTextHeaders } from "./headers.ts";
 
 const HEALTH_PATH = "/api/health";
 const ANSI_ESCAPE = "\x1b";
+const MAX_URL_LENGTH = 2048;
+const METHOD_NOT_ALLOWED = "Method Not Allowed";
+const BAD_REQUEST = "Bad Request";
 
 interface HealthPayload {
   status: "ok";
@@ -190,7 +193,25 @@ function serveHealth(req: Request): Response {
   return new Response(body, { status: 200, headers });
 }
 
-async function serve404(): Promise<Response> {
+function textResponse(
+  req: Request,
+  body: string,
+  status: number,
+  extraHeaders?: Record<string, string>,
+): Response {
+  const headers = buildTextHeaders(encodeSize(body));
+  for (const [name, value] of Object.entries(extraHeaders ?? {})) {
+    headers.set(name, value);
+  }
+
+  if (req.method === "HEAD") {
+    return new Response(null, { status, headers });
+  }
+
+  return new Response(body, { status, headers });
+}
+
+async function serve404(req: Request): Promise<Response> {
   const path404 = config.publicDir + "/404.html";
   try {
     const f = await openFile(path404);
@@ -199,20 +220,57 @@ async function serve404(): Promise<Response> {
       size: f.size,
       mtime: f.mtime,
     });
+
+    if (req.method === "HEAD") {
+      f.stream.cancel();
+      return new Response(null, { status: 404, headers });
+    }
+
     return new Response(f.stream, { status: 404, headers });
   } catch {
-    return new Response("Not Found", { status: 404 });
+    return textResponse(req, "Not Found", 404);
   }
 }
 
-async function handler(req: Request): Promise<Response> {
-  const url = new URL(req.url);
+function normalizeHostname(hostname: string): string {
+  return hostname.toLowerCase().replace(/^\[(.*)\]$/, "$1");
+}
+
+function isAllowedHost(url: URL): boolean {
+  return config.allowedHosts.includes(normalizeHostname(url.hostname));
+}
+
+function hasDisallowedRequestBody(req: Request): boolean {
+  const contentLength = req.headers.get("content-length");
+  if (contentLength !== null) {
+    const normalized = contentLength.trim();
+    if (!/^(0|[1-9][0-9]*)$/.test(normalized)) return true;
+    return Number(normalized) > 0;
+  }
+
+  return req.headers.has("transfer-encoding");
+}
+
+export async function handler(req: Request): Promise<Response> {
+  let url: URL;
+  try {
+    url = new URL(req.url);
+  } catch {
+    return textResponse(req, BAD_REQUEST, 400);
+  }
+
+  if (req.url.length > MAX_URL_LENGTH || !isAllowedHost(url)) {
+    return textResponse(req, BAD_REQUEST, 400);
+  }
 
   if (req.method !== "GET" && req.method !== "HEAD") {
-    return new Response("Method Not Allowed", {
-      status: 405,
-      headers: { Allow: "GET, HEAD" },
+    return textResponse(req, METHOD_NOT_ALLOWED, 405, {
+      Allow: "GET, HEAD",
     });
+  }
+
+  if (hasDisallowedRequestBody(req)) {
+    return textResponse(req, BAD_REQUEST, 400);
   }
 
   if (url.pathname === HEALTH_PATH) {
@@ -221,7 +279,7 @@ async function handler(req: Request): Promise<Response> {
 
   const route = await resolve(url);
   if (route.kind === "notFound") {
-    return await serve404();
+    return await serve404(req);
   }
 
   const filePath = route.path;
@@ -229,7 +287,7 @@ async function handler(req: Request): Promise<Response> {
   try {
     fileResult = await openFile(filePath);
   } catch {
-    return await serve404();
+    return await serve404(req);
   }
 
   const ext = filePath.slice(filePath.lastIndexOf("."));
@@ -249,6 +307,7 @@ async function handler(req: Request): Promise<Response> {
   return new Response(fileResult.stream, { status: 200, headers });
 }
 
-console.log(`Serving on http://${config.host}:${config.port}`);
-
-Deno.serve({ port: config.port, hostname: config.host }, handler);
+if (import.meta.main) {
+  console.log(`Serving on http://${config.host}:${config.port}`);
+  Deno.serve({ port: config.port, hostname: config.host }, handler);
+}

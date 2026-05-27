@@ -1,4 +1,5 @@
 import { config } from "./config.ts";
+import { hasKnownMimeType } from "./mime.ts";
 
 export type RouteResult =
   | { kind: "page"; path: string }
@@ -37,6 +38,10 @@ async function caseStudyPage(): Promise<string | null> {
 }
 
 function decodePath(pathname: string): string | null {
+  if (/%2f|%5c/i.test(pathname)) {
+    return null;
+  }
+
   try {
     return decodeURIComponent(pathname);
   } catch {
@@ -44,15 +49,42 @@ function decodePath(pathname: string): string | null {
   }
 }
 
+function hasControlCharacter(value: string): boolean {
+  for (const char of value) {
+    const code = char.charCodeAt(0);
+    if (code <= 0x1f || code === 0x7f) return true;
+  }
+
+  return false;
+}
+
+function isSafePathname(pathname: string): boolean {
+  if (!pathname.startsWith("/")) return false;
+  if (hasControlCharacter(pathname)) return false;
+  if (pathname.includes("\\")) return false;
+
+  const segments = pathname.split("/");
+  return segments.every((segment) =>
+    segment !== "." && segment !== ".." && !segment.startsWith(".")
+  );
+}
+
 function hasStaticAssetExtension(pathname: string): boolean {
   const basename = pathname.slice(pathname.lastIndexOf("/") + 1);
-  return basename.includes(".") && !pathname.endsWith("/") &&
-    !pathname.toLowerCase().endsWith(".html");
+  if (
+    !basename.includes(".") || pathname.endsWith("/") ||
+    pathname.toLowerCase().endsWith(".html")
+  ) {
+    return false;
+  }
+
+  const ext = basename.slice(basename.lastIndexOf("."));
+  return hasKnownMimeType(ext);
 }
 
 export async function resolve(url: URL): Promise<RouteResult> {
   const pathname = decodePath(url.pathname);
-  if (pathname === null) {
+  if (pathname === null || !isSafePathname(pathname)) {
     return { kind: "notFound" };
   }
 

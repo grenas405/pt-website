@@ -5,11 +5,18 @@ const TYPES: Record<string, string> = {
   ".ico": "image/x-icon",
   ".png": "image/png",
   ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
   ".svg": "image/svg+xml",
+  ".woff": "font/woff",
   ".woff2": "font/woff2",
+  ".ttf": "font/ttf",
   ".txt": "text/plain; charset=utf-8",
 };
 
 export function mimeType(ext: string): string {
   return TYPES[ext.toLowerCase()] ?? "application/octet-stream";
+}
+
+export function hasKnownMimeType(ext: string): boolean {
+  return ext.toLowerCase() in TYPES;
 }
