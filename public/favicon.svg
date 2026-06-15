@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Praxedis Technologies">
+  <rect width="64" height="64" rx="12" fill="#0f0f0f"/>
+  <path d="M0 12C0 5.373 5.373 0 12 0h8v64H12C5.373 64 0 58.627 0 52V12Z" fill="#006847"/>
+  <path d="M44 0h8c6.627 0 12 5.373 12 12v40c0 6.627-5.373 12-12 12h-8V0Z" fill="#ce1126"/>
+  <path d="M20 0h24v64H20V0Z" fill="#ffffff" opacity="0.08"/>
+  <path d="M20 14h20c8.284 0 14 5.255 14 13.178C54 35.102 48.284 40 40 40H30v10H20V14Zm10 8v10h9.4c2.886 0 4.6-1.897 4.6-4.822C44 24.253 42.286 22 39.4 22H30Z" fill="#ffffff"/>
+  <path d="M20 50h28v6H20v-6Z" fill="#00a868"/>
+  <path d="M34 44h18v6H34v-6Z" fill="#ce1126"/>
+</svg>
