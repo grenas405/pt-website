@@ -141,7 +141,7 @@ nav {
 .nav-links {
     list-style: none;
     display: flex;
-    gap: 2rem;
+    gap: clamp(1rem, 1.8vw, 2rem);
     align-items: center;
 }
 
@@ -379,6 +379,7 @@ nav {
 .hero-actions {
     display: flex;
     gap: 1.5rem;
+    flex-wrap: wrap;
 }
 
 .cta-button {
@@ -706,6 +707,11 @@ section {
     transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 
+.waitlist-form input::placeholder,
+.waitlist-form textarea::placeholder {
+    color: rgba(255, 255, 255, 0.28);
+}
+
 .waitlist-form input:focus,
 .waitlist-form textarea:focus {
     border-color: var(--mexican-green-light);
@@ -772,6 +778,12 @@ section {
 .capabilities-eyebrow                { opacity: 0; }
 .capabilities-intro                  { opacity: 0; }
 .capability-card                     { opacity: 0; transform: translateY(60px); }
+.local-eyebrow                       { opacity: 0; transform: translateY(12px); }
+.local-copy .section-title           { opacity: 0; transform: translateX(-40px); }
+.local-copy .red-line                { width: 0; }
+.local-intro                         { opacity: 0; transform: translateY(20px); }
+.local-proof-item                    { opacity: 0; transform: translateY(18px); }
+.local-offer-card                    { opacity: 0; transform: translateY(36px); }
 .heritage-eyebrow                    { opacity: 0; transform: translateX(40px); }
 .heritage-text h2                    { opacity: 0; transform: translateX(40px); }
 .heritage-text p                     { opacity: 0; transform: translateX(40px); }
@@ -900,6 +912,169 @@ section {
 .contact-section > .container {
     position: relative;
     z-index: 1;
+}
+
+/* ============================================================
+   Local Business Promotion
+   ============================================================ */
+.local-section {
+    background:
+        linear-gradient(90deg, rgba(0, 104, 71, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(0, 104, 71, 0.04) 1px, transparent 1px),
+        #ffffff;
+    background-size: 44px 44px;
+    position: relative;
+    overflow: hidden;
+}
+
+.local-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(
+        90deg,
+        var(--mexican-green) 0%,
+        var(--mexican-green) 33.33%,
+        var(--mexican-white) 33.33%,
+        var(--mexican-white) 66.66%,
+        var(--mexican-red) 66.66%,
+        var(--mexican-red) 100%
+    );
+}
+
+.local-grid {
+    align-items: stretch;
+}
+
+.local-copy {
+    align-self: center;
+}
+
+.local-eyebrow {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--mexican-green);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.local-copy .section-title {
+    margin-bottom: 1.5rem;
+}
+
+.local-intro {
+    font-size: 1.1rem;
+    color: #555;
+    max-width: 560px;
+}
+
+.local-proof-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+.local-proof-item {
+    min-height: 112px;
+    padding: 1.25rem;
+    border: 1px solid rgba(0, 104, 71, 0.16);
+    border-top: 4px solid var(--mexican-green);
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.05);
+}
+
+.local-proof-item i {
+    display: block;
+    color: var(--mexican-red);
+    font-size: 1.35rem;
+    margin-bottom: 0.8rem;
+}
+
+.local-proof-item span {
+    display: block;
+    font-weight: 800;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--dark-bg);
+}
+
+.local-offer-card {
+    position: relative;
+    overflow: hidden;
+    padding: 2.5rem;
+    background:
+        linear-gradient(135deg, rgba(0, 104, 71, 0.16), transparent 42%),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        #101010;
+    background-size: auto, 28px 28px, auto;
+    color: white;
+    border-left: 5px solid var(--mexican-green);
+    border-bottom: 5px solid var(--mexican-red);
+    box-shadow: 0 26px 70px rgba(0, 0, 0, 0.22);
+}
+
+.offer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid rgba(0, 168, 104, 0.35);
+    background: rgba(0, 104, 71, 0.16);
+    color: var(--mexican-green-light);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+
+.local-offer-card h3 {
+    font-size: 2rem;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.local-offer-card p {
+    color: rgba(255, 255, 255, 0.72);
+    margin-bottom: 1.4rem;
+}
+
+.offer-list {
+    list-style: none;
+    display: grid;
+    gap: 1rem;
+    margin: 0 0 1.6rem;
+    padding: 0;
+}
+
+.offer-list li {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 0.8rem;
+    align-items: start;
+}
+
+.offer-list i {
+    color: var(--mexican-green-light);
+    margin-top: 0.2rem;
+}
+
+.offer-list span {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+
+.local-cta {
+    text-align: center;
 }
 
 /* ============================================================
@@ -1389,6 +1564,10 @@ section {
         grid-template-columns: repeat(2, 1fr);
     }
 
+    .local-offer-card {
+        padding: 2rem;
+    }
+
     .heritage-quote-bubble {
         position: static;
         margin-top: 1.5rem;
@@ -1408,6 +1587,23 @@ section {
 @media (max-width: 600px) {
     .stats-grid {
         gap: 1rem;
+    }
+
+    .hero-actions .cta-button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .local-proof-strip {
+        grid-template-columns: 1fr;
+    }
+
+    .local-offer-card {
+        padding: 1.5rem;
+    }
+
+    .local-offer-card h3 {
+        font-size: 1.55rem;
     }
 
     .stat-number {

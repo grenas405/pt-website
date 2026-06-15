@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
 
     // Scale up on interactive elements
-    const interactiveEls = document.querySelectorAll('a, button, .capability-card, .vision-card');
+    const interactiveEls = document.querySelectorAll('a, button, .capability-card, .vision-card, .local-proof-item, .local-offer-card');
     interactiveEls.forEach(el => {
       el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
       el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
@@ -200,11 +200,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // ============================================================
 
   const heroSlogans = [
-    { lead: 'One Person.', payoff: 'Mag 7 Speed.' },
-    { lead: 'Solo Operator.', payoff: 'Enterprise Velocity.' },
-    { lead: 'Founder-Led.', payoff: 'Full-Stack Firepower.' },
-    { lead: 'No Middle Layers.', payoff: 'Just Execution.' },
-    { lead: 'Lean Team.', payoff: 'Heavyweight Output.' },
+    { lead: 'Built Directly.', payoff: 'For Local Growth.' },
+    { lead: 'Local Businesses.', payoff: 'One-on-One Support.' },
+    { lead: 'No Agency Maze.', payoff: 'Just Execution.' },
+    { lead: 'Local Operators.', payoff: 'Digital Leverage.' },
+    { lead: 'Mexico-Based Teams.', payoff: 'Cross-Border Ready.' },
   ];
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       if (submitButton) submitButton.disabled = true;
-      setWaitlistStatus(statusEl, 'Joining...', null);
+      setWaitlistStatus(statusEl, 'Sending request...', null);
 
       try {
         const response = await fetch('/api/waitlist', {
@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         form.reset();
-        setWaitlistStatus(statusEl, 'You are on the waitlist.', 'success');
+        setWaitlistStatus(statusEl, 'Request received. I will follow up directly.', 'success');
       } catch {
         setWaitlistStatus(statusEl, 'Network error. Try again in a moment.', 'error');
       } finally {
@@ -515,6 +515,63 @@ document.addEventListener('DOMContentLoaded', () => {
           card.style.transform = '';
         });
       },
+    });
+  });
+
+
+  // --- LOCAL BUSINESS PROMOTION ---
+  createObserver('.local-section', () => {
+
+    anime({
+      targets: '.local-eyebrow',
+      opacity: [0, 1],
+      translateY: [12, 0],
+      duration: 400,
+      easing: 'easeOutExpo',
+    });
+
+    anime({
+      targets: '.local-copy .section-title',
+      opacity: [0, 1],
+      translateX: [-40, 0],
+      duration: 650,
+      delay: 80,
+      easing: 'easeOutExpo',
+    });
+
+    anime({
+      targets: '.local-copy .red-line',
+      width: ['0px', '50px'],
+      duration: 420,
+      delay: 120,
+      easing: 'easeOutExpo',
+    });
+
+    anime({
+      targets: '.local-intro',
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 520,
+      delay: 260,
+      easing: 'easeOutExpo',
+    });
+
+    anime({
+      targets: '.local-proof-item',
+      opacity: [0, 1],
+      translateY: [18, 0],
+      duration: 560,
+      delay: anime.stagger(95, { start: 360 }),
+      easing: 'easeOutExpo',
+    });
+
+    anime({
+      targets: '.local-offer-card',
+      opacity: [0, 1],
+      translateY: [36, 0],
+      duration: 720,
+      delay: 260,
+      easing: 'easeOutExpo',
     });
   });
 
