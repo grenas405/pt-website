@@ -18,6 +18,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ============================================================
   // 1. HELPERS
@@ -64,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
 
     // Scale up on interactive elements
-    const interactiveEls = document.querySelectorAll('a, button, .capability-card, .vision-card, .local-proof-item, .local-offer-card');
+    const interactiveEls = document.querySelectorAll('a, button, .capability-card, .vision-card, .promo-term, .local-proof-item, .local-offer-card, .promo-modal-offer');
     interactiveEls.forEach(el => {
       el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
       el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
@@ -82,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ParticleEngine.initSectionAmbient('.contact-section');
   ParticleEngine.initContactUniverse('contact-canvas');
   initWaitlistForm();
+  initPromoModal();
 
 
   // ============================================================
@@ -207,8 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
     { lead: 'Mexico-Based Teams.', payoff: 'Cross-Border Ready.' },
   ];
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   function startHeroSloganRotation() {
     const leadEl = document.querySelector('.hero-line-1');
     const payoffEl = document.querySelector('.hero-line-2');
@@ -308,7 +308,137 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ============================================================
-  // 7. WAITLIST FORM
+  // 7. PROMOTION MODAL
+  // ============================================================
+
+  function initPromoModal() {
+    const modal = document.getElementById('promo-modal');
+    if (!modal) return;
+
+    const panel = modal.querySelector('.promo-modal-panel');
+    const openers = document.querySelectorAll('[data-promo-open]');
+    const closers = modal.querySelectorAll('[data-promo-close]');
+    const contactLinks = modal.querySelectorAll('[data-promo-contact]');
+    let lastFocused = null;
+    let isOpen = false;
+
+    function rememberSeen() {
+      try {
+        sessionStorage.setItem('praxedisLocalPromoSeen', 'true');
+      } catch {
+        // Storage can be disabled; the modal still works manually.
+      }
+    }
+
+    function hasSeen() {
+      try {
+        return sessionStorage.getItem('praxedisLocalPromoSeen') === 'true';
+      } catch {
+        return true;
+      }
+    }
+
+    function focusableElements() {
+      return Array.from(modal.querySelectorAll('a[href], button:not([disabled])'));
+    }
+
+    function openModal() {
+      if (isOpen) return;
+      isOpen = true;
+      lastFocused = document.activeElement;
+      rememberSeen();
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('promo-modal-open');
+
+      window.setTimeout(() => {
+        const firstFocusable = focusableElements()[0];
+        if (firstFocusable) firstFocusable.focus();
+        else panel?.focus();
+      }, 80);
+    }
+
+    function closeModal(options) {
+      if (!isOpen) return;
+      isOpen = false;
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('promo-modal-open');
+
+      if (!options?.skipRestore && lastFocused && typeof lastFocused.focus === 'function') {
+        lastFocused.focus();
+      }
+    }
+
+    function scrollToContact() {
+      closeModal({ skipRestore: true });
+      const contact = document.getElementById('contact');
+      const firstInput = document.querySelector('#waitlist-form input, #waitlist-form textarea');
+
+      if (contact) {
+        contact.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      }
+
+      window.setTimeout(() => {
+        if (firstInput) firstInput.focus();
+      }, reduceMotion ? 80 : 700);
+    }
+
+    openers.forEach(opener => {
+      opener.addEventListener('click', event => {
+        event.preventDefault();
+        openModal();
+      });
+    });
+
+    closers.forEach(closer => {
+      closer.addEventListener('click', () => closeModal());
+    });
+
+    contactLinks.forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        scrollToContact();
+      });
+    });
+
+    modal.addEventListener('keydown', event => {
+      if (!isOpen) return;
+
+      if (event.key === 'Escape') {
+        closeModal();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const focusable = focusableElements();
+      if (focusable.length === 0) {
+        event.preventDefault();
+        panel?.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+
+    if (!hasSeen()) {
+      window.setTimeout(openModal, reduceMotion ? 700 : 1600);
+    }
+  }
+
+
+  // ============================================================
+  // 8. WAITLIST FORM
   // ============================================================
 
   function setWaitlistStatus(statusEl, message, type) {
@@ -364,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ============================================================
-  // 8. SCROLL ANIMATIONS (IntersectionObserver)
+  // 9. SCROLL ANIMATIONS (IntersectionObserver)
   // ============================================================
 
   function createObserver(selector, fn, threshold) {
@@ -557,11 +687,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     anime({
+      targets: '.promo-term',
+      opacity: [0, 1],
+      translateY: [18, 0],
+      duration: 560,
+      delay: anime.stagger(90, { start: 320 }),
+      easing: 'easeOutExpo',
+    });
+
+    anime({
       targets: '.local-proof-item',
       opacity: [0, 1],
       translateY: [18, 0],
       duration: 560,
-      delay: anime.stagger(95, { start: 360 }),
+      delay: anime.stagger(95, { start: 520 }),
       easing: 'easeOutExpo',
     });
 

@@ -64,7 +64,7 @@
             layers of agencies, contractors, and delays.
           </p>
           <div class="hero-actions">
-            <a href="#local-business" class="cta-button primary">Local Business Promo</a>
+            <a href="#local-business" class="cta-button primary" data-promo-open>Local Business Promo</a>
             <a href="#contact" class="cta-button secondary">Work One-on-One</a>
           </div>
         </div>
@@ -211,8 +211,27 @@
             <p class="local-intro">
               If your business operates from Praxedis G. Guerrero, Mexico, you
               can work directly with Pedro one-on-one to plan, build, and launch
-              the technology your business actually needs.
+              the technology your business actually needs. Local operators can
+              claim a no-cost 30-minute discovery call, a free digital presence
+              audit, and a priority build plan before committing to a project.
             </p>
+            <div class="promo-terms-grid" aria-label="Promotion terms">
+              <div class="promo-term">
+                <span class="promo-term-kicker">01</span>
+                <strong>No-cost discovery call</strong>
+                <span>30 minutes to map the biggest digital opportunity for your business.</span>
+              </div>
+              <div class="promo-term">
+                <span class="promo-term-kicker">02</span>
+                <strong>Free digital presence audit</strong>
+                <span>Review your website, search presence, lead flow, and customer contact path.</span>
+              </div>
+              <div class="promo-term">
+                <span class="promo-term-kicker">03</span>
+                <strong>Priority build plan</strong>
+                <span>A clear first-step scope for websites, automation, or customer follow-up.</span>
+              </div>
+            </div>
             <div class="local-proof-strip" aria-label="Promotion highlights">
               <div class="local-proof-item">
                 <i class="fa-solid fa-handshake"></i>
@@ -238,9 +257,14 @@
             <p>
               Businesses in Praxedis G. Guerrero receive direct access to the
               builder, flexible remote collaboration, and practical launch plans
-              shaped around local schedules, staffing, and communication needs.
+              shaped around local schedules, staffing, budgets, and
+              communication needs.
             </p>
             <ul class="offer-list">
+              <li>
+                <i class="fa-solid fa-magnifying-glass-chart"></i>
+                <span>Free digital audit to identify missed calls, weak online presence, and lost leads.</span>
+              </li>
               <li>
                 <i class="fa-solid fa-clock"></i>
                 <span>Flexible meeting windows for owners balancing daily operations.</span>
@@ -258,7 +282,7 @@
                 <span>Priority discovery for websites, lead capture, automation, and digital operations.</span>
               </li>
             </ul>
-            <a href="#contact" class="cta-button primary local-cta">Claim the Promotion</a>
+            <a href="#contact" class="cta-button primary local-cta" data-promo-open>Claim the Promotion</a>
           </div>
         </div>
       </section>
@@ -387,8 +411,9 @@
           <h2>Claim the Local Business Promotion</h2>
           <p>
             Tell me what your business needs. Praxedis G. Guerrero operators
-            receive direct one-on-one support with special accommodations for
-            local schedules, remote coordination, and cross-border operations.
+            receive a no-cost discovery call, free digital presence audit, and
+            direct one-on-one support with special accommodations for local
+            schedules, remote coordination, and cross-border operations.
           </p>
           <form class="waitlist-form" id="waitlist-form">
             <div class="waitlist-grid">
@@ -535,6 +560,71 @@
         <span class="mno-tagline-green">Praxedis</span>
         <span class="mno-tagline-white">Technologies</span>
       </p>
+    </div>
+    <div
+      class="promo-modal"
+      id="promo-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="promo-modal-title"
+      aria-describedby="promo-modal-desc"
+      aria-hidden="true"
+    >
+      <div class="promo-modal-backdrop" data-promo-close aria-hidden="true"></div>
+      <div class="promo-modal-panel" tabindex="-1">
+        <button class="promo-modal-close" type="button" data-promo-close aria-label="Close promotion">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+        <div class="promo-modal-flag" aria-hidden="true">
+          <span class="pmf pmf--green"></span>
+          <span class="pmf pmf--white"></span>
+          <span class="pmf pmf--red"></span>
+        </div>
+        <div class="promo-modal-grid">
+          <div class="promo-modal-main">
+            <p class="promo-modal-eyebrow">Praxedis G. Guerrero Local Business Promotion</p>
+            <h2 id="promo-modal-title">Free digital audit. Direct one-on-one build plan.</h2>
+            <p id="promo-modal-desc">
+              Local businesses in Praxedis G. Guerrero can work directly with
+              Pedro to build websites, lead systems, and automations, with
+              flexible communication and special accommodations for Mexico-based
+              operations.
+            </p>
+            <div class="promo-modal-actions">
+              <a href="#contact" class="cta-button primary" data-promo-contact>Claim the Promotion</a>
+              <a href="mailto:domingueztechsolutions@gmail.com" class="promo-modal-link">
+                <i class="fa-solid fa-envelope"></i>
+                Email Pedro
+              </a>
+            </div>
+          </div>
+          <div class="promo-modal-offer">
+            <div class="promo-modal-price">
+              <span>No-cost</span>
+              <strong>30 min</strong>
+              <small>Discovery call</small>
+            </div>
+            <ul class="promo-modal-list">
+              <li>
+                <i class="fa-solid fa-check"></i>
+                Free digital presence audit
+              </li>
+              <li>
+                <i class="fa-solid fa-check"></i>
+                Priority website or automation plan
+              </li>
+              <li>
+                <i class="fa-solid fa-check"></i>
+                WhatsApp, phone, or email coordination
+              </li>
+              <li>
+                <i class="fa-solid fa-check"></i>
+                Flexible scheduling for local operators
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
     <script src="particles.js" defer></script>
     <script src="navigation.js" defer></script>

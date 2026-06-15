@@ -387,11 +387,15 @@ nav {
     padding: 1rem 2.5rem;
     font-weight: 700;
     font-size: 1rem;
+    font-family: inherit;
     border-radius: 4px;
+    border: 0;
+    cursor: pointer;
     transition: background var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
     text-transform: uppercase;
     letter-spacing: 1.5px;
     display: inline-block;
+    line-height: 1.2;
     will-change: transform;
 }
 
@@ -782,6 +786,7 @@ section {
 .local-copy .section-title           { opacity: 0; transform: translateX(-40px); }
 .local-copy .red-line                { width: 0; }
 .local-intro                         { opacity: 0; transform: translateY(20px); }
+.promo-term                          { opacity: 0; transform: translateY(18px); }
 .local-proof-item                    { opacity: 0; transform: translateY(18px); }
 .local-offer-card                    { opacity: 0; transform: translateY(36px); }
 .heritage-eyebrow                    { opacity: 0; transform: translateX(40px); }
@@ -972,6 +977,47 @@ section {
     max-width: 560px;
 }
 
+.promo-terms-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+}
+
+.promo-term {
+    min-height: 170px;
+    padding: 1.25rem;
+    background: var(--dark-bg);
+    color: white;
+    border-top: 4px solid var(--mexican-red);
+    box-shadow: 0 20px 42px rgba(0, 0, 0, 0.12);
+}
+
+.promo-term-kicker {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 900;
+    color: var(--mexican-green-light);
+    letter-spacing: 2px;
+    margin-bottom: 0.7rem;
+}
+
+.promo-term strong {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    line-height: 1.3;
+    margin-bottom: 0.55rem;
+}
+
+.promo-term span:last-child {
+    display: block;
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 0.86rem;
+    line-height: 1.55;
+}
+
 .local-proof-strip {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1075,6 +1121,232 @@ section {
 
 .local-cta {
     text-align: center;
+}
+
+/* ============================================================
+   Promotion Modal
+   ============================================================ */
+body.promo-modal-open {
+    overflow: hidden;
+}
+
+.promo-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.28s ease, visibility 0.28s ease;
+}
+
+.promo-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.promo-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 18% 18%, rgba(0, 168, 104, 0.24), transparent 34%),
+        radial-gradient(circle at 78% 18%, rgba(206, 17, 38, 0.2), transparent 32%),
+        rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.promo-modal-panel {
+    position: relative;
+    width: min(1040px, 100%);
+    max-height: calc(100vh - 4rem);
+    overflow: auto;
+    background:
+        linear-gradient(135deg, rgba(0, 104, 71, 0.2), transparent 38%),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        #101010;
+    background-size: auto, 34px 34px, 34px 34px, auto;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    box-shadow: 0 34px 90px rgba(0, 0, 0, 0.56);
+    transform: translateY(28px) scale(0.96);
+    transition: transform 0.32s ease;
+}
+
+.promo-modal.is-open .promo-modal-panel {
+    transform: translateY(0) scale(1);
+}
+
+.promo-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 3;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.36);
+    color: rgba(255, 255, 255, 0.76);
+    cursor: pointer;
+    transition: border-color 0.25s, color 0.25s, background 0.25s;
+}
+
+.promo-modal-close:hover {
+    border-color: var(--mexican-red);
+    color: white;
+    background: rgba(206, 17, 38, 0.2);
+}
+
+.promo-modal-close:focus-visible {
+    outline: 2px solid var(--mexican-green-light);
+    outline-offset: 3px;
+}
+
+.promo-modal-flag {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    height: 7px;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+}
+
+.pmf--green { background: var(--mexican-green); }
+.pmf--white { background: rgba(255, 255, 255, 0.86); }
+.pmf--red   { background: var(--mexican-red); }
+
+.promo-modal-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.8fr);
+    gap: 2rem;
+    align-items: stretch;
+    padding: 3.4rem;
+}
+
+.promo-modal-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 430px;
+}
+
+.promo-modal-eyebrow {
+    color: var(--mexican-green-light);
+    font-size: 0.76rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 1rem;
+}
+
+.promo-modal-main h2 {
+    max-width: 680px;
+    font-size: 3.8rem;
+    line-height: 1.02;
+    letter-spacing: 0;
+    margin-bottom: 1.4rem;
+}
+
+.promo-modal-main p {
+    max-width: 640px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 1.08rem;
+    line-height: 1.75;
+}
+
+.promo-modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.promo-modal-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: rgba(255, 255, 255, 0.72);
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.25s;
+}
+
+.promo-modal-link:hover {
+    color: var(--mexican-green-light);
+}
+
+.promo-modal-link i {
+    color: var(--mexican-green-light);
+}
+
+.promo-modal-offer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 430px;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.07);
+    border-left: 5px solid var(--mexican-green);
+    border-bottom: 5px solid var(--mexican-red);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.promo-modal-price {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.promo-modal-price span,
+.promo-modal-price small {
+    display: block;
+    color: rgba(255, 255, 255, 0.52);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.promo-modal-price strong {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 4.2rem;
+    line-height: 1;
+    color: var(--mexican-green-light);
+    letter-spacing: 0;
+    margin: 0.45rem 0;
+}
+
+.promo-modal-list {
+    list-style: none;
+    display: grid;
+    gap: 1rem;
+    padding: 0;
+    margin: 1.5rem 0 0;
+}
+
+.promo-modal-list li {
+    display: grid;
+    grid-template-columns: 1.4rem 1fr;
+    gap: 0.7rem;
+    align-items: start;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.5;
+}
+
+.promo-modal-list i {
+    color: var(--mexican-green-light);
+    margin-top: 0.25rem;
 }
 
 /* ============================================================
@@ -1564,8 +1836,34 @@ section {
         grid-template-columns: repeat(2, 1fr);
     }
 
+    .promo-terms-grid {
+        grid-template-columns: 1fr;
+    }
+
     .local-offer-card {
         padding: 2rem;
+    }
+
+    .promo-modal {
+        padding: 1rem;
+    }
+
+    .promo-modal-grid {
+        grid-template-columns: 1fr;
+        padding: 2.5rem;
+    }
+
+    .promo-modal-main {
+        min-height: auto;
+    }
+
+    .promo-modal-main h2 {
+        font-size: 2.7rem;
+        max-width: 100%;
+    }
+
+    .promo-modal-offer {
+        min-height: auto;
     }
 
     .heritage-quote-bubble {
@@ -1598,12 +1896,65 @@ section {
         grid-template-columns: 1fr;
     }
 
+    .promo-term {
+        min-height: auto;
+    }
+
     .local-offer-card {
         padding: 1.5rem;
     }
 
     .local-offer-card h3 {
         font-size: 1.55rem;
+    }
+
+    .promo-modal {
+        align-items: flex-start;
+        padding: 0.75rem;
+    }
+
+    .promo-modal-panel {
+        max-height: calc(100vh - 1.5rem);
+    }
+
+    .promo-modal-grid {
+        gap: 1.5rem;
+        padding: 2rem 1.25rem 1.25rem;
+    }
+
+    .promo-modal-close {
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 40px;
+        height: 40px;
+    }
+
+    .promo-modal-eyebrow {
+        max-width: calc(100% - 3rem);
+        font-size: 0.68rem;
+        letter-spacing: 2px;
+    }
+
+    .promo-modal-main h2 {
+        font-size: 2.05rem;
+        line-height: 1.08;
+    }
+
+    .promo-modal-main p {
+        font-size: 0.98rem;
+    }
+
+    .promo-modal-actions .cta-button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .promo-modal-price strong {
+        font-size: 3rem;
+    }
+
+    .promo-modal-offer {
+        padding: 1.4rem;
     }
 
     .stat-number {
