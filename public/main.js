@@ -37,82 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return el.querySelectorAll('.letter');
   }
 
-  function initSystemsCommandBackground() {
-    const layer = document.querySelector('.systems-command-bg');
-    if (!layer) return;
-
-    const commands = [
-      'curl https://praxedistechnologies.com/api/health',
-      'deno task check',
-      'deno test --unstable-kv',
-      'nginx -t',
-      'systemctl status praxedis-technologies',
-      'journalctl -u praxedis-technologies -n 40',
-      'ss -ltnp',
-      'git diff --stat',
-      'curl -I https://praxedistechnologies.com',
-      'tail -n 80 /var/log/nginx/access.log',
-      'openssl x509 -noout -dates -in fullchain.pem',
-      'rsync -av public/ edge:/srv/praxedis/public/',
-      'uptime',
-      'df -h',
-      'free -h',
-      'systemctl reload nginx',
-    ];
-
-    const rowCount = window.innerWidth < 700 ? 6 : 10;
-    const tokensPerRow = window.innerWidth < 700 ? 4 : 7;
-
-    for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-      const row = document.createElement('div');
-      row.className = 'systems-command-row';
-      row.style.top = (6 + rowIndex * (88 / Math.max(rowCount - 1, 1))) + '%';
-
-      for (let tokenIndex = 0; tokenIndex < tokensPerRow; tokenIndex++) {
-        const token = document.createElement('span');
-        token.className = 'systems-command-token';
-        token.textContent = commands[(rowIndex * 3 + tokenIndex * 5) % commands.length];
-        row.appendChild(token);
-      }
-
-      layer.appendChild(row);
-    }
-
-    if (reduceMotion || typeof anime === 'undefined') return;
-
-    const rows = layer.querySelectorAll('.systems-command-row');
-    anime.set(rows, { opacity: 0 });
-
-    rows.forEach((row, index) => {
-      const movingRight = index % 2 === 0;
-      anime({
-        targets: row,
-        translateX: movingRight ? ['-12%', '18%'] : ['18%', '-12%'],
-        opacity: [
-          { value: 0, duration: 0 },
-          { value: 0.62, duration: 1200 },
-          { value: 0.38, duration: 6000 },
-          { value: 0.58, duration: 1400 },
-        ],
-        duration: 26000 + index * 1100,
-        delay: index * 260,
-        easing: 'linear',
-        direction: 'alternate',
-        loop: true,
-      });
-    });
-
-    anime({
-      targets: layer.querySelectorAll('.systems-command-token'),
-      opacity: [0.38, 0.88, 0.48],
-      delay: anime.stagger(55),
-      duration: 4800,
-      easing: 'easeInOutSine',
-      direction: 'alternate',
-      loop: true,
-    });
-  }
-
   // ============================================================
   // 2. CUSTOM CURSOR
   // ============================================================
@@ -141,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
 
     // Scale up on interactive elements
-    const interactiveEls = document.querySelectorAll('a, button, .capability-card, .systems-outcome, .capability-track-item, .vision-card, .promo-term, .local-proof-item, .local-offer-card, .promo-modal-offer');
+    const interactiveEls = document.querySelectorAll('a, button, .capability-card, .vision-card, .promo-term, .local-proof-item, .local-offer-card, .promo-modal-offer');
     interactiveEls.forEach(el => {
       el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
       el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
@@ -158,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
   ParticleEngine.initSectionAmbient('.capabilities-section.dark');
   ParticleEngine.initSectionAmbient('.contact-section');
   ParticleEngine.initContactUniverse('contact-canvas');
-  initSystemsCommandBackground();
   initWaitlistForm();
   initPromoModal();
 
@@ -683,127 +606,45 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- CAPABILITIES SECTION ---
   createObserver('.capabilities-section', () => {
 
-    const capabilityTL = anime.timeline({ easing: 'easeOutExpo' });
-
-    capabilityTL
-      .add({
-        targets: '.capabilities-eyebrow',
-        opacity: [0, 1],
-        translateY: [12, 0],
-        duration: 420,
-      })
-      .add({
-        targets: '.capabilities-section .section-title',
-        opacity: [0, 1],
-        scale: [0.9, 1],
-        translateY: [18, 0],
-        duration: 680,
-      }, '-=220')
-      .add({
-        targets: '.capabilities-intro',
-        opacity: [0, 1],
-        translateY: [14, 0],
-        duration: 520,
-      }, '-=360')
-      .add({
-        targets: '.systems-outcome',
-        opacity: [0, 1],
-        translateY: [18, 0],
-        delay: anime.stagger(80),
-        duration: 520,
-      }, '-=260')
-      .add({
-        targets: '.capability-card',
-        opacity: [0, 1],
-        translateY: [64, 0],
-        scale: [0.96, 1],
-        delay: anime.stagger(110),
-        duration: 780,
-        complete() {
-          document.querySelectorAll('.capability-card').forEach(card => {
-            anime.remove(card);
-            card.style.transform = '';
-          });
-        },
-      }, '-=260')
-      .add({
-        targets: '.capability-metric',
-        opacity: [0, 1],
-        translateY: [12, 0],
-        delay: anime.stagger(70),
-        duration: 420,
-      }, '-=420')
-      .add({
-        targets: '.capability-tags span',
-        opacity: [0, 1],
-        translateY: [8, 0],
-        delay: anime.stagger(18),
-        duration: 260,
-      }, '-=280')
-      .add({
-        targets: '.capability-track-item',
-        opacity: [0, 1],
-        translateY: [18, 0],
-        delay: anime.stagger(85),
-        duration: 520,
-      }, '-=120');
-
-    document.querySelectorAll('.systems-outcome').forEach((item, index) => {
-      const value = item.querySelector('.systems-outcome-value');
-      const target = parseInt(item.dataset.systemTarget || '0', 10);
-      const prefix = item.dataset.systemPrefix || '';
-      const suffix = item.dataset.systemSuffix || '';
-      if (!value || Number.isNaN(target)) return;
-
-      anime({
-        targets: { count: 0 },
-        count: target,
-        duration: 1250,
-        delay: 560 + index * 120,
-        easing: 'easeOutExpo',
-        update(anim) {
-          value.textContent = prefix + Math.round(anim.animations[0].currentValue) + suffix;
-        },
-      });
+    anime({
+      targets: '.capabilities-eyebrow',
+      opacity: [0, 1],
+      translateY: [10, 0],
+      duration: 400,
+      easing: 'easeOutExpo',
     });
 
-    document.querySelectorAll('.capability-card').forEach((card, index) => {
-      const score = parseInt(card.dataset.systemHealth || '0', 10);
-      const progress = card.querySelector('.capability-progress span');
-      const metric = card.querySelector('.capability-metric strong');
-      const target = parseInt(metric?.dataset.metricTarget || String(score), 10);
-      const suffix = metric?.dataset.metricSuffix || '';
+    anime({
+      targets: '.capabilities-section .section-title',
+      opacity: [0, 1],
+      scale: [0.9, 1],
+      duration: 600,
+      delay: 100,
+      easing: 'easeOutExpo',
+    });
 
-      if (progress && !Number.isNaN(score)) {
-        anime({
-          targets: progress,
-          width: ['0%', score + '%'],
-          duration: 1000,
-          delay: 900 + index * 130,
-          easing: 'easeInOutExpo',
-        });
-      }
+    anime({
+      targets: '.capabilities-intro',
+      opacity: [0, 1],
+      translateY: [10, 0],
+      duration: 400,
+      delay: 200,
+      easing: 'easeOutExpo',
+    });
 
-      if (metric && !Number.isNaN(target)) {
-        anime({
-          targets: { count: 0 },
-          count: target,
-          duration: 1150,
-          delay: 820 + index * 130,
-          easing: 'easeOutExpo',
-          update(anim) {
-            metric.textContent = Math.round(anim.animations[0].currentValue) + suffix;
-          },
-          complete() {
-            anime({
-              targets: metric,
-              scale: [1, 1.12, 1],
-              duration: 360,
-              easing: 'easeOutBack',
-            });
-          },
+    anime({
+      targets: '.capability-card',
+      opacity: [0, 1],
+      translateY: [60, 0],
+      duration: 700,
+      delay: anime.stagger(100, { start: 300 }),
+      easing: 'easeOutExpo',
+      complete() {
+        document.querySelectorAll('.capability-card').forEach(card => {
+          anime.remove(card);
+          card.style.transform = '';
         });
-      }
+      },
     });
   });
 
@@ -1107,30 +948,6 @@ document.addEventListener('DOMContentLoaded', () => {
         borderTopColor: '#006847',
         duration: 200,
         easing: 'easeOutQuad',
-      });
-    });
-  });
-
-  document.querySelectorAll('.systems-outcome, .capability-track-item').forEach(item => {
-    item.addEventListener('mouseenter', () => {
-      anime.remove(item);
-      anime({
-        targets: item,
-        translateY: -4,
-        scale: 1.015,
-        duration: 260,
-        easing: 'easeOutExpo',
-      });
-    });
-
-    item.addEventListener('mouseleave', () => {
-      anime.remove(item);
-      anime({
-        targets: item,
-        translateY: 0,
-        scale: 1,
-        duration: 520,
-        easing: 'easeOutElastic(1, 0.55)',
       });
     });
   });
