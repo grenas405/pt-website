@@ -366,6 +366,19 @@ nav {
     .highlight {
         animation: none;
     }
+
+    .systems-command-bg {
+        opacity: 0.24;
+    }
+
+    .systems-command-row {
+        opacity: 0.42;
+        transform: none !important;
+    }
+
+    .systems-command-token {
+        opacity: 0.72 !important;
+    }
 }
 
 .hero p {
@@ -525,10 +538,73 @@ section {
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 0;
     background:
         linear-gradient(180deg, rgba(0, 0, 0, 0.15), transparent 22%, rgba(0, 0, 0, 0.26)),
         linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.035), transparent);
     pointer-events: none;
+}
+
+.systems-command-bg {
+    position: absolute;
+    inset: -4rem 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.52;
+    mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 82%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 82%, transparent 100%);
+}
+
+.systems-command-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, #1a1a1a 0%, transparent 15%, transparent 85%, #1a1a1a 100%),
+        radial-gradient(circle at 50% 50%, transparent, rgba(0, 0, 0, 0.42));
+    pointer-events: none;
+}
+
+.systems-command-row {
+    position: absolute;
+    left: -16vw;
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+    width: max-content;
+    min-width: 132vw;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: clamp(0.72rem, 1vw, 0.95rem);
+    font-weight: 700;
+    white-space: nowrap;
+    will-change: transform, opacity;
+}
+
+.systems-command-row:nth-child(2n) {
+    color: rgba(0, 255, 136, 0.24);
+}
+
+.systems-command-row:nth-child(3n) {
+    color: rgba(206, 17, 38, 0.2);
+}
+
+.systems-command-token {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0.38rem 0.72rem;
+    border: 1px solid rgba(255, 255, 255, 0.065);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.34);
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.18);
+}
+
+.systems-command-token::before {
+    content: '$';
+    margin-right: 0.55rem;
+    color: var(--mexican-green-light);
 }
 
 .capabilities-section.dark > .container {
@@ -930,6 +1006,10 @@ section {
     .systems-outcome,
     .capability-track-item {
         min-height: auto;
+    }
+
+    .systems-command-bg {
+        opacity: 0.34;
     }
 
     .hero h1 {

@@ -37,6 +37,82 @@ document.addEventListener('DOMContentLoaded', () => {
     return el.querySelectorAll('.letter');
   }
 
+  function initSystemsCommandBackground() {
+    const layer = document.querySelector('.systems-command-bg');
+    if (!layer) return;
+
+    const commands = [
+      'curl https://praxedistechnologies.com/api/health',
+      'deno task check',
+      'deno test --unstable-kv',
+      'nginx -t',
+      'systemctl status praxedis-technologies',
+      'journalctl -u praxedis-technologies -n 40',
+      'ss -ltnp',
+      'git diff --stat',
+      'curl -I https://praxedistechnologies.com',
+      'tail -n 80 /var/log/nginx/access.log',
+      'openssl x509 -noout -dates -in fullchain.pem',
+      'rsync -av public/ edge:/srv/praxedis/public/',
+      'uptime',
+      'df -h',
+      'free -h',
+      'systemctl reload nginx',
+    ];
+
+    const rowCount = window.innerWidth < 700 ? 6 : 10;
+    const tokensPerRow = window.innerWidth < 700 ? 4 : 7;
+
+    for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+      const row = document.createElement('div');
+      row.className = 'systems-command-row';
+      row.style.top = (6 + rowIndex * (88 / Math.max(rowCount - 1, 1))) + '%';
+
+      for (let tokenIndex = 0; tokenIndex < tokensPerRow; tokenIndex++) {
+        const token = document.createElement('span');
+        token.className = 'systems-command-token';
+        token.textContent = commands[(rowIndex * 3 + tokenIndex * 5) % commands.length];
+        row.appendChild(token);
+      }
+
+      layer.appendChild(row);
+    }
+
+    if (reduceMotion || typeof anime === 'undefined') return;
+
+    const rows = layer.querySelectorAll('.systems-command-row');
+    anime.set(rows, { opacity: 0 });
+
+    rows.forEach((row, index) => {
+      const movingRight = index % 2 === 0;
+      anime({
+        targets: row,
+        translateX: movingRight ? ['-12%', '18%'] : ['18%', '-12%'],
+        opacity: [
+          { value: 0, duration: 0 },
+          { value: 0.62, duration: 1200 },
+          { value: 0.38, duration: 6000 },
+          { value: 0.58, duration: 1400 },
+        ],
+        duration: 26000 + index * 1100,
+        delay: index * 260,
+        easing: 'linear',
+        direction: 'alternate',
+        loop: true,
+      });
+    });
+
+    anime({
+      targets: layer.querySelectorAll('.systems-command-token'),
+      opacity: [0.38, 0.88, 0.48],
+      delay: anime.stagger(55),
+      duration: 4800,
+      easing: 'easeInOutSine',
+      direction: 'alternate',
+      loop: true,
+    });
+  }
+
   // ============================================================
   // 2. CUSTOM CURSOR
   // ============================================================
@@ -82,6 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ParticleEngine.initSectionAmbient('.capabilities-section.dark');
   ParticleEngine.initSectionAmbient('.contact-section');
   ParticleEngine.initContactUniverse('contact-canvas');
+  initSystemsCommandBackground();
   initWaitlistForm();
   initPromoModal();
 
