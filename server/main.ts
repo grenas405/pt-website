@@ -201,14 +201,23 @@ function formatAnsiHealth(payload: HealthPayload): string {
   return lines.join("\n");
 }
 
+function acceptsTextPlain(accept: string | null): boolean {
+  if (accept === null) return false;
+
+  return accept.toLowerCase().split(",").some((part) =>
+    part.trim().startsWith("text/plain")
+  );
+}
+
 function serveHealth(req: Request): Response {
   const payload = createHealthPayload();
   const browserRequest = isBrowserUserAgent(req.headers.get("user-agent"));
-  const body = browserRequest
+  const textRequest = acceptsTextPlain(req.headers.get("accept"));
+  const body = browserRequest && !textRequest
     ? JSON.stringify(payload)
     : formatAnsiHealth(payload);
   const size = encodeSize(body);
-  const headers = browserRequest
+  const headers = browserRequest && !textRequest
     ? buildJsonHeaders(size)
     : buildTextHeaders(size);
 

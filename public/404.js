@@ -244,7 +244,7 @@ async function startTerminal() {
       key: "policy:        ",
       val: legacyHint(globalThis.location.pathname),
     },
-    { type: "comment", text: "# live routes: /  /about  /case-study" },
+    { type: "comment", text: "# live routes: /  /mission  /about  /case-study" },
     { type: "output", text: "" },
     { type: "key-val", key: "next_step:     ", val: "choose a verified route" },
   ];

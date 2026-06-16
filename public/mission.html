@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mission | Praxedis Technologies</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="mission.css" />
+    <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
+    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css" />
+    <script src="/vendor/animejs/anime.min.js"></script>
+    <meta
+      name="description"
+      content="Praxedis Technologies is a new kind of technology company democratizing open source technology for everyone, regardless of race, religion, ethnicity, or political ideology."
+    />
+  </head>
+  <body>
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+    <div id="scroll-progress"></div>
+
+    <header>
+      <nav class="container">
+        <a href="/" class="logo">
+          <span class="green">Praxedis</span><span class="white">Technologies</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="/#vision">Vision</a></li>
+          <li><a href="/mission" class="active">Mission</a></li>
+          <li><a href="/#capabilities">Capabilities</a></li>
+          <li><a href="/case-study">Work</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="#contact" class="cta-button-small">Connect</a></li>
+        </ul>
+        <button
+          class="hamburger"
+          id="hamburger-btn"
+          aria-label="Open navigation menu"
+          aria-expanded="false"
+          aria-controls="mobile-nav-overlay"
+        >
+          <span class="ham-bar ham-bar--top" aria-hidden="true"></span>
+          <span class="ham-bar ham-bar--mid" aria-hidden="true"></span>
+          <span class="ham-bar ham-bar--bot" aria-hidden="true"></span>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="mission-hero" aria-labelledby="mission-heading">
+        <canvas id="mission-canvas" aria-hidden="true"></canvas>
+        <div class="cinema-grid" aria-hidden="true"></div>
+        <div class="flag-rails" aria-hidden="true">
+          <span class="rail rail-green"></span>
+          <span class="rail rail-white"></span>
+          <span class="rail rail-red"></span>
+        </div>
+
+        <div class="container mission-shell">
+          <section class="mission-copy">
+            <p class="mission-kicker" id="mission-kicker">
+              Open Source Access // Public Good Technology
+            </p>
+            <h1 class="mission-title" id="mission-heading">
+              Praxedis Technologies is a new kind of technology company.
+            </h1>
+            <p class="mission-sub" id="mission-sub">
+              We democratize open source technology for everyone, regardless of race,
+              religion, ethnicity, or political ideology. The future should be built
+              where people live, work, organize, worship, learn, and disagree.
+            </p>
+            <div class="mission-actions" id="mission-actions">
+              <a href="#live-proof" class="cta-button primary">
+                <i class="fa-solid fa-terminal" aria-hidden="true"></i>
+                Live Signal
+              </a>
+              <a href="#contact" class="cta-button secondary">
+                <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                Connect
+              </a>
+            </div>
+          </section>
+
+          <aside class="signal-card" id="signal-card" aria-label="Mission signal">
+            <div class="signal-card-top">
+              <span class="status-pill">ACCESS LAYER ONLINE</span>
+              <span class="status-pulse" aria-hidden="true"></span>
+            </div>
+            <div class="signal-stack" aria-hidden="true">
+              <span>community</span>
+              <span>small business</span>
+              <span>education</span>
+              <span>open source</span>
+              <span>automation</span>
+            </div>
+            <p>
+              Technology should not be locked behind credentials, corporate gatekeeping,
+              ideology tests, or budget walls.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="declaration-section" id="declaration">
+        <div class="container">
+          <div class="section-header">
+            <span class="red-line"></span>
+            <p class="section-kicker">The Declaration</p>
+            <h2>Open tools. Human dignity. Practical execution.</h2>
+          </div>
+
+          <div class="principle-grid">
+            <article class="principle-card">
+              <span class="principle-index">01</span>
+              <i class="fa-solid fa-lock-open" aria-hidden="true"></i>
+              <h3>Access without permission.</h3>
+              <p>
+                Open source gives ordinary people the right to inspect, adapt, and
+                own the systems they depend on. Praxedis Technologies turns that
+                right into usable websites, automations, and digital infrastructure.
+              </p>
+            </article>
+            <article class="principle-card">
+              <span class="principle-index">02</span>
+              <i class="fa-solid fa-people-group" aria-hidden="true"></i>
+              <h3>Everyone means everyone.</h3>
+              <p>
+                Race, religion, ethnicity, and political ideology are not qualifiers
+                for technical access. People need reliable tools before they need
+                another institution deciding whether they belong.
+              </p>
+            </article>
+            <article class="principle-card">
+              <span class="principle-index">03</span>
+              <i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i>
+              <h3>Build what people can use.</h3>
+              <p>
+                The work is not theatrical complexity. It is direct implementation:
+                fast pages, clear data flows, useful automation, and systems that
+                make smaller operators harder to ignore.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="access-section" id="access">
+        <div class="container access-grid">
+          <div class="access-copy">
+            <span class="red-line"></span>
+            <p class="section-kicker">A Different Company Model</p>
+            <h2>Not an ivory tower. Not a black box. A working technology shop for real people.</h2>
+            <p>
+              Praxedis Technologies stands apart by refusing the old split between
+              people who understand technology and people who are expected to merely
+              consume it. Open source makes technology inspectable. Founder-led
+              execution makes it usable.
+            </p>
+            <p>
+              That combination matters for local businesses, independent workers,
+              educators, ministries, organizers, families, and communities that need
+              practical systems without surrendering ownership or identity.
+            </p>
+          </div>
+
+          <div class="access-matrix" aria-label="Access commitments">
+            <div class="matrix-row">
+              <span>Race</span>
+              <strong>Never a barrier</strong>
+            </div>
+            <div class="matrix-row">
+              <span>Religion</span>
+              <strong>Never a barrier</strong>
+            </div>
+            <div class="matrix-row">
+              <span>Ethnicity</span>
+              <strong>Never a barrier</strong>
+            </div>
+            <div class="matrix-row">
+              <span>Political ideology</span>
+              <strong>Never a barrier</strong>
+            </div>
+            <div class="matrix-row matrix-row-live">
+              <span>Open source technology</span>
+              <strong>For everyone</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="live-proof-section" id="live-proof">
+        <div class="container">
+          <div class="section-header live-proof-header">
+            <span class="red-line"></span>
+            <p class="section-kicker">Live Proof</p>
+            <h2>Infrastructure should speak for itself.</h2>
+            <p>
+              This is the actual health endpoint rendered as a cinematic terminal
+              sequence from the same command a visitor can run from their own shell.
+            </p>
+          </div>
+
+          <div class="terminal-frame" id="terminal-frame">
+            <div class="terminal-bar">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green-dot"></span>
+              <span class="terminal-title">praxedis@edge ~ live-system-pulse</span>
+            </div>
+            <div class="terminal-command">
+              <span class="t-prompt">$</span>
+              <span id="health-command">curl https://praxedistechnologies.com/api/health</span>
+            </div>
+            <pre
+              class="terminal-output"
+              id="health-output"
+              aria-live="polite"
+              aria-label="Live curl output"
+            ></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="contact-section" id="contact">
+        <div class="container contact-content">
+          <p class="contact-manifesto">Open source reach. Direct execution. Human scale.</p>
+          <h2>Build with Praxedis Technologies.</h2>
+          <p>
+            Bring the problem, the community, the business, or the mission. The work
+            begins with useful systems and a clear path to ownership.
+          </p>
+          <div class="contact-actions">
+            <a href="mailto:domingueztechsolutions@gmail.com" class="cta-button primary large-green">
+              <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+              Connect
+            </a>
+            <a href="/" class="cta-button secondary">
+              <i class="fa-solid fa-house" aria-hidden="true"></i>
+              Home
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-flag" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="container footer-inner">
+        <span>&copy; 2026 Praxedis Technologies. All rights reserved.</span>
+        <span>Open source technology for everyone.</span>
+      </div>
+    </footer>
+
+    <div
+      class="mobile-nav-overlay"
+      id="mobile-nav-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Navigation menu"
+      aria-hidden="true"
+    >
+      <div class="mno-flag-bars" aria-hidden="true">
+        <div class="mno-flag-bar mno-flag-bar--green"></div>
+        <div class="mno-flag-bar mno-flag-bar--white"></div>
+        <div class="mno-flag-bar mno-flag-bar--red"></div>
+      </div>
+      <div class="mno-grid" aria-hidden="true"></div>
+      <button class="mno-close" id="mno-close-btn" aria-label="Close navigation menu">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <nav class="mno-nav" aria-label="Mobile site navigation">
+        <ul class="mno-links">
+          <li class="mno-item"><a href="/#vision" class="mno-link">Vision</a></li>
+          <li class="mno-item"><a href="/mission" class="mno-link active">Mission</a></li>
+          <li class="mno-item"><a href="/#capabilities" class="mno-link">Capabilities</a></li>
+          <li class="mno-item"><a href="/case-study" class="mno-link">Work</a></li>
+          <li class="mno-item"><a href="/about" class="mno-link">About</a></li>
+          <li class="mno-item"><a href="#contact" class="mno-link mno-link--cta">Connect</a></li>
+        </ul>
+      </nav>
+      <p class="mno-tagline" aria-hidden="true">
+        <span class="mno-tagline-green">Praxedis</span>
+        <span class="mno-tagline-white">Technologies</span>
+      </p>
+    </div>
+
+    <script src="particles.js" defer></script>
+    <script src="navigation.js" defer></script>
+    <script src="mission.js" defer></script>
+  </body>
+</html>

@@ -57,6 +57,58 @@ Deno.test("handler returns security headers on method errors", async () => {
   );
 });
 
+Deno.test("health endpoint returns browser JSON and terminal text on request", async () => {
+  const browser = await handler(
+    new Request("http://localhost/api/health", {
+      headers: {
+        accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "user-agent":
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126.0 Safari/537.36",
+      },
+    }),
+  );
+  const browserBody = await browser.json();
+  assertEquals(browser.status, 200);
+  assertEquals(
+    browser.headers.get("Content-Type"),
+    "application/json; charset=utf-8",
+  );
+  assertEquals(browserBody.status, "ok");
+  assertEquals(browserBody.service, "praxedis-technologies-website");
+
+  const terminal = await handler(
+    new Request("http://localhost/api/health", {
+      headers: {
+        accept: "text/plain",
+        "user-agent":
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126.0 Safari/537.36",
+      },
+    }),
+  );
+  const terminalBody = await terminal.text();
+  assertEquals(terminal.status, 200);
+  assertEquals(
+    terminal.headers.get("Content-Type"),
+    "text/plain; charset=utf-8",
+  );
+  if (!terminalBody.includes("PRAXEDIS TECHNOLOGIES")) {
+    throw new Error("Expected terminal health panel");
+  }
+
+  const curl = await handler(
+    new Request("http://localhost/api/health", {
+      headers: { "user-agent": "curl/8.9.1" },
+    }),
+  );
+  const curlBody = await curl.text();
+  assertEquals(curl.status, 200);
+  assertEquals(curl.headers.get("Content-Type"), "text/plain; charset=utf-8");
+  if (!curlBody.includes("system integrity confirmed")) {
+    throw new Error("Expected curl health output");
+  }
+});
+
 Deno.test("handler accepts waitlist submissions and rejects duplicates", async () => {
   const email = `waitlist-${crypto.randomUUID()}@example.com`;
   const response = await handler(

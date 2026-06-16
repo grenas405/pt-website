@@ -14,6 +14,7 @@ Deno.test("router resolves explicit pages and known static assets", async () => 
   assert((await route("/")).kind === "page", "home route failed");
   assert((await route("/about")).kind === "page", "about route failed");
   assert((await route("/case-study")).kind === "page", "case-study failed");
+  assert((await route("/mission")).kind === "page", "mission route failed");
   assert(
     (await route("/vendor/fonts/fonts.css")).kind === "asset",
     "vendor font css failed",

@@ -37,6 +37,10 @@ async function caseStudyPage(): Promise<string | null> {
   return await resolvePublicFile("/case-study.html");
 }
 
+async function missionPage(): Promise<string | null> {
+  return await resolvePublicFile("/mission.html");
+}
+
 function decodePath(pathname: string): string | null {
   if (/%2f|%5c/i.test(pathname)) {
     return null;
@@ -100,6 +104,11 @@ export async function resolve(url: URL): Promise<RouteResult> {
 
   if (pathname === "/case-study") {
     const path = await caseStudyPage();
+    return path === null ? { kind: "notFound" } : { kind: "page", path };
+  }
+
+  if (pathname === "/mission") {
+    const path = await missionPage();
     return path === null ? { kind: "notFound" } : { kind: "page", path };
   }
 
