@@ -41,6 +41,10 @@ async function missionPage(): Promise<string | null> {
   return await resolvePublicFile("/mission.html");
 }
 
+async function mexicoPage(): Promise<string | null> {
+  return await resolvePublicFile("/mexico.html");
+}
+
 async function adminPage(): Promise<string | null> {
   return await resolvePublicFile("/admin.html");
 }
@@ -117,6 +121,11 @@ export async function resolve(url: URL): Promise<RouteResult> {
 
   if (pathname === "/mission") {
     const path = await missionPage();
+    return path === null ? { kind: "notFound" } : { kind: "page", path };
+  }
+
+  if (pathname === "/mexico") {
+    const path = await mexicoPage();
     return path === null ? { kind: "notFound" } : { kind: "page", path };
   }
 

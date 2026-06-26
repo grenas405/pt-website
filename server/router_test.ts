@@ -15,6 +15,11 @@ Deno.test("router resolves explicit pages and known static assets", async () => 
   assert((await route("/about")).kind === "page", "about route failed");
   assert((await route("/case-study")).kind === "page", "case-study failed");
   assert((await route("/mission")).kind === "page", "mission route failed");
+  assert((await route("/mexico")).kind === "page", "mexico route failed");
+  assert(
+    (await route("/mexico-hero.webp")).kind === "asset",
+    "mexico hero failed",
+  );
   assert((await route("/admin")).kind === "page", "admin route failed");
   assert(
     (await route("/admin/login")).kind === "page",
@@ -43,6 +48,7 @@ Deno.test("router rejects traversal, ambiguous encodings, dotfiles, and unknown 
     "/%00",
     "/.env",
     "/about.html",
+    "/mexico.html",
     "/admin.html",
     "/admin-login.html",
     "/unknown.exe",

@@ -33,9 +33,12 @@ function jsonRequest(path: string, body: unknown): Request {
 
 Deno.test("handler serves pages with strict security headers", async () => {
   const response = await handler(new Request("http://localhost/"));
-  await read(response);
+  const body = await response.text();
 
   assertEquals(response.status, 200);
+  if (!body.includes('href="/mexico"')) {
+    throw new Error("Mexico campaign link missing from home page");
+  }
   assertEquals(
     response.headers.get("Content-Security-Policy"),
     CONTENT_SECURITY_POLICY,
@@ -63,6 +66,23 @@ Deno.test("handler serves admin login and dashboard pages", async () => {
 
   assertEquals(
     dashboard.headers.get("Content-Security-Policy"),
+    CONTENT_SECURITY_POLICY,
+  );
+});
+
+Deno.test("handler serves the Mexico mission campaign", async () => {
+  const response = await handler(new Request("http://localhost/mexico"));
+  const body = await response.text();
+
+  assertEquals(response.status, 200);
+  if (
+    !body.includes('id="hero-title"') ||
+    !body.includes('id="terminal-output"')
+  ) {
+    throw new Error("Mexico campaign content missing");
+  }
+  assertEquals(
+    response.headers.get("Content-Security-Policy"),
     CONTENT_SECURITY_POLICY,
   );
 });

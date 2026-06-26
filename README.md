@@ -60,6 +60,10 @@ pt-website/
 │   ├── case-study.html           # Client case study — Heavenly Roofing LLC
 │   ├── case-study.css            # Case study styles
 │   ├── case-study.js             # Case study animations
+│   ├── mexico.html               # Mexico small-town technology campaign
+│   ├── mexico.css                # Mexico campaign visual system
+│   ├── mexico.js                 # Campaign and terminal animations
+│   ├── mexico-hero.webp          # Generated Chihuahua hero visual
 │   ├── admin-login.html           # Private administrator sign-in
 │   ├── admin.html                 # Waitlist operations dashboard
 │   ├── admin.css                  # Shared admin interface styles
@@ -97,6 +101,7 @@ Page routes are exact and extensionless:
 /             # Home
 /about        # About
 /case-study   # Client case study
+/mexico       # Mexico small-town technology campaign
 /admin/login  # Administrator sign-in
 /admin        # Waitlist dashboard
 ```

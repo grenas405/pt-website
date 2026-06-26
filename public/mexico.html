@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Misión México | Praxedis Technologies</title>
+    <meta
+      name="description"
+      content="Tecnología abierta, sitios web y herramientas digitales para pequeños negocios y comunidades de México, comenzando en Chihuahua."
+    />
+    <meta name="theme-color" content="#07130f" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Misión México | Praxedis Technologies" />
+    <meta
+      property="og:description"
+      content="Tecnología para los pueblos que México no puede dejar atrás."
+    />
+    <meta property="og:image" content="/mexico-hero.webp" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="preload" href="/mexico-hero.webp" as="image" />
+    <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
+    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="/mexico.css" />
+    <script src="/vendor/animejs/anime.min.js" defer></script>
+    <script src="/mexico.js" defer></script>
+  </head>
+  <body>
+    <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+
+    <header class="site-header" id="site-header">
+      <a class="brand" href="/" aria-label="Praxedis Technologies, inicio">
+        <span>Praxedis</span>
+        <strong>Technologies</strong>
+      </a>
+      <nav class="desktop-nav" aria-label="Navegación principal">
+        <a href="#historia">Historia</a>
+        <a href="#modelo">Modelo</a>
+        <a href="#senal">Señal</a>
+        <a href="/mission">Mission</a>
+        <a class="nav-cta" href="#contacto">Conectar</a>
+      </nav>
+      <button
+        class="menu-button"
+        id="menu-button"
+        type="button"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </header>
+
+    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+      <button class="menu-close" id="menu-close" type="button"
+        aria-label="Cerrar menú">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+      <nav aria-label="Navegación móvil">
+        <a href="#historia">Historia</a>
+        <a href="#modelo">Modelo</a>
+        <a href="#senal">Señal</a>
+        <a href="/mission">Mission</a>
+        <a href="#contacto">Conectar</a>
+      </nav>
+      <p>Praxedis G. Guerrero / Chihuahua / México</p>
+    </div>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <img
+          class="hero-image"
+          src="/mexico-hero.webp"
+          alt="Una comunidad de Chihuahua usa tecnología frente a una biblioteca de pueblo"
+          width="1672"
+          height="941"
+          fetchpriority="high"
+        />
+        <div class="hero-scrim" aria-hidden="true"></div>
+        <div class="hero-grid" aria-hidden="true"></div>
+
+        <div class="hero-content">
+          <p class="eyebrow hero-eyebrow">
+            <span class="live-dot" aria-hidden="true"></span>
+            Praxedis G. Guerrero / Chihuahua / México
+          </p>
+          <h1 id="hero-title">Tecnología para los pueblos de México.</h1>
+          <p class="hero-lede">
+            Sitios web, automatización y herramientas abiertas para negocios y
+            comunidades que merecen competir sin pedir permiso.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#modelo">
+              <span>Conoce la misión</span>
+              <i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
+            </a>
+            <a class="button button-ghost" href="#senal">
+              <i class="fa-solid fa-terminal" aria-hidden="true"></i>
+              <span>Ver señal en vivo</span>
+            </a>
+          </div>
+        </div>
+
+        <dl class="hero-rail" aria-label="Compromisos de la misión">
+          <div>
+            <dt>01</dt>
+            <dd>Herramientas abiertas</dd>
+          </div>
+          <div>
+            <dt>02</dt>
+            <dd>Propiedad local</dd>
+          </div>
+          <div>
+            <dt>03</dt>
+            <dd>Escala humana</dd>
+          </div>
+        </dl>
+
+        <a class="hero-scroll" href="#manifiesto"
+          aria-label="Continuar al manifiesto">
+          <span>Continuar</span>
+          <i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
+        </a>
+      </section>
+
+      <section class="manifesto" id="manifiesto">
+        <div class="section-shell manifesto-grid">
+          <div class="section-marker reveal">
+            <span>MX / 001</span>
+            <strong>El punto de partida</strong>
+          </div>
+          <div class="manifesto-copy reveal">
+            <p class="eyebrow">Una misión construida desde la frontera</p>
+            <h2>El código no debe tener código postal.</h2>
+            <p>
+              El futuro digital de México no puede concentrarse solamente en las
+              capitales. Empieza también en la tienda familiar, la biblioteca
+              municipal, el taller, la cooperativa y la escuela de un pueblo pequeño.
+            </p>
+            <p>
+              Praxedis Technologies lleva el nombre de un lugar en Chihuahua y una
+              convicción: una comunidad no necesita ser grande para construir algo
+              importante.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="story" id="historia" aria-labelledby="story-title">
+        <div class="section-shell">
+          <div class="story-heading reveal">
+            <p class="eyebrow">La historia detrás de la misión</p>
+            <h2
+              id="story-title">De Chihuahua a Oklahoma City. De regreso por medio del código.</h2>
+            <a
+              href="https://pedromdominguez.com/tribute/united-states-mexico"
+              target="_blank"
+              rel="noopener"
+            >
+              Leer la historia completa
+              <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+            </a>
+          </div>
+
+          <div class="story-track">
+            <article class="story-step reveal">
+              <span class="story-year">1995</span>
+              <div>
+                <p class="story-place">Ciudad Juárez, Chihuahua</p>
+                <h3>El comienzo</h3>
+                <p>
+                  Pedro M. Dominguez nació en la frontera, en una ciudad formada por
+                  trabajo, movimiento y resistencia.
+                </p>
+              </div>
+            </article>
+            <article class="story-step reveal">
+              <span class="story-year">2000</span>
+              <div>
+                <p class="story-place">Oklahoma City, Oklahoma</p>
+                <h3>La oportunidad</h3>
+                <p>
+                  A los cinco años, su madre lo llevó a Estados Unidos. Su sacrificio
+                  convirtió una nueva ciudad en escuela, responsabilidad y camino.
+                </p>
+              </div>
+            </article>
+            <article class="story-step reveal">
+              <span class="story-year">HOY</span>
+              <div>
+                <p class="story-place">Código abierto / alcance local</p>
+                <h3>El regreso</h3>
+                <p>
+                  Formado con libros, bibliotecas públicas y disciplina, Pedro
+                  construye sistemas accesibles para quienes el modelo tradicional
+                  suele ignorar.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="town-callout">
+        <div class="town-word" aria-hidden="true">PRAXEDIS</div>
+        <div class="section-shell town-content">
+          <p class="eyebrow reveal">Praxedis G. Guerrero, Chihuahua</p>
+          <h2
+            class="reveal">Un pueblo pequeño puede enviar una señal enorme.</h2>
+          <p class="reveal">
+            La misión comienza en lugares como Praxedis: cerca de la frontera,
+            lejos de los grandes centros tecnológicos y llenos de personas que ya
+            saben crear valor con recursos limitados.
+          </p>
+        </div>
+      </section>
+
+      <section class="model" id="modelo" aria-labelledby="model-title">
+        <div class="section-shell">
+          <div class="model-heading reveal">
+            <div>
+              <p class="eyebrow">Modelo de trabajo</p>
+              <h2 id="model-title">Tecnología útil. Entregada. Tuya.</h2>
+            </div>
+            <p>
+              No es una campaña de promesas. Es una forma concreta de poner
+              infraestructura digital en manos locales.
+            </p>
+          </div>
+
+          <div class="model-grid">
+            <article class="model-item reveal">
+              <span class="model-index">01</span>
+              <i class="fa-solid fa-store" aria-hidden="true"></i>
+              <h3>Presencia local</h3>
+              <p>
+                Sitios rápidos y bilingües para negocios, oficios, productores y
+                servicios que necesitan ser encontrados.
+              </p>
+            </article>
+            <article class="model-item reveal">
+              <span class="model-index">02</span>
+              <i class="fa-solid fa-gears" aria-hidden="true"></i>
+              <h3>Trabajo automatizado</h3>
+              <p>
+                Formularios, reservas y flujos simples que reducen tareas repetitivas
+                sin añadir una plataforma costosa.
+              </p>
+            </article>
+            <article class="model-item reveal">
+              <span class="model-index">03</span>
+              <i class="fa-solid fa-code-branch" aria-hidden="true"></i>
+              <h3>Propiedad real</h3>
+              <p>
+                Código abierto, archivos entregados y una salida clara. La comunidad
+                no queda atrapada en una suscripción.
+              </p>
+            </article>
+          </div>
+
+          <div class="delivery-line reveal" aria-label="Proceso de entrega">
+            <div>
+              <span>Escuchar</span>
+              <small>El problema local</small>
+            </div>
+            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            <div>
+              <span>Construir</span>
+              <small>Una solución directa</small>
+            </div>
+            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            <div>
+              <span>Entregar</span>
+              <small>Sin dependencia</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="signal" id="senal" aria-labelledby="signal-title">
+        <div class="section-shell signal-grid">
+          <div class="signal-copy reveal">
+            <p class="eyebrow">Prueba pública / sistema activo</p>
+            <h2 id="signal-title">La infraestructura habla.</h2>
+            <p>
+              Esta es una reproducción animada de la respuesta real obtenida desde
+              el servidor de Pedro. El sistema expone su estado con las mismas
+              herramientas abiertas que impulsan esta misión.
+            </p>
+            <div class="signal-meta">
+              <div>
+                <span>Runtime</span>
+                <strong>Deno Native</strong>
+              </div>
+              <div>
+                <span>Signal</span>
+                <strong>Strong / 100</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="terminal reveal" id="terminal">
+            <div class="terminal-top">
+              <div class="terminal-lights" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+              <span>pedro@production:~</span>
+              <button id="terminal-replay" type="button"
+                title="Reproducir de nuevo">
+                <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+                <span>Repetir</span>
+              </button>
+            </div>
+            <div class="terminal-body">
+              <div class="terminal-command">
+                <span class="terminal-prompt">$</span>
+                <span id="terminal-command"></span><span class="terminal-cursor" aria-hidden="true"></span>
+              </div>
+              <pre id="terminal-output" aria-live="polite"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="closing" id="contacto" aria-labelledby="closing-title">
+        <div class="closing-rule" aria-hidden="true"></div>
+        <div class="section-shell closing-content">
+          <p class="eyebrow reveal">Chihuahua es el comienzo</p>
+          <h2 id="closing-title"
+            class="reveal">Trae un pueblo. Un negocio. Un problema real.</h2>
+          <p class="reveal">
+            Construyamos una solución que la comunidad pueda usar, entender y conservar.
+          </p>
+          <div class="closing-actions reveal">
+            <a
+              class="button button-primary"
+              href="mailto:domingueztechsolutions@gmail.com?subject=Misi%C3%B3n%20M%C3%A9xico"
+            >
+              <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+              <span>Iniciar conversación</span>
+            </a>
+            <a
+              class="button button-ghost"
+              href="https://pedromdominguez.com"
+              target="_blank"
+              rel="noopener"
+            >
+              <span>Conocer a Pedro</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"
+                aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a class="brand" href="/">
+        <span>Praxedis</span>
+        <strong>Technologies</strong>
+      </a>
+      <p>México / Estados Unidos / Código abierto</p>
+      <p>&copy; 2026 Praxedis Technologies.</p>
+    </footer>
+  </body>
+</html>
