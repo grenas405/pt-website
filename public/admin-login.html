@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login | Praxedis Technologies</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
+    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="/admin.css" />
+    <script src="/admin-login.js" defer></script>
+  </head>
+  <body class="admin-login-page">
+    <a class="skip-link" href="#login-form">Skip to sign in</a>
+
+    <main class="login-layout">
+      <section class="login-brand-panel" aria-labelledby="brand-title">
+        <a class="admin-brand admin-brand--light" href="/">
+          <span class="admin-brand-mark" aria-hidden="true">
+            <i class="fa-solid fa-p"></i>
+          </span>
+          <span>
+            <strong>Praxedis</strong>
+            <span>Technologies</span>
+          </span>
+        </a>
+
+        <div class="login-brand-copy">
+          <p class="admin-eyebrow admin-eyebrow--light">Private operations</p>
+          <h1 id="brand-title">Praxedis Technologies</h1>
+          <p>
+            Secure access to business inquiries and waitlist operations.
+          </p>
+        </div>
+
+        <div class="login-system-strip" aria-label="Admin system information">
+          <div class="system-status">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Protected workspace</span>
+          </div>
+          <div>
+            <span>Session</span>
+            <strong>8 hours</strong>
+          </div>
+          <div>
+            <span>Storage</span>
+            <strong>Deno KV</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="login-form-panel" aria-labelledby="login-title">
+        <div class="login-form-wrap">
+          <div class="login-shield" aria-hidden="true">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <p class="admin-eyebrow">Administrator access</p>
+          <h2 id="login-title">Sign in</h2>
+          <p
+            class="login-intro">Enter the password configured on the server.</p>
+
+          <div class="login-notice" id="login-notice" role="status" hidden>
+            <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+            <span>Your session expired. Sign in again to continue.</span>
+          </div>
+
+          <form id="login-form" novalidate>
+            <label class="field-label" for="admin-password">Password</label>
+            <div class="password-field">
+              <i class="fa-solid fa-lock field-icon" aria-hidden="true"></i>
+              <input
+                id="admin-password"
+                name="password"
+                type="password"
+                minlength="12"
+                autocomplete="current-password"
+                required
+                autofocus
+              />
+              <button
+                class="icon-button password-toggle"
+                id="password-toggle"
+                type="button"
+                aria-label="Show password"
+                title="Show password"
+              >
+                <i class="fa-solid fa-eye" aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <p class="form-status" id="login-status" aria-live="polite"></p>
+
+            <button class="primary-button login-submit" id="login-submit"
+              type="submit">
+              <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
+              <span>Sign in</span>
+            </button>
+          </form>
+
+          <a class="back-link" href="/">
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+            Back to public site
+          </a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

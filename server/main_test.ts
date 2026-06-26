@@ -43,6 +43,30 @@ Deno.test("handler serves pages with strict security headers", async () => {
   assertEquals(response.headers.get("X-Frame-Options"), "DENY");
 });
 
+Deno.test("handler serves admin login and dashboard pages", async () => {
+  const login = await handler(new Request("http://localhost/admin/login"));
+  const loginBody = await login.text();
+  assertEquals(login.status, 200);
+  if (!loginBody.includes('id="login-form"')) {
+    throw new Error("Admin login form missing");
+  }
+
+  const dashboard = await handler(new Request("http://localhost/admin"));
+  const dashboardBody = await dashboard.text();
+  assertEquals(dashboard.status, 200);
+  if (
+    !dashboardBody.includes('id="waitlist-body"') ||
+    !dashboardBody.includes('id="export-button"')
+  ) {
+    throw new Error("Admin dashboard controls missing");
+  }
+
+  assertEquals(
+    dashboard.headers.get("Content-Security-Policy"),
+    CONTENT_SECURITY_POLICY,
+  );
+});
+
 Deno.test("handler returns security headers on method errors", async () => {
   const response = await handler(
     new Request("http://localhost/", { method: "POST" }),

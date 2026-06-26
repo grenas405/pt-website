@@ -41,6 +41,14 @@ async function missionPage(): Promise<string | null> {
   return await resolvePublicFile("/mission.html");
 }
 
+async function adminPage(): Promise<string | null> {
+  return await resolvePublicFile("/admin.html");
+}
+
+async function adminLoginPage(): Promise<string | null> {
+  return await resolvePublicFile("/admin-login.html");
+}
+
 function decodePath(pathname: string): string | null {
   if (/%2f|%5c/i.test(pathname)) {
     return null;
@@ -109,6 +117,16 @@ export async function resolve(url: URL): Promise<RouteResult> {
 
   if (pathname === "/mission") {
     const path = await missionPage();
+    return path === null ? { kind: "notFound" } : { kind: "page", path };
+  }
+
+  if (pathname === "/admin") {
+    const path = await adminPage();
+    return path === null ? { kind: "notFound" } : { kind: "page", path };
+  }
+
+  if (pathname === "/admin/login") {
+    const path = await adminLoginPage();
     return path === null ? { kind: "notFound" } : { kind: "page", path };
   }
 

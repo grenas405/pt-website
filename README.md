@@ -1,27 +1,41 @@
 # Praxedis Technologies
 
-The official website for **Praxedis Technologies** (`www.praxedistechnologies.com`), a disruptive, high-velocity technology firm run and operated by **Pedro M. Dominguez**.
+The official website for **Praxedis Technologies**
+(`www.praxedistechnologies.com`), a disruptive, high-velocity technology firm
+run and operated by **Pedro M. Dominguez**.
 
 ## Philosophy
 
-Praxedis Technologies represents a new era of engineering: **One person operating at the speed of a Mag 7 company.** By unifying the roles of developer, marketer, analyst, and programmer into a single, high-frictionless execution loop, we deliver industrial-grade solutions at unprecedented velocity.
+Praxedis Technologies represents a new era of engineering: **One person
+operating at the speed of a Mag 7 company.** By unifying the roles of developer,
+marketer, analyst, and programmer into a single, high-frictionless execution
+loop, we deliver industrial-grade solutions at unprecedented velocity.
 
-The name is a tribute to **Praxedis G. Guerrero**, the revolutionary journalist and intellectual from Chihuahua, Mexico. His spirit of disruption and pursuit of progress is the heartbeat of our technological mission.
+The name is a tribute to **Praxedis G. Guerrero**, the revolutionary journalist
+and intellectual from Chihuahua, Mexico. His spirit of disruption and pursuit of
+progress is the heartbeat of our technological mission.
 
 ## Visual Identity
 
-The site's aesthetic is a fusion of **Vibrant Mexican Heritage** and **High-Tech Professionalism**.
-- **Green (`#006847`)**: Represents growth, vitality, and the lush landscapes of Mexico.
-- **Red (`#CE1126`)**: Represents the revolutionary fire and passion for disruption.
-- **White (`#FFFFFF`)**: Represents the clarity and precision of our technical architecture.
+The site's aesthetic is a fusion of **Vibrant Mexican Heritage** and **High-Tech
+Professionalism**.
+
+- **Green (`#006847`)**: Represents growth, vitality, and the lush landscapes of
+  Mexico.
+- **Red (`#CE1126`)**: Represents the revolutionary fire and passion for
+  disruption.
+- **White (`#FFFFFF`)**: Represents the clarity and precision of our technical
+  architecture.
 
 ## Tech Stack
 
 - **Deno**: Native HTTP server — no npm, no frameworks, no build step.
 - **HTML5**: Semantic and accessible structure.
-- **CSS3**: Responsive design with custom properties, grid layouts, and smooth animations.
+- **CSS3**: Responsive design with custom properties, grid layouts, and smooth
+  animations.
 - **Typography**: Self-hosted Montserrat (Headers) and Inter (Body).
-- **nginx**: Reverse proxy handling TLS, gzip, caching, and HTTP→HTTPS redirects.
+- **nginx**: Reverse proxy handling TLS, gzip, caching, and HTTP→HTTPS
+  redirects.
 
 ## Project Structure
 
@@ -46,6 +60,11 @@ pt-website/
 │   ├── case-study.html           # Client case study — Heavenly Roofing LLC
 │   ├── case-study.css            # Case study styles
 │   ├── case-study.js             # Case study animations
+│   ├── admin-login.html           # Private administrator sign-in
+│   ├── admin.html                 # Waitlist operations dashboard
+│   ├── admin.css                  # Shared admin interface styles
+│   ├── admin-login.js             # Password login and session storage
+│   ├── admin-dashboard.js         # Search, filters, details, and CSV export
 │   ├── 404.html                  # Custom 404 page — glitch animation, terminal typewriter
 │   ├── 404.css                   # 404 styles
 │   ├── 404.js                    # 404 animations (entry timeline, glitch, magnetic buttons)
@@ -66,7 +85,9 @@ deno run \
   server/main.ts
 ```
 
-Open `http://localhost:8000` (home), `http://localhost:8000/about` (about), `http://localhost:8000/case-study` (client case study), or navigate to any non-existent path to see the 404 page.
+Open `http://localhost:8000` (home), `http://localhost:8000/about` (about),
+`http://localhost:8000/case-study` (client case study), or navigate to any
+non-existent path to see the 404 page.
 
 ## Routes
 
@@ -76,6 +97,8 @@ Page routes are exact and extensionless:
 /             # Home
 /about        # About
 /case-study   # Client case study
+/admin/login  # Administrator sign-in
+/admin        # Waitlist dashboard
 ```
 
 Legacy page URLs are not redirected. Old paths such as these return the custom
@@ -90,6 +113,19 @@ Legacy page URLs are not redirected. Old paths such as these return the custom
 
 Static assets such as `/main.css`, `/about.js`, `/case-study.js`, and
 `/vendor/...` files are still served directly by filename.
+
+## Admin Dashboard
+
+Create the production password and session secret from the repository on the
+VPS:
+
+```sh
+./scripts/setup_vps_admin.sh
+```
+
+Then open `/admin/login`. Successful authentication stores the eight-hour bearer
+token in browser session storage. The dashboard supports waitlist search, date
+filtering, sorting, inquiry details, refresh, and authenticated CSV export.
 
 ## API
 
@@ -123,9 +159,9 @@ Unsupported methods return `405 Method Not Allowed` with `Allow: GET, HEAD`.
 
 ## Security
 
-- All responses use strict same-origin security headers, including CSP,
-  HSTS, `nosniff`, `DENY` framing protection, cross-origin isolation headers,
-  and a restrictive `Permissions-Policy`.
+- All responses use strict same-origin security headers, including CSP, HSTS,
+  `nosniff`, `DENY` framing protection, cross-origin isolation headers, and a
+  restrictive `Permissions-Policy`.
 - Third-party runtime assets are vendored under `public/vendor/`, so the CSP
   does not need CDN exceptions or inline script/style allowances.
 - The router rejects malformed paths, encoded path separators, traversal
@@ -148,7 +184,8 @@ systemd-analyze verify systemd/praxedis-technologies.service
 
 ## Versioning
 
-The root `VERSION` file is the source of truth for the site release version. It uses SemVer format:
+The root `VERSION` file is the source of truth for the site release version. It
+uses SemVer format:
 
 ```txt
 MAJOR.MINOR.PATCH
@@ -169,7 +206,8 @@ deno run \
   server/main.ts
 ```
 
-nginx config at `nginx/praxedistechnologies.com.conf` handles TLS termination and proxies to the Deno process.
+nginx config at `nginx/praxedistechnologies.com.conf` handles TLS termination
+and proxies to the Deno process.
 
 ## nginx
 
@@ -205,4 +243,5 @@ journalctl --user -u praxedis-technologies -f
 ```
 
 ---
-*Operated with pride by Pedro M. Dominguez.*
+
+_Operated with pride by Pedro M. Dominguez._
