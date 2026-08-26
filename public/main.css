@@ -19,6 +19,9 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    scrollbar-color: var(--mexican-green) var(--dark-bg);
+    scrollbar-width: thin;
 }
 
 body {
@@ -27,6 +30,30 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     cursor: none;
+}
+
+/* ============================================================
+   Scrollbar
+   Themed to match the site's dark/green palette instead of
+   falling back to the browser's default (light/white) scrollbar.
+   ============================================================ */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--mexican-green);
+    border-radius: 5px;
+    border: 2px solid var(--dark-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--mexican-green-light);
 }
 
 h1, h2, h3 {
@@ -474,6 +501,7 @@ section {
    ============================================================ */
 .vision-section {
     background: white;
+    overflow-x: hidden;
 }
 
 .stats {
@@ -600,6 +628,7 @@ section {
    ============================================================ */
 .heritage-section {
     background: var(--light-bg);
+    overflow-x: hidden;
 }
 
 .mexican-flag-accent {
