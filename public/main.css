@@ -334,6 +334,9 @@ nav {
     min-height: 100vh;
     display: flex;
     align-items: center;
+    /* Isolate the slogan animation: content changes inside the hero can no
+       longer trigger reflow/repaint of the rest of the document. */
+    contain: layout paint;
 }
 
 #hero-canvas {
@@ -364,12 +367,70 @@ nav {
     margin-bottom: 2rem;
     letter-spacing: -3px;
     font-weight: 900;
+    /* Reserve space for both slogan lines so swapping text never resizes the
+       heading (and never re-centres the flex hero content). */
+    min-height: 2.2em;
 }
 
 .hero-title-line {
     display: block;
     min-height: 1.05em;
     will-change: opacity, transform;
+    /* Never let a slogan wrap mid-animation — a wrap change is a full
+       line-height jump. Longest slogans still fit the container at this size. */
+    white-space: nowrap;
+}
+
+/* ----- Slogan payoff line: left-to-right "typewriter" wipe ----- */
+
+@property --hero-wipe {
+    syntax: "<percentage>";
+    inherits: true;
+    initial-value: 100%;
+}
+
+.hero-line-2 {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    /* 0% = fully clipped, 100% = fully revealed. */
+    --hero-wipe: 100%;
+}
+
+.hero-line-2-text {
+    display: inline-block;
+    /* Negative top/bottom insets keep ascenders/descenders from being clipped. */
+    clip-path: inset(-0.15em calc(100% - var(--hero-wipe)) -0.15em 0);
+}
+
+/* Caret rides the reveal edge (lives on the unclipped parent). */
+.hero-line-2::after {
+    content: "";
+    position: absolute;
+    top: 0.1em;
+    left: var(--hero-wipe);
+    width: 0.055em;
+    height: 0.88em;
+    background: var(--mexican-green-light);
+    transform: translateX(-0.03em);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.hero-line-2.caret-active::after {
+    opacity: 1;
+    animation: hero-caret-blink 1s steps(1, end) infinite;
+}
+
+@keyframes hero-caret-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-line-2 { --hero-wipe: 100%; }
+    .hero-line-2-text { clip-path: none; }
+    .hero-line-2::after { display: none; }
 }
 
 .highlight {
@@ -875,9 +936,12 @@ section {
     }
 
     .hero h1 {
-        font-size: 2.6rem;
+        /* Scale with the viewport so the longest slogan stays on one line
+           (white-space: nowrap) without overflowing small screens. */
+        font-size: clamp(1.55rem, 7vw, 2.6rem);
         line-height: 1.1;
-        min-height: 3.3em;
+        min-height: 2.4em;
+        letter-spacing: -1px;
     }
 
     .waitlist-grid {

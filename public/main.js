@@ -212,17 +212,30 @@ document.addEventListener('DOMContentLoaded', () => {
   function startHeroSloganRotation() {
     const leadEl = document.querySelector('.hero-line-1');
     const payoffEl = document.querySelector('.hero-line-2');
-    if (!leadEl || !payoffEl) return;
+    const payoffTextEl = payoffEl && payoffEl.querySelector('.hero-line-2-text');
+    if (!leadEl || !payoffEl || !payoffTextEl) return;
 
     leadEl.textContent = heroSlogans[0].lead;
-    payoffEl.textContent = heroSlogans[0].payoff;
+    payoffTextEl.textContent = heroSlogans[0].payoff;
+    payoffEl.style.setProperty('--hero-wipe', '100%');
 
     if (reduceMotion || heroSlogans.length < 2) return;
 
-    scrambleText(payoffEl, heroSlogans[0].payoff, { delay: 500 });
+    // Pause the (endless) rotation whenever the hero is scrolled out of view —
+    // no off-screen work, and nothing animating behind the rest of the page.
+    let heroVisible = true;
+    const heroSection = document.querySelector('.hero');
+    if (heroSection && 'IntersectionObserver' in window) {
+      new IntersectionObserver(entries => {
+        heroVisible = entries[entries.length - 1].isIntersecting;
+      }, { threshold: 0 }).observe(heroSection);
+    }
+
+    wipeReveal(payoffEl, payoffTextEl, heroSlogans[0].payoff, { delay: 500 });
 
     let index = 0;
     window.setInterval(() => {
+      if (!heroVisible) return;
       index = (index + 1) % heroSlogans.length;
       const next = heroSlogans[index];
 
@@ -235,7 +248,9 @@ document.addEventListener('DOMContentLoaded', () => {
           easing: 'easeInQuad',
           complete() {
             leadEl.textContent = next.lead;
-            payoffEl.textContent = '';
+            payoffTextEl.textContent = next.payoff;
+            payoffEl.classList.remove('caret-active');
+            payoffEl.style.setProperty('--hero-wipe', '0%');
           },
         })
         .add({
@@ -250,59 +265,47 @@ document.addEventListener('DOMContentLoaded', () => {
           translateY: [14, 0],
           duration: 520,
           begin() {
-            scrambleText(payoffEl, next.payoff, {
-              duration: 900,
-              resolveDelay: 48,
-            });
+            wipeReveal(payoffEl, payoffTextEl, next.payoff, { duration: 700 });
           },
         }, '-=260');
     }, 4200);
   }
 
-  function scrambleText(target, finalText, options) {
-    const el = typeof target === 'string' ? document.querySelector(target) : target;
-    if (!el) return Promise.resolve();
+  // Left-to-right reveal of the payoff line via an animated clip-path
+  // (custom property `--hero-wipe`). Pure compositor work — the text box never
+  // changes size, so nothing on the page reflows.
+  function wipeReveal(lineEl, textEl, finalText, options) {
+    const duration = (options && options.duration) || 900;
+    const delay = (options && options.delay) || 0;
 
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&';
-    const duration = options?.duration || 1200;
-    const resolveDelay = options?.resolveDelay || 80;
-    const delay = options?.delay || 0;
-    let startTime = null;
-    const textLen = finalText.length;
-    const resolved = new Array(textLen).fill(false);
+    textEl.textContent = finalText;
+    lineEl.classList.remove('caret-active');
 
-    function randomChar() {
-      return chars[Math.floor(Math.random() * chars.length)];
+    if (reduceMotion) {
+      lineEl.style.setProperty('--hero-wipe', '100%');
+      return;
     }
 
-    return new Promise(resolve => {
-      function tick(timestamp) {
-        if (!startTime) startTime = timestamp;
-        const elapsed = timestamp - startTime;
+    lineEl.style.setProperty('--hero-wipe', '0%');
+    lineEl.classList.add('caret-active');
 
-        // Resolve chars one by one, left to right
-        const resolveIndex = Math.floor(elapsed / resolveDelay);
-        for (let i = 0; i <= resolveIndex && i < textLen; i++) {
-          resolved[i] = true;
-        }
-
-        let display = '';
-        for (let i = 0; i < textLen; i++) {
-          display += resolved[i] ? finalText[i] : randomChar();
-        }
-
-        el.textContent = display;
-
-        if (resolved.every(Boolean) || elapsed >= duration + textLen * resolveDelay) {
-          el.textContent = finalText;
-          resolve();
-          return;
-        }
-
-        requestAnimationFrame(tick);
-      }
-
-      window.setTimeout(() => requestAnimationFrame(tick), delay);
+    // anime.js v3 can't set CSS custom properties directly, so drive a proxy
+    // object and push the value onto the element each frame. The work per frame
+    // is one setProperty + a compositor-only clip-path update (no reflow).
+    const proxy = { wipe: 0 };
+    anime({
+      targets: proxy,
+      wipe: 100,
+      duration,
+      delay,
+      easing: 'steps(' + Math.max(6, finalText.replace(/\s/g, '').length) + ')',
+      update() {
+        lineEl.style.setProperty('--hero-wipe', proxy.wipe + '%');
+      },
+      complete() {
+        lineEl.style.setProperty('--hero-wipe', '100%');
+        window.setTimeout(() => lineEl.classList.remove('caret-active'), 1400);
+      },
     });
   }
 

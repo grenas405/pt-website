@@ -2,6 +2,15 @@
 
 All notable changes to the **Praxedis Technologies** website project will be documented in this file.
 
+## [Unreleased] - 2026-09-03
+
+### Changed
+- **Hero Slogan Animation** — replaced the per-frame text scramble on the hero payoff line with a GPU-composited left-to-right `clip-path` "typewriter" wipe (`--hero-wipe` custom property driven via anime.js, with a blinking caret riding the reveal edge). The old scramble rewrote `textContent` with random proportional glyphs every frame, changing the heading's width/wrap and reflowing the whole document — the page visibly shook well below the hero.
+
+### Fixed
+- **Landing Page Shake** — `contain: layout paint` on `.hero` isolates slogan changes from the rest of the document; `.hero-title-line` is now `white-space: nowrap` with a reserved `min-height` on the `h1` so text swaps can no longer resize or re-centre the heading; mobile hero `h1` scales with `clamp()` to keep the longest slogan on one line.
+- **Off-Screen Animation** — the endless slogan `setInterval` now pauses via `IntersectionObserver` whenever the hero is scrolled out of view.
+
 ## [Unreleased] - 2026-05-08
 
 ### Added
