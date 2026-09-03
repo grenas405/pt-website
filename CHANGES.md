@@ -4,6 +4,10 @@ All notable changes to the **Praxedis Technologies** website project will be doc
 
 ## [Unreleased] - 2026-09-03
 
+### Added
+- **One-Shot Deploy Script** — `scripts/deploy.sh` puts the checkout into service on the host it runs on: preflight → `deno task verify` → service account → ownership → `ADMIN_SESSION_SECRET` provisioning → render + install the systemd unit (host paths patched in with `sed`, no per-host commits) → health poll on `/api/health` → ACME bootstrap + `certbot` issuance + renewal reload hook → install the nginx vhost. Idempotent, stops at the first failure, and nothing is installed until verification passes. Flags: `--skip-verify`, `--skip-nginx`, `--skip-certbot`, `--staging`, `--force-renewal`. Modelled on `grenas405/pmd-web-app`'s `scripts/deploy.sh`.
+- **`deno task verify`** — `deno fmt --check && deno task check && deno task test` in one task, used by the deploy script and handy locally.
+
 ### Changed
 - **Hero Slogan Animation** — replaced the per-frame text scramble on the hero payoff line with a GPU-composited left-to-right `clip-path` "typewriter" wipe (`--hero-wipe` custom property driven via anime.js, with a blinking caret riding the reveal edge). The old scramble rewrote `textContent` with random proportional glyphs every frame, changing the heading's width/wrap and reflowing the whole document — the page visibly shook well below the hero.
 

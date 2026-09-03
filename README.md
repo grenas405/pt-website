@@ -181,11 +181,45 @@ Unsupported methods return `405 Method Not Allowed` with `Allow: GET, HEAD`.
 ## Verification
 
 ```sh
-deno task check
-deno task test
-deno fmt --check
+deno task verify   # deno fmt --check && deno task check && deno task test
 systemd-analyze verify systemd/praxedis-technologies.service
 ```
+
+## Deploy
+
+`scripts/deploy.sh` puts the current checkout into service on the machine it
+runs on. The checkout **is** the deployment — there is no second copy under
+`/var/www` — so updating is `git pull` then a redeploy.
+
+```sh
+# First install: verify, install the unit + nginx vhost, issue the certificate.
+sudo scripts/deploy.sh
+
+# Redeploy after `git pull` (tree already verified, certificate already issued).
+sudo scripts/deploy.sh --skip-verify --skip-certbot
+```
+
+It runs in order: preflight checks → `deno task verify` → create the service
+account if missing → tighten ownership → add `ADMIN_SESSION_SECRET` to
+`/etc/praxedis-technologies.env` if absent → render the systemd unit with this
+host's paths and install it → restart and health-poll `/api/health` → bootstrap
+the ACME challenge, run `certbot`, install a renewal reload hook → install the
+nginx vhost. It is idempotent and stops at the first failure; nothing is
+installed until verification passes.
+
+| Flag | Effect |
+| --- | --- |
+| `--skip-verify` | Skip the verification suite (redeploy of an already-verified tree). |
+| `--skip-nginx` | Leave the reverse proxy alone (implies `--skip-certbot`). |
+| `--skip-certbot` | Do not touch certificates. |
+| `--staging` | Issue from Let's Encrypt's staging CA (untrusted, not rate limited). |
+| `--force-renewal` | Renew even if the current certificate is still valid. |
+
+Host layout is overridable from the environment: `APP_DIR`, `OWNER_USER`,
+`SERVICE_USER`, `SERVICE_NAME`, `SITE_NAME`, `STATE_DIR`, `KV_PATH`, `ENV_FILE`,
+`CERT_DOMAINS`, `CERTBOT_EMAIL`, `WEBROOT`, `DENO`. Set the admin password with
+`scripts/setup_vps_admin.sh` after the first deploy. The manual `nginx` and
+`systemd` steps below are what the script automates.
 
 ## Versioning
 
