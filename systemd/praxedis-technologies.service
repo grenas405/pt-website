@@ -1,51 +1,126 @@
+# /etc/systemd/system/praxedis-technologies.service
+#
+# The application runs from the checkout — there is no copy under /srv or
+# /var/www to drift out of step with git: `git pull` and a restart is the
+# whole update, and `systemctl cat praxedis-technologies` names the directory
+# you edit.
+#
+# It does not run *as* the user who owns that checkout. The owner keeps write
+# access so `git pull` works without sudo; the service account (ptweb) gets
+# group read and nothing else, so a bug in the request path cannot rewrite the
+# code that will be executed at the next restart. Two users, one directory:
+#
+#   drwxr-x---  <owner>:ptweb   the checkout   (owner writes, service reads)
+#
+# The one thing the service writes — its Deno KV database — lives outside the
+# checkout in StateDirectory, so `git pull` never touches it.
+#
+#   sudo install -o root -g root -m 0644 systemd/praxedis-technologies.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now praxedis-technologies
+#
+# ConditionPathExists, WorkingDirectory, BindReadOnlyPaths, User and Group all
+# name the checkout or its accounts. scripts/deploy.sh rewrites them for the
+# host it runs on; edit them by hand only if you install this file yourself.
+
 [Unit]
-Description=Praxedis Technologies Website
+Description=Praxedis Technologies Website — Deno web application
 Documentation=https://www.praxedistechnologies.com
-After=network.target
+ConditionPathExists=/home/sysadmin/.local/src/development/pt-website/server/main.ts
+After=network-online.target
+Wants=network-online.target
 
 [Service]
-Type=simple
-User=sysadmin
-Group=sysadmin
-# systemd uses %h correctly in most fields, but not inside ExecStart for path expansion
+Type=exec
+User=ptweb
+Group=ptweb
 WorkingDirectory=/home/sysadmin/.local/src/development/pt-website
-EnvironmentFile=-/etc/praxedis-technologies.env
-Environment=PORT=8000
+
 Environment=HOST=127.0.0.1
-Environment=PUBLIC_DIR=/home/sysadmin/.local/src/development/pt-website/public
+Environment=PORT=8000
 Environment=ALLOWED_HOSTS=www.praxedistechnologies.com,praxedistechnologies.com,127.0.0.1,localhost
-Environment=DENO_DIR=/tmp/deno-cache
 Environment=KV_PATH=/var/lib/praxedis-technologies/site.kv
-# Use %h here instead of $HOME; systemd doesn't expand shell variables in ExecStart
-# Keep --allow-env in sync with every Deno.env.get() call.
-ExecStart=/home/sysadmin/.deno/bin/deno run \
-    --unstable-kv \
-    --allow-net=127.0.0.1:8000 \
-    --allow-read=/home/sysadmin/.local/src/development/pt-website/public,/var/lib/praxedis-technologies \
-    --allow-write=/var/lib/praxedis-technologies \
-    --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS,DENO_DIR,KV_PATH,ADMIN_SESSION_SECRET \
-    server/main.ts
+Environment=DENO_DIR=/var/cache/praxedis-technologies/deno
+
+# Secrets and per-host overrides, none of them in git. The leading `-` makes
+# the file optional, but ADMIN_SESSION_SECRET must be set there for the /admin
+# dashboard to accept sign-ins.
+EnvironmentFile=-/etc/praxedis-technologies/praxedis-technologies.env
+
+# Exactly the capabilities the application uses, and no others. Read access is
+# the checkout's public/ tree and the state directory; write access is the
+# state directory; the network is one loopback socket it can never leave.
+#
+# --unstable-kv is required for Deno.openKv, which holds the waitlist entries
+# and admin sessions. --cached-only keeps the process off the network at
+# startup; the module cache is populated at deploy time.
+ExecStart=/usr/bin/deno run \
+  --unstable-kv \
+  --allow-net=127.0.0.1:8000 \
+  --allow-read=public,/var/lib/praxedis-technologies \
+  --allow-write=/var/lib/praxedis-technologies \
+  --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS,DENO_DIR,KV_PATH,ADMIN_SESSION_SECRET \
+  --cached-only \
+  server/main.ts
+
 Restart=on-failure
-KillMode=control-group
-RestartSec=5
-StateDirectory=praxedis-technologies
+RestartSec=2s
+KillSignal=SIGTERM
+TimeoutStopSec=20s
+
+# --- sandbox -----------------------------------------------------------------
+# ProtectSystem=strict mounts the whole hierarchy read-only — including the
+# checkout, which is the point. ProtectHome=tmpfs then replaces /home with an
+# empty tmpfs, so no other user's home directory exists for this process, and
+# BindReadOnlyPaths puts back exactly one directory: the checkout, read-only.
+# That bind mount is also how ptweb reaches code that lives under another
+# user's 0750 home. If a systemd too old to order the mounts refuses the unit,
+# ProtectHome=read-only is the fallback — it keeps the write protection and
+# gives up only the hiding.
 NoNewPrivileges=true
-PrivateDevices=true
 PrivateTmp=true
-ProtectClock=true
-ProtectControlGroups=true
-ProtectHome=read-only
-ProtectHostname=true
-ProtectKernelLogs=true
-ProtectKernelModules=true
-ProtectKernelTunables=true
+PrivateDevices=true
 ProtectSystem=strict
-ReadOnlyPaths=/home/sysadmin/.local/src/development/pt-website
-ReadWritePaths=/var/lib/praxedis-technologies
-RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ProtectHome=tmpfs
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+ProtectProc=invisible
+RestrictNamespaces=true
 RestrictRealtime=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
 SystemCallArchitectures=native
-UMask=0077
+LockPersonality=true
+MemoryDenyWriteExecute=false
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+CapabilityBoundingSet=
+AmbientCapabilities=
+UMask=0027
+
+# /var/lib/praxedis-technologies — the KV database. Created and owned by the
+# service, writable under ProtectSystem=strict because of this line.
+StateDirectory=praxedis-technologies
+
+# /var/cache/praxedis-technologies — the Deno module cache, populated once at
+# deploy time so --cached-only can hold.
+CacheDirectory=praxedis-technologies
+
+BindReadOnlyPaths=/home/sysadmin/.local/src/development/pt-website
+
+# --- limits ----------------------------------------------------------------
+LimitNOFILE=8192
+MemoryMax=256M
+TasksMax=64
+
+# journald captures stdout/stderr; no log files, no rotation.
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=praxedis-technologies
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target

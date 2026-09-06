@@ -2,17 +2,19 @@
 #
 # deploy.sh — put this checkout into service on the machine it is run on.
 #
-# The install flows documented in README.md (Production / nginx / systemd), in
-# the same order, made idempotent and made to stop at the first thing that goes
-# wrong. Running it twice changes nothing the second time; running it against a
-# broken tree changes nothing at all, because the verification suite runs
-# before anything is installed.
+# The install flows documented in README.md, in the same order, made idempotent
+# and made to stop at the first thing that goes wrong. Running it twice changes
+# nothing the second time; running it against a broken tree changes nothing at
+# all, because the verification suite runs before anything is installed.
 #
 #   sudo scripts/deploy.sh
 #
 # The application runs from this checkout — there is no second copy under /srv
-# or /var/www to drift out of step with git, and updating is
-# `git pull && sudo scripts/deploy.sh --skip-verify --skip-certbot`.
+# or /var/www to drift out of step with git, and updating is `git pull && sudo
+# scripts/deploy.sh --skip-verify --skip-certbot`. It does not run *as* the
+# user who owns the checkout: a system account with no shell gets group read
+# and nothing else, so the running code is not writable by the process that
+# runs it.
 #
 # Nothing here is specific to one host beyond the variables below, and each of
 # those can be overridden from the environment:
@@ -23,27 +25,29 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# The checkout is the deployment. OWNER is whoever invoked sudo: they own the
-# files and can `git pull` without root. SERVICE is the account the unit runs
-# as; by default it is the same login user (the committed unit ships
-# User=sysadmin), but a dedicated system account can be named instead.
+# The checkout is the deployment, and two users share it. OWNER is whoever
+# invoked sudo: they own the files and can `git pull` without root. SERVICE is
+# a system account with no shell and no home that gets group read and nothing
+# else, so a bug in the request path cannot rewrite the code it runs.
 APP_DIR="${APP_DIR:-$REPO_ROOT}"
 OWNER_USER="${OWNER_USER:-${SUDO_USER:-root}}"
 OWNER_GROUP="${OWNER_GROUP:-$(id -gn "$OWNER_USER" 2>/dev/null || echo "$OWNER_USER")}"
-SERVICE_USER="${SERVICE_USER:-sysadmin}"
+SERVICE_USER="${SERVICE_USER:-ptweb}"
 SERVICE_GROUP="${SERVICE_GROUP:-$SERVICE_USER}"
 SERVICE_NAME="${SERVICE_NAME:-praxedis-technologies}"
 SITE_NAME="${SITE_NAME:-praxedistechnologies.com}"
 
-# Deno KV lives outside the checkout, in the unit's StateDirectory, so a
-# `git pull` never touches the database and the read-only app tree stays
-# read-only.
-STATE_DIR="${STATE_DIR:-/var/lib/praxedis-technologies}"
-STATE_DIR_NAME="${STATE_DIR##*/}"
-KV_PATH="${KV_PATH:-$STATE_DIR/site.kv}"
+# State (the Deno KV database) and the module cache live outside the checkout,
+# in the unit's StateDirectory / CacheDirectory, so `git pull` never touches
+# them and the read-only app tree stays read-only. systemd derives both from
+# SERVICE_NAME, so these are not independently relocatable.
+STATE_DIR="/var/lib/$SERVICE_NAME"
+CACHE_DIR="/var/cache/$SERVICE_NAME"
+DENO_CACHE="$CACHE_DIR/deno"
 
 # Secrets and per-host overrides, read by the unit's EnvironmentFile.
-ENV_FILE="${ENV_FILE:-/etc/praxedis-technologies.env}"
+ENV_DIR="${ENV_DIR:-/etc/$SERVICE_NAME}"
+ENV_FILE="${ENV_FILE:-$ENV_DIR/$SERVICE_NAME.env}"
 
 # Certificates. CERT_DOMAINS is a space-separated list; the first is the
 # lineage name, which is what the vhost names in its ssl_certificate paths, so
@@ -55,11 +59,17 @@ WEBROOT="${WEBROOT:-/var/www/certbot}"
 SKIP_VERIFY=0
 SKIP_NGINX=0
 SKIP_CERTBOT=0
+SKIP_FAIL2BAN=0
 CERTBOT_STAGING=0
 FORCE_RENEWAL=0
 
 UNIT_SRC="$REPO_ROOT/systemd/$SERVICE_NAME.service"
+ENV_SRC="$REPO_ROOT/systemd/$SERVICE_NAME.env.example"
 NGINX_SRC="$REPO_ROOT/nginx/$SITE_NAME.conf"
+SNIPPET_SRC="$REPO_ROOT/nginx/snippets/deny-probes.conf"
+DEFAULT_DROP_SRC="$REPO_ROOT/nginx/00-default-drop"
+F2B_FILTER_SRC="$REPO_ROOT/fail2ban/filter.d/nginx-probes.conf"
+F2B_JAIL_SRC="$REPO_ROOT/fail2ban/jail.local"
 
 # --- output ----------------------------------------------------------------
 # stderr, so that stdout stays empty and the script can be piped without noise.
@@ -82,6 +92,7 @@ usage: sudo scripts/deploy.sh [options]
                   --skip-certbot.
   --skip-certbot  Do not touch certificates. The Nginx configuration will
                   still fail to load without them.
+  --skip-fail2ban Do not install the jail or the probe filter.
   --staging       Issue from Let's Encrypt's staging CA. Untrusted by
                   browsers, but not rate limited — use it to rehearse.
   --force-renewal Renew even though the current certificate is still valid.
@@ -89,8 +100,8 @@ usage: sudo scripts/deploy.sh [options]
   -h, --help      This text.
 
 Environment: APP_DIR, OWNER_USER, OWNER_GROUP, SERVICE_USER, SERVICE_GROUP,
-SERVICE_NAME, SITE_NAME, STATE_DIR, KV_PATH, ENV_FILE, CERT_DOMAINS,
-CERTBOT_EMAIL, WEBROOT, DENO.
+SERVICE_NAME, SITE_NAME, ENV_FILE, CERT_DOMAINS, CERTBOT_EMAIL, WEBROOT, DENO.
+(STATE_DIR and CACHE_DIR follow SERVICE_NAME under /var/lib and /var/cache.)
 EOF
 }
 
@@ -99,6 +110,7 @@ while [ $# -gt 0 ]; do
     --skip-verify) SKIP_VERIFY=1 ;;
     --skip-nginx) SKIP_NGINX=1 ;;
     --skip-certbot) SKIP_CERTBOT=1 ;;
+    --skip-fail2ban) SKIP_FAIL2BAN=1 ;;
     --staging) CERTBOT_STAGING=1 ;;
     --force-renewal) FORCE_RENEWAL=1 ;;
     -h | --help)
@@ -119,7 +131,7 @@ done
 CERT_NAME="${CERT_DOMAINS%% *}"
 CERT_DIR="/etc/letsencrypt/live/$CERT_NAME"
 
-# --- preflight -----------------------------------------------------------------
+# --- preflight ---------------------------------------------------------------
 # Everything that could stop the deployment is checked before the first change,
 # so a missing tool is a message rather than a half-installed service.
 
@@ -127,14 +139,21 @@ step "Preflight"
 
 [ "$(id -u)" -eq 0 ] || fail "run with sudo: installing units and reloading nginx needs root"
 
-for f in "$UNIT_SRC" "$APP_DIR/server/main.ts" "$APP_DIR/deno.json"; do
+for f in "$UNIT_SRC" "$ENV_SRC" "$APP_DIR/server/main.ts" "$APP_DIR/deno.json"; do
   [ -f "$f" ] || fail "missing $f — run this from a checkout of the repository"
 done
 if [ "$SKIP_NGINX" -eq 0 ]; then
-  [ -f "$NGINX_SRC" ] || fail "missing $NGINX_SRC (SITE_NAME=$SITE_NAME names nginx/$SITE_NAME.conf)"
+  for f in "$NGINX_SRC" "$SNIPPET_SRC" "$DEFAULT_DROP_SRC"; do
+    [ -f "$f" ] || fail "missing $f (SITE_NAME=$SITE_NAME names nginx/$SITE_NAME.conf)"
+  done
+fi
+if [ "$SKIP_FAIL2BAN" -eq 0 ]; then
+  for f in "$F2B_FILTER_SRC" "$F2B_JAIL_SRC"; do
+    [ -f "$f" ] || fail "missing $f (pass --skip-fail2ban to leave fail2ban alone)"
+  done
 fi
 
-for cmd in systemctl install sed; do
+for cmd in systemctl install sed useradd; do
   command -v "$cmd" >/dev/null 2>&1 || fail "$cmd is not installed"
 done
 
@@ -142,52 +161,41 @@ id -u "$OWNER_USER" >/dev/null 2>&1 || fail "no such user: $OWNER_USER"
 [ "$OWNER_USER" != root ] ||
   fail "refusing to deploy a root-owned checkout — invoke through sudo from a login user, or set OWNER_USER"
 
-# The unit names an absolute interpreter path: a ~/.deno/bin install is
-# invisible to systemd once it starts dropping privileges, so resolve a real
-# one now. Order matches scripts/setup_vps_admin.sh.
-if [ -n "${DENO:-}" ]; then
-  :
-elif command -v deno >/dev/null 2>&1; then
-  DENO="$(command -v deno)"
-elif [ -x "/home/$OWNER_USER/.deno/bin/deno" ]; then
-  DENO="/home/$OWNER_USER/.deno/bin/deno"
-elif [ -x "/usr/bin/deno" ]; then
-  DENO="/usr/bin/deno"
-else
-  fail "no deno found — install it, or pass DENO=/path/to/deno"
+# The unit names an absolute interpreter path. A ~/.deno/bin install is
+# invisible to systemd once it drops privileges, and under ProtectHome=tmpfs a
+# /home path does not exist inside the unit's namespace at all.
+DENO="${DENO:-/usr/bin/deno}"
+if [ ! -x "$DENO" ]; then
+  if command -v deno >/dev/null 2>&1; then
+    fail "no deno at $DENO — install a real copy there: sudo install -m 0755 \"\$(command -v deno)\" $DENO"
+  fi
+  fail "no deno at $DENO — install Deno, then: sudo install -m 0755 ~/.deno/bin/deno $DENO"
 fi
-[ -x "$DENO" ] || fail "not executable: $DENO"
 
-# ProtectHome=tmpfs would make a /home interpreter vanish inside the unit's
-# namespace. The committed unit uses ProtectHome=read-only, but warn if that
-# was hardened and the binary still lives under /home.
-case "$DENO" in
+# -x above is answered for root. The service account is neither root nor in
+# root's group, so what matters is the other-execute bit — and `deno upgrade`
+# has been known to drop it, surfacing much later as "Permission denied".
+deno_real="$(readlink -f "$DENO")"
+case "$deno_real" in
   /home/*)
-    if grep -q '^ProtectHome=tmpfs' "$UNIT_SRC"; then
-      fail "$DENO is under /home but the unit sets ProtectHome=tmpfs — install a real copy: sudo install -m 0755 \"\$(readlink -f "$DENO")\" /usr/bin/deno"
-    fi
+    fail "$DENO resolves to $deno_real, under /home — ProtectHome=tmpfs hides it from the unit.
+       Install a real copy: sudo install -m 0755 $deno_real $DENO"
     ;;
 esac
-info "deno:    $DENO ($("$DENO" --version | head -n 1))"
-
-# The service account only reaches the tree through the group when it is not
-# the owner, so the other-execute bit on the interpreter is what actually
-# matters then.
-if [ "$SERVICE_USER" != "$OWNER_USER" ]; then
-  deno_mode="$(stat -c '%a' "$DENO")"
-  case "${deno_mode: -1}" in
-    1 | 3 | 5 | 7) ;;
-    *) fail "$DENO is mode $deno_mode: $SERVICE_USER cannot execute it (sudo chmod 0755 $DENO)" ;;
-  esac
-fi
+deno_mode="$(stat -c '%a' "$deno_real")"
+case "${deno_mode: -1}" in
+  1 | 3 | 5 | 7) ;;
+  *) fail "$deno_real is mode $deno_mode: $SERVICE_USER cannot execute it (sudo chmod 0755 $deno_real)" ;;
+esac
+info "deno:    $deno_real ($("$DENO" --version | head -n 1))"
 
 # The unit file is the single source of truth for the port. Reading it back
 # here means the health check below cannot drift from what was installed.
 APP_PORT="$(sed -n 's/^Environment=PORT=\([0-9]\+\).*/\1/p' "$UNIT_SRC" | tail -n 1)"
 [ -n "$APP_PORT" ] || fail "no Environment=PORT= line in $UNIT_SRC"
-info "source:  $APP_DIR"
+info "source:  $APP_DIR (owned by $OWNER_USER:$SERVICE_GROUP)"
 info "runs as: $SERVICE_USER:$SERVICE_GROUP on 127.0.0.1:$APP_PORT"
-info "kv:      $KV_PATH"
+info "state:   $STATE_DIR (owned by $SERVICE_USER)"
 
 if [ "$SKIP_NGINX" -eq 0 ] && ! command -v nginx >/dev/null 2>&1; then
   fail "nginx is not installed (pass --skip-nginx if it lives elsewhere)"
@@ -213,7 +221,11 @@ if [ "$SKIP_CERTBOT" -eq 0 ]; then
   info "certs:   $CERT_DOMAINS -> $CERT_DIR"
 fi
 
-# --- verify ------------------------------------------------------------------
+if [ "$SKIP_FAIL2BAN" -eq 0 ] && ! command -v fail2ban-client >/dev/null 2>&1; then
+  fail "fail2ban is not installed: sudo apt-get install -y fail2ban (or --skip-fail2ban)"
+fi
+
+# --- verify ----------------------------------------------------------------
 # Formatting, type check and the full suite, against the tree about to be put
 # into service. As the owning user: root has no reason to own a cache.
 
@@ -230,9 +242,9 @@ else
   info "all checks passed"
 fi
 
-# --- account ---------------------------------------------------------------------
-# Only created when missing, and only ever as a no-login system account. An
-# existing login user (the default SERVICE_USER=sysadmin) is left untouched.
+# --- account -------------------------------------------------------------------
+# No shell, no home directory, no password: there is nothing to log into and
+# nothing to leave behind. This account exists to read one directory.
 
 step "Account"
 
@@ -240,14 +252,14 @@ if id -u "$SERVICE_USER" >/dev/null 2>&1; then
   info "user $SERVICE_USER already exists"
 else
   useradd --system --no-create-home --shell /usr/sbin/nologin "$SERVICE_USER"
-  info "created system user $SERVICE_USER"
+  info "created system user $SERVICE_USER (no shell, no home)"
 fi
 
-# --- ownership -----------------------------------------------------------------
-# The owner keeps write access so `git pull` needs no root; the service account
-# reaches the tree only through the group, read-only, so it cannot rewrite the
-# code it will run at the next restart. When owner and service are the same
-# user this is a no-op beyond dropping world access.
+# --- ownership ---------------------------------------------------------------
+# The half of the sandbox that systemd cannot do. The owner keeps write access
+# so `git pull` needs no root; the service account reaches the tree only
+# through the group, read-only, and so cannot rewrite the code that will run at
+# the next restart.
 
 step "Ownership"
 
@@ -263,9 +275,10 @@ install -d -o "$SERVICE_USER" -g "$SERVICE_GROUP" -m 0750 "$STATE_DIR"
 info "$APP_DIR is $OWNER_USER:$SERVICE_GROUP, group read-only"
 info "$STATE_DIR is $SERVICE_USER:$SERVICE_GROUP"
 
-# --- environment file ----------------------------------------------------------
-# Touched only to add a session secret it does not already carry. Everything
-# else in it is the host's own and is never overwritten.
+# --- environment file ------------------------------------------------------------
+# Installed only when absent — it is the one file on the server meant to
+# diverge from git. The session secret is appended only if the file carries
+# none: without it the /admin dashboard rejects every sign-in.
 
 step "Environment"
 
@@ -277,20 +290,38 @@ gen_secret() {
   fi
 }
 
-if [ -f "$ENV_FILE" ] && grep -q '^ADMIN_SESSION_SECRET=' "$ENV_FILE"; then
-  info "$ENV_FILE already has ADMIN_SESSION_SECRET, left alone"
+install -d -m 0755 "$ENV_DIR"
+if [ -e "$ENV_FILE" ]; then
+  info "$ENV_FILE exists, left alone"
 else
-  secret="$(gen_secret)"
-  (
-    umask 077
-    touch "$ENV_FILE"
-    printf 'ADMIN_SESSION_SECRET=%s\n' "$secret" >>"$ENV_FILE"
-  )
+  install -o root -g "$SERVICE_GROUP" -m 0640 "$ENV_SRC" "$ENV_FILE"
+  info "installed $ENV_FILE from the example — review it"
+fi
+
+if grep -q '^ADMIN_SESSION_SECRET=.\+' "$ENV_FILE"; then
+  info "ADMIN_SESSION_SECRET already set, left alone"
+else
+  # The example ships a commented placeholder; append the real value below it.
+  printf 'ADMIN_SESSION_SECRET=%s\n' "$(gen_secret)" >>"$ENV_FILE"
   chown "root:$SERVICE_GROUP" "$ENV_FILE"
   chmod 0640 "$ENV_FILE"
-  info "wrote ADMIN_SESSION_SECRET to $ENV_FILE"
+  info "generated ADMIN_SESSION_SECRET into $ENV_FILE"
 fi
 info "admin password: run scripts/setup_vps_admin.sh to set or change it"
+
+# --- module cache ----------------------------------------------------------------
+# Resolved once here, under review, so the unit can run --cached-only and the
+# service never contacts a registry — not at start, not after a restart at 3am.
+# CacheDirectory= in the unit owns this path once systemd takes over. The app
+# has no third-party imports today; this keeps that guarantee enforced.
+
+step "Module cache"
+
+install -d -o "$SERVICE_USER" -g "$SERVICE_GROUP" -m 0750 "$CACHE_DIR" "$DENO_CACHE"
+DENO_DIR="$DENO_CACHE" "$DENO" cache "$APP_DIR/server/main.ts" >&2 ||
+  fail "could not populate the module cache at $DENO_CACHE"
+chown -R "$SERVICE_USER:$SERVICE_GROUP" "$DENO_CACHE"
+info "cached into $DENO_CACHE, owned by $SERVICE_USER"
 
 # --- service -------------------------------------------------------------------
 # The unit in git carries the paths for the machine it was written on. They are
@@ -305,22 +336,22 @@ unit_tmp_dir="$(mktemp -d)"
 unit_tmp="$unit_tmp_dir/$SERVICE_NAME.service"
 trap 'rm -rf "$unit_tmp_dir"' EXIT
 sed \
+  -e "s|^ConditionPathExists=.*|ConditionPathExists=$APP_DIR/server/main.ts|" \
+  -e "s|^WorkingDirectory=.*|WorkingDirectory=$APP_DIR|" \
+  -e "s|^BindReadOnlyPaths=.*|BindReadOnlyPaths=$APP_DIR|" \
   -e "s|^User=.*|User=$SERVICE_USER|" \
   -e "s|^Group=.*|Group=$SERVICE_GROUP|" \
-  -e "s|^WorkingDirectory=.*|WorkingDirectory=$APP_DIR|" \
-  -e "s|^Environment=PUBLIC_DIR=.*|Environment=PUBLIC_DIR=$APP_DIR/public|" \
-  -e "s|^Environment=KV_PATH=.*|Environment=KV_PATH=$KV_PATH|" \
-  -e "s|^ReadOnlyPaths=.*|ReadOnlyPaths=$APP_DIR|" \
-  -e "s|^ReadWritePaths=.*|ReadWritePaths=$STATE_DIR|" \
-  -e "s|^StateDirectory=.*|StateDirectory=$STATE_DIR_NAME|" \
   -e "s|^ExecStart=[^ ]*/deno |ExecStart=$DENO |" \
-  -e "s|^\( *--allow-read=\)[^ ]*|\1$APP_DIR/public,$STATE_DIR|" \
+  -e "s|^Environment=KV_PATH=.*|Environment=KV_PATH=$STATE_DIR/site.kv|" \
+  -e "s|^Environment=DENO_DIR=.*|Environment=DENO_DIR=$DENO_CACHE|" \
+  -e "s|^StateDirectory=.*|StateDirectory=$SERVICE_NAME|" \
+  -e "s|^CacheDirectory=.*|CacheDirectory=$SERVICE_NAME|" \
+  -e "s|^\( *--allow-read=\)[^ ]*|\1public,$STATE_DIR|" \
   -e "s|^\( *--allow-write=\)[^ ]*|\1$STATE_DIR|" \
   "$UNIT_SRC" >"$unit_tmp"
 
 if command -v systemd-analyze >/dev/null 2>&1; then
-  # Advisory only: the real gate is daemon-reload + restart + the health poll.
-  # verify is noisy about unresolved dependencies on a host it is not running.
+  # Advisory: the real gate is daemon-reload + restart + the health poll.
   systemd-analyze verify "$unit_tmp" >&2 ||
     info "warning: systemd-analyze verify had complaints (see above) — continuing"
 fi
@@ -329,11 +360,11 @@ install -o root -g root -m 0644 "$unit_tmp" "/etc/systemd/system/$SERVICE_NAME.s
 systemctl daemon-reload
 systemctl enable "$SERVICE_NAME" >/dev/null 2>&1 || true
 
-# restart, not reload: Type=simple has no reload semantics.
+# restart, not reload: Type=exec has no reload semantics.
 systemctl restart "$SERVICE_NAME"
 info "$SERVICE_NAME restarted (WorkingDirectory=$APP_DIR)"
 
-# --- health ------------------------------------------------------------------
+# --- health ----------------------------------------------------------------
 # The deployment is not finished when systemd returns; it is finished when the
 # application answers. Fifteen tries at a fifth of a second is generous for a
 # process whose entire startup is reading a directory.
@@ -369,7 +400,7 @@ systemctl is-active --quiet "$SERVICE_NAME" ||
 info "127.0.0.1:$APP_PORT/api/health is answering"
 info "the KV database is exercised on the first /admin sign-in, not here"
 
-# --- certificates ----------------------------------------------------------------
+# --- certificates --------------------------------------------------------------
 # Before the reverse proxy, because the vhost names its key material by
 # absolute path: `nginx -t` fails outright if the lineage is not on disk yet.
 #
@@ -464,21 +495,88 @@ EOF
 fi
 
 # --- reverse proxy -----------------------------------------------------------------
-# The vhost from git, installed verbatim. `nginx -t` first, always: a
-# configuration that does not parse must never reach a running Nginx.
+# The vhost, plus the two box-wide pieces it depends on: the probe snippet it
+# includes, and the catch-all that closes the connection on requests addressed
+# to no server_name at all. Both are shared with every other site on the host,
+# and installing them is idempotent.
 
 step "Reverse proxy"
 
 if [ "$SKIP_NGINX" -eq 1 ]; then
   info "skipped (--skip-nginx)"
 else
+  install -d -m 0755 /etc/nginx/snippets
+  install -o root -g root -m 0644 "$SNIPPET_SRC" /etc/nginx/snippets/deny-probes.conf
+  install -o root -g root -m 0644 "$DEFAULT_DROP_SRC" /etc/nginx/sites-available/00-default-drop
+
+  # The distro default site answers for any unmatched Host, which is exactly
+  # what 00-default-drop is here to stop doing.
+  rm -f /etc/nginx/sites-enabled/default
+  ln -sfn /etc/nginx/sites-available/00-default-drop /etc/nginx/sites-enabled/00-default-drop
+
   install -o root -g root -m 0644 "$NGINX_SRC" "/etc/nginx/sites-available/$SITE_NAME.conf"
   ln -sfn "/etc/nginx/sites-available/$SITE_NAME.conf" "/etc/nginx/sites-enabled/$SITE_NAME.conf"
+
   nginx_apply
-  info "nginx serving $SITE_NAME"
+  info "nginx serving $SITE_NAME, probes dropped, default site removed"
+fi
+
+# --- fail2ban --------------------------------------------------------------------------
+# The filter is this repository's and is kept current. jail.local is the box's,
+# shared with every other site, and carries edits that are deliberately not in
+# git (the real sshd port) — so it is installed only when absent.
+
+step "fail2ban"
+
+if [ "$SKIP_FAIL2BAN" -eq 1 ]; then
+  info "skipped (--skip-fail2ban)"
+else
+  install -o root -g root -m 0644 "$F2B_FILTER_SRC" /etc/fail2ban/filter.d/nginx-probes.conf
+
+  if [ -e /etc/fail2ban/jail.local ]; then
+    info "/etc/fail2ban/jail.local exists, left alone"
+  else
+    install -o root -g root -m 0644 "$F2B_JAIL_SRC" /etc/fail2ban/jail.local
+    info "installed /etc/fail2ban/jail.local — set the real sshd port in it"
+  fi
+
+  # Restart, not reload: apt starts fail2ban before jail.local exists, and a
+  # running daemon does not pick the file up any other way.
+  systemctl restart fail2ban
+
+  # systemctl returns before fail2ban has bound its socket, and a client that
+  # cannot connect looks exactly like a jail that does not exist. Ask until it
+  # answers something that is actually about the jail.
+  jail_status=""
+  for _ in $(seq 1 20); do
+    jail_status="$(fail2ban-client status nginx-probes 2>&1 || true)"
+    case "$jail_status" in
+      *"File list:"* | *"Journal matches:"* | *"does not exist"*) break ;;
+    esac
+    sleep 0.4
+  done
+
+  # Two ways to be wrong, and they need different fixes: the jail can be
+  # missing from a jail.local this script declined to overwrite, or it can be
+  # present and reading the journal, where nginx access logs never appear.
+  case "$jail_status" in
+    *"File list:"*)
+      info "jail nginx-probes is reading the access logs"
+      ;;
+    *"Journal matches:"*)
+      info "warning: nginx-probes is reading the journal, where nginx logs never appear."
+      info "         add 'backend = polling' to its stanza in /etc/fail2ban/jail.local"
+      ;;
+    *)
+      info "warning: no working nginx-probes jail. fail2ban-client said:"
+      printf '        %s\n' "$jail_status" >&2
+      info "         this host's jail.local was left alone; add the stanza from $F2B_JAIL_SRC"
+      ;;
+  esac
 fi
 
 step "Deployed"
 info "journalctl -u $SERVICE_NAME -f"
 info "systemctl status $SERVICE_NAME"
+info "sudo fail2ban-client status nginx-probes"
 info "sudo scripts/setup_vps_admin.sh   # set the admin password"

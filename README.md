@@ -73,10 +73,20 @@ pt-website/
 │   ├── 404.css                   # 404 styles
 │   ├── 404.js                    # 404 animations (entry timeline, glitch, magnetic buttons)
 │   └── vendor/                   # Self-hosted fonts, Font Awesome, and anime.js
+├── scripts/
+│   ├── deploy.sh                 # One-shot host deploy (unit, nginx, certs, fail2ban)
+│   ├── setup_vps_admin.sh        # Seed the admin password + session secret
+│   └── create_admin_password.ts  # KV password writer used by setup_vps_admin.sh
 ├── nginx/
-│   └── praxedistechnologies.com.conf
+│   ├── praxedistechnologies.com.conf   # The site vhost
+│   ├── 00-default-drop                 # Catch-all: close unmatched Host; owns :443 socket opts
+│   └── snippets/deny-probes.conf       # 444 on PHP/WordPress/dotfile probe paths
+├── fail2ban/
+│   ├── filter.d/nginx-probes.conf      # Regex for scanner hits in the access log
+│   └── jail.local                      # nginx-probes + sshd jails (backend = polling)
 └── systemd/
-    └── praxedis-technologies.service
+    ├── praxedis-technologies.service       # Hardened system unit, runs as `ptweb`
+    └── praxedis-technologies.env.example   # Per-host overrides template
 ```
 
 ## Running Locally
@@ -122,10 +132,11 @@ Static assets such as `/main.css`, `/about.js`, `/case-study.js`, and
 ## Admin Dashboard
 
 Create the production password and session secret from the repository on the
-VPS:
+VPS, after `scripts/deploy.sh` has run (it needs the `ptweb` account and the
+KV directory):
 
 ```sh
-./scripts/setup_vps_admin.sh
+sudo scripts/setup_vps_admin.sh
 ```
 
 Then open `/admin/login`. Successful authentication stores the eight-hour bearer
@@ -199,27 +210,35 @@ sudo scripts/deploy.sh
 sudo scripts/deploy.sh --skip-verify --skip-certbot
 ```
 
-It runs in order: preflight checks → `deno task verify` → create the service
-account if missing → tighten ownership → add `ADMIN_SESSION_SECRET` to
-`/etc/praxedis-technologies.env` if absent → render the systemd unit with this
-host's paths and install it → restart and health-poll `/api/health` → bootstrap
-the ACME challenge, run `certbot`, install a renewal reload hook → install the
-nginx vhost. It is idempotent and stops at the first failure; nothing is
-installed until verification passes.
+It runs in order: preflight checks → `deno task verify` → create the no-login
+`ptweb` service account if missing → tighten ownership (owner writes, `ptweb`
+reads through the group) → install the env file and add `ADMIN_SESSION_SECRET`
+if absent → populate the module cache so the unit can run `--cached-only` →
+render the systemd unit with this host's paths and install it as a **system**
+unit → restart and health-poll `/api/health` → bootstrap the ACME challenge,
+run `certbot`, install a renewal reload hook → install the nginx vhost, the
+probe snippet, and the catch-all default-drop → install the fail2ban filter
+and jail. It is idempotent and stops at the first failure; nothing is installed
+until verification passes.
 
 | Flag | Effect |
 | --- | --- |
 | `--skip-verify` | Skip the verification suite (redeploy of an already-verified tree). |
 | `--skip-nginx` | Leave the reverse proxy alone (implies `--skip-certbot`). |
 | `--skip-certbot` | Do not touch certificates. |
+| `--skip-fail2ban` | Do not install the jail or the probe filter. |
 | `--staging` | Issue from Let's Encrypt's staging CA (untrusted, not rate limited). |
 | `--force-renewal` | Renew even if the current certificate is still valid. |
 
-Host layout is overridable from the environment: `APP_DIR`, `OWNER_USER`,
-`SERVICE_USER`, `SERVICE_NAME`, `SITE_NAME`, `STATE_DIR`, `KV_PATH`, `ENV_FILE`,
-`CERT_DOMAINS`, `CERTBOT_EMAIL`, `WEBROOT`, `DENO`. Set the admin password with
-`scripts/setup_vps_admin.sh` after the first deploy. The manual `nginx` and
-`systemd` steps below are what the script automates.
+The service runs as a dedicated no-shell system user (`ptweb` by default) under
+a strict systemd sandbox; the checkout stays owner-writable and group-readable,
+and the KV database lives in `StateDirectory=/var/lib/praxedis-technologies`,
+owned by the service. Host layout is overridable from the environment:
+`APP_DIR`, `OWNER_USER`, `SERVICE_USER`, `SERVICE_GROUP`, `SERVICE_NAME`,
+`SITE_NAME`, `STATE_DIR`, `ENV_FILE`, `CERT_DOMAINS`, `CERTBOT_EMAIL`,
+`WEBROOT`, `DENO`. Set the admin password with `sudo scripts/setup_vps_admin.sh`
+after the first deploy. The manual `nginx` and `systemd` steps below are what
+the script automates.
 
 ## Versioning
 
@@ -234,51 +253,84 @@ Use numeric segments only, no leading `v`, and keep the file to a single line.
 
 ## Production
 
+Use `sudo scripts/deploy.sh` (see [Deploy](#deploy)). It installs the hardened
+systemd unit, which starts the process as:
+
 ```sh
-PORT=8000 HOST=127.0.0.1 PUBLIC_DIR=/var/www/praxedistechnologies/public \
+KV_PATH=/var/lib/praxedis-technologies/site.kv \
+DENO_DIR=/var/cache/praxedis-technologies/deno \
 ALLOWED_HOSTS=www.praxedistechnologies.com,praxedistechnologies.com,127.0.0.1,localhost \
-DENO_DIR=/tmp/deno-cache \
 deno run \
+  --unstable-kv \
   --allow-net=127.0.0.1:8000 \
-  --allow-read=/var/www/praxedistechnologies/public \
-  --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS,DENO_DIR \
+  --allow-read=public,/var/lib/praxedis-technologies \
+  --allow-write=/var/lib/praxedis-technologies \
+  --allow-env=PORT,PUBLIC_DIR,HOST,ALLOWED_HOSTS,DENO_DIR,KV_PATH,ADMIN_SESSION_SECRET \
+  --cached-only \
   server/main.ts
 ```
 
-nginx config at `nginx/praxedistechnologies.com.conf` handles TLS termination
-and proxies to the Deno process.
+`ADMIN_SESSION_SECRET` comes from
+`/etc/praxedis-technologies/praxedis-technologies.env`. nginx
+(`nginx/praxedistechnologies.com.conf`) handles TLS termination and proxies to
+the Deno process.
 
 ## nginx
 
+`scripts/deploy.sh` does all of this. By hand:
+
 ```sh
-# Install
-sudo cp nginx/praxedistechnologies.com.conf \
+# Box-wide pieces (install once, shared by every site)
+sudo install -m 0644 nginx/snippets/deny-probes.conf /etc/nginx/snippets/deny-probes.conf
+sudo install -m 0644 nginx/00-default-drop /etc/nginx/sites-available/00-default-drop
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo ln -sf /etc/nginx/sites-available/00-default-drop /etc/nginx/sites-enabled/00-default-drop
+
+# The site vhost
+sudo install -m 0644 nginx/praxedistechnologies.com.conf \
         /etc/nginx/sites-available/praxedistechnologies.com.conf
-sudo ln -s /etc/nginx/sites-available/praxedistechnologies.com.conf \
+sudo ln -sf /etc/nginx/sites-available/praxedistechnologies.com.conf \
            /etc/nginx/sites-enabled/praxedistechnologies.com.conf
 
 # Obtain TLS certificate (first time)
 sudo certbot certonly --webroot -w /var/www/certbot \
+  --cert-name praxedistechnologies.com \
   -d praxedistechnologies.com -d www.praxedistechnologies.com
 
 # Test and reload
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-## systemd (User Service)
+## fail2ban
 
 ```sh
-# Install
-sudo cp ~/.local/src/development/pt-website/systemd/praxedis-technologies.service \
-        /etc/systemd/user/praxedis-technologies.service
+sudo install -m 0644 fail2ban/filter.d/nginx-probes.conf /etc/fail2ban/filter.d/nginx-probes.conf
+# Only if absent — jail.local is the box's, and carries the real sshd port.
+sudo install -m 0644 fail2ban/jail.local /etc/fail2ban/jail.local
+sudo systemctl restart fail2ban
+sudo fail2ban-client status nginx-probes   # must say "File list:", not "Journal matches:"
+```
 
-# Enable and start
-systemctl --user daemon-reload
-systemctl --user enable --now praxedis-technologies
+## systemd
 
-# Status / logs
-systemctl --user status praxedis-technologies
-journalctl --user -u praxedis-technologies -f
+Installed as a **system** unit that runs as the no-login `ptweb` account under
+a strict sandbox. `scripts/deploy.sh` rewrites the checkout paths and installs
+it; by hand:
+
+```sh
+# Edit User/Group/WorkingDirectory/BindReadOnlyPaths/ConditionPathExists for
+# this host first, then:
+sudo install -o root -g root -m 0644 \
+  systemd/praxedis-technologies.service /etc/systemd/system/praxedis-technologies.service
+sudo install -d -m 0755 /etc/praxedis-technologies
+sudo install -o root -g ptweb -m 0640 \
+  systemd/praxedis-technologies.env.example /etc/praxedis-technologies/praxedis-technologies.env
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now praxedis-technologies
+
+sudo systemctl status praxedis-technologies
+sudo journalctl -u praxedis-technologies -f
 ```
 
 ---

@@ -6,11 +6,13 @@ usage() {
 Usage: scripts/setup_vps_admin.sh [options] [--stdin]
 
 Creates or updates the admin password in the same Deno KV file used by the VPS
-service. Run this from the repo on the VPS as the normal deploy user.
+service, and hands the file to the service account so the running unit can
+write it. Run this from the repo on the VPS (with sudo) after scripts/deploy.sh.
 
 Options:
   --kv-path PATH    KV file path. Default: /var/lib/praxedis-technologies/site.kv
-  --env-file PATH   Service env file. Default: /etc/praxedis-technologies.env
+  --env-file PATH   Service env file.
+                    Default: /etc/praxedis-technologies/praxedis-technologies.env
   --service NAME    systemd service name. Default: praxedis-technologies
   --deno PATH       Deno binary path. Default: deno on PATH, then ~/.deno/bin/deno
   --no-secret       Do not create ADMIN_SESSION_SECRET in the env file
@@ -19,7 +21,8 @@ Options:
   -h, --help        Show this help
 
 Environment overrides:
-  KV_PATH, ENV_FILE, SERVICE_NAME, DENO_BIN, OWNER, GROUP
+  KV_PATH, ENV_FILE, SERVICE_NAME, SERVICE_USER, SERVICE_GROUP, DENO_BIN,
+  OWNER, GROUP
 USAGE
 }
 
@@ -31,11 +34,15 @@ die() {
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 KV_PATH="${KV_PATH:-/var/lib/praxedis-technologies/site.kv}"
-ENV_FILE="${ENV_FILE:-/etc/praxedis-technologies.env}"
 SERVICE_NAME="${SERVICE_NAME:-praxedis-technologies}"
+ENV_FILE="${ENV_FILE:-/etc/$SERVICE_NAME/$SERVICE_NAME.env}"
 DENO_BIN="${DENO_BIN:-}"
 OWNER="${OWNER:-$(stat -c '%U' "$repo_root")}"
 GROUP="${GROUP:-$(stat -c '%G' "$repo_root")}"
+# The unit runs as a dedicated no-shell account; the KV file it opens must be
+# owned by that account, not by whoever ran this script.
+SERVICE_USER="${SERVICE_USER:-ptweb}"
+SERVICE_GROUP="${SERVICE_GROUP:-$SERVICE_USER}"
 create_secret=1
 restart_after_secret=1
 deno_script_args=()
@@ -107,8 +114,8 @@ fi
 kv_dir="$(dirname "$KV_PATH")"
 
 if [[ "$KV_PATH" != ":memory:" ]]; then
-  echo "Preparing KV directory: $kv_dir"
-  "${sudo_cmd[@]}" install -d -m 700 -o "$OWNER" -g "$GROUP" "$kv_dir"
+  echo "Preparing KV directory: $kv_dir (owned by $SERVICE_USER)"
+  "${sudo_cmd[@]}" install -d -m 0750 -o "$SERVICE_USER" -g "$SERVICE_GROUP" "$kv_dir"
 fi
 
 generate_secret() {
@@ -142,19 +149,15 @@ if [[ "$create_secret" -eq 1 ]]; then
   fi
 fi
 
-deno_prefix=(env "KV_PATH=$KV_PATH")
-if [[ "$(id -u)" -eq 0 && "$OWNER" != "root" ]]; then
-  if command -v sudo >/dev/null 2>&1; then
-    deno_prefix=(sudo -H -u "$OWNER" env "KV_PATH=$KV_PATH")
-  elif command -v runuser >/dev/null 2>&1; then
-    deno_prefix=(runuser -u "$OWNER" -- env "KV_PATH=$KV_PATH")
-  fi
-fi
-
+# Run the seeder as root, not as the checkout owner: the KV directory is owned
+# by the no-shell service account and is not group-writable, and that account
+# cannot traverse the owner's home to reach this script. Root writes the file,
+# then it is handed to the service account below — matching what the running
+# unit expects to own.
 echo "Creating admin password in KV: $KV_PATH"
 (
   cd "$repo_root"
-  "${deno_prefix[@]}" "$DENO_BIN" run \
+  "${sudo_cmd[@]}" env "KV_PATH=$KV_PATH" "$DENO_BIN" run \
     --unstable-kv \
     "--allow-read=/tmp,$kv_dir" \
     "--allow-write=/tmp,$kv_dir" \
@@ -162,6 +165,11 @@ echo "Creating admin password in KV: $KV_PATH"
     scripts/create_admin_password.ts \
     "${deno_script_args[@]}"
 )
+
+if [[ "$KV_PATH" != ":memory:" ]]; then
+  echo "Handing $kv_dir to $SERVICE_USER:$SERVICE_GROUP"
+  "${sudo_cmd[@]}" chown -R "$SERVICE_USER:$SERVICE_GROUP" "$kv_dir"
+fi
 
 if [[ "$env_changed" -eq 1 && "$restart_after_secret" -eq 1 ]]; then
   if command -v systemctl >/dev/null 2>&1 &&
