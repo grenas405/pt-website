@@ -7,6 +7,9 @@ All notable changes to the **Praxedis Technologies** website project will be doc
 ### Changed
 - **CSS/JS Cache Policy** — `text/css` and `text/javascript` responses now send `Cache-Control: no-cache, must-revalidate` (same tier as HTML) instead of a 1-year `immutable` cache. Static assets ship with no cache-busting filename hash, so a deploy needs to land on the very next load; the `ETag`/`Last-Modified` pair `headers.ts` already sets on every response turns that revalidation into a cheap `304` when the file has not actually changed, rather than a stale asset silently surviving up to a year in browser cache. Fonts (`font/woff`, `font/woff2`, `font/ttf`) keep the 1-year `immutable` cache — the vendored Google Fonts files under `public/vendor/fonts/` carry unique, stable filenames per face and are never overwritten in place.
 
+### Fixed
+- **Mobile Nav "Connect" Overlapping the "Praxedis Technologies" Tagline** — `.mobile-nav-overlay` vertically centers the 9-link `.mno-nav` list with `justify-content: center`, which lets an overflowing flex item bleed equally into its top *and* bottom padding rather than staying clipped to its box. `.mno-tagline` ("Praxedis Technologies") is pinned separately at `bottom: 2rem` inside that same bottom padding. On any short viewport — a phone in portrait around 667px tall (iPhone SE class) or almost any phone in landscape — the list's real height exceeds the space `justify-content: center` has to work with, so the overflow pushes the last item, the "Connect" CTA, down into the tagline's reserved area. Fixed by capping `.mno-nav` to `max-height: 100%` of the overlay's content box and making it scroll internally (`overflow-y: auto`, `overscroll-behavior: contain`) instead of overflowing past it — the list now always stays inside the space it's given, regardless of viewport height or how many links it holds.
+
 ## [Unreleased] - 2026-09-03
 
 ### Added

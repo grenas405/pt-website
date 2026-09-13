@@ -278,8 +278,24 @@ nav {
 .mno-close:hover { border-color: var(--mexican-red); color: var(--mexican-red); }
 .mno-close:focus-visible { outline: 2px solid var(--mexican-green); outline-offset: 3px; }
 
-.mno-nav { width: 100%; max-width: 82%; }
-.mno-links { list-style: none; padding: 0; margin: 0; }
+.mno-nav {
+    width: 100%;
+    max-width: 82%;
+    /* .mobile-nav-overlay centers this box with `justify-content: center`,
+       which lets an overflowing flex item bleed equally into the top *and*
+       bottom padding — the padding that reserves room for .mno-tagline,
+       pinned separately at `bottom: 2rem`. With 9 links, that overflow
+       reaches far enough to put "Connect" behind "Praxedis Technologies" on
+       any short phone (portrait ~667px tall, e.g. iPhone SE, or landscape).
+       Capping this box to the space the overlay actually has, and scrolling
+       inside it, keeps the whole list on-screen and out of the tagline's
+       reserved area regardless of viewport height or link count. */
+    max-height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+.mno-links { list-style: none; padding: 0 0 1rem; margin: 0; }
 .mno-item {
     overflow: hidden;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
