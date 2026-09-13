@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const command = "curl https://pedromdominguez.com/api/health";
+  const command = "curl https://pedromdominguez.dev/api/health";
   const outputLines = [
     ["", ""],
     [

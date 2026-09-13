@@ -10,6 +10,9 @@ All notable changes to the **Praxedis Technologies** website project will be doc
 ### Fixed
 - **Mobile Nav "Connect" Overlapping the "Praxedis Technologies" Tagline** — `.mobile-nav-overlay` vertically centers the 9-link `.mno-nav` list with `justify-content: center`, which lets an overflowing flex item bleed equally into its top *and* bottom padding rather than staying clipped to its box. `.mno-tagline` ("Praxedis Technologies") is pinned separately at `bottom: 2rem` inside that same bottom padding. On any short viewport — a phone in portrait around 667px tall (iPhone SE class) or almost any phone in landscape — the list's real height exceeds the space `justify-content: center` has to work with, so the overflow pushes the last item, the "Connect" CTA, down into the tagline's reserved area. Fixed by capping `.mno-nav` to `max-height: 100%` of the overlay's content box and making it scroll internally (`overflow-y: auto`, `overscroll-behavior: contain`) instead of overflowing past it — the list now always stays inside the space it's given, regardless of viewport height or how many links it holds.
 
+### Changed
+- **`pedromdominguez.com` → `pedromdominguez.dev`** — updated the three remaining links to Pedro M. Dominguez's personal site (the Mexico campaign page's tribute link and footer CTA, and the terminal-effect command text in `mexico.js`) to the current `.dev` domain.
+
 ## [Unreleased] - 2026-09-03
 
 ### Added
