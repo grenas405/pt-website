@@ -63,10 +63,29 @@ Deno.test("content security policy is same-origin and blocks inline code", () =>
   assert(!CONTENT_SECURITY_POLICY.includes("https:"), "external https allowed");
 });
 
-Deno.test("cache policy separates HTML, long-lived assets, and no-store responses", () => {
+Deno.test("cache policy separates always-revalidated pages/scripts, long-lived fonts, and no-store responses", () => {
   assertEquals(
     buildHeaders({
       contentType: "text/html; charset=utf-8",
+      size: 1,
+      mtime: null,
+    }).get("Cache-Control"),
+    "no-cache, must-revalidate",
+  );
+  // CSS/JS ship without a cache-busting filename hash, so a deploy must land
+  // on the next load: always revalidate, same as HTML, and let ETag turn
+  // that into a 304 when the file has not actually changed.
+  assertEquals(
+    buildHeaders({
+      contentType: "text/css; charset=utf-8",
+      size: 1,
+      mtime: null,
+    }).get("Cache-Control"),
+    "no-cache, must-revalidate",
+  );
+  assertEquals(
+    buildHeaders({
+      contentType: "text/javascript; charset=utf-8",
       size: 1,
       mtime: null,
     }).get("Cache-Control"),

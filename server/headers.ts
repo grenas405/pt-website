@@ -18,9 +18,14 @@ export const CONTENT_SECURITY_POLICY = [
 ].join("; ");
 
 const CACHE_DURATION: Record<string, number> = {
+  // CSS/JS ship with no cache-busting filename hash, so a deploy must take
+  // effect on the very next load rather than waiting out a long max-age.
+  // 0 still means "cache, but always revalidate" below, not "don't cache":
+  // the ETag/Last-Modified pair on every response turns that revalidation
+  // into a 304 when the file has not changed.
   "text/html": 0,
-  "text/css": 31536000,
-  "text/javascript": 31536000,
+  "text/css": 0,
+  "text/javascript": 0,
   "font/woff": 31536000,
   "font/woff2": 31536000,
   "font/ttf": 31536000,

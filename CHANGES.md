@@ -2,6 +2,11 @@
 
 All notable changes to the **Praxedis Technologies** website project will be documented in this file.
 
+## [Unreleased] - 2026-09-13
+
+### Changed
+- **CSS/JS Cache Policy** — `text/css` and `text/javascript` responses now send `Cache-Control: no-cache, must-revalidate` (same tier as HTML) instead of a 1-year `immutable` cache. Static assets ship with no cache-busting filename hash, so a deploy needs to land on the very next load; the `ETag`/`Last-Modified` pair `headers.ts` already sets on every response turns that revalidation into a cheap `304` when the file has not actually changed, rather than a stale asset silently surviving up to a year in browser cache. Fonts (`font/woff`, `font/woff2`, `font/ttf`) keep the 1-year `immutable` cache — the vendored Google Fonts files under `public/vendor/fonts/` carry unique, stable filenames per face and are never overwritten in place.
+
 ## [Unreleased] - 2026-09-03
 
 ### Added
